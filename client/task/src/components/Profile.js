@@ -52,7 +52,7 @@ const Profile = () => {
       return;
     }
     try {
-      await axios.put(`http://localhost:5000/api/user/${userId}`, profile);
+      await axios.put(`https://sooru-ai.onrender.com/api/user/${userId}`, profile);
       alert("✅ Profile Updated!");
     } catch (error) {
       console.error("Error updating profile:", error);

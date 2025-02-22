@@ -37,7 +37,7 @@ const Register = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post("http://localhost:5000/api/auth/register", formData);
+        const response = await axios.post("https://sooru-ai.onrender.com/api/auth/register", formData);
 
         if (response.status === 201) {
           setSuccessMessage("User registered successfully!");
