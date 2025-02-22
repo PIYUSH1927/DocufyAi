@@ -74,7 +74,7 @@ const Register = () => {
           <input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} />
           {errors.phone && <span className="error">{errors.phone}</span>}
 
-          {errors.apiError && <span style={{marginLeft:"80px", fontSize:"medium"}} className="error">{errors.apiError}</span>}
+          {errors.apiError && <span style={{marginLeft:"80px",marginTop:"10px", fontSize:"medium"}} className="error">{errors.apiError}</span>}
 
           <button type="submit">Register</button>
         </form>
