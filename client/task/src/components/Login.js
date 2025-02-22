@@ -12,7 +12,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/auth/login", formData, { withCredentials: true, } );
+      const res = await axios.post("http://localhost:5000/api/auth/login", formData, { withCredentials: true, } );
       localStorage.setItem("token", res.data.token);
       navigate("/home");
     } catch (err) {
