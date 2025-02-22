@@ -38,7 +38,7 @@ const Profile = () => {
       return;
     }
 
-    axios.get(`http://localhost:5000/api/user/${userId}`)
+    axios.get(`https://sooru-ai.onrender.com/api/user/${userId}`)
       .then((res) => setProfile(res.data))
       .catch((err) => console.error("Error fetching profile:", err));
   }, [userId]);
