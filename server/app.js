@@ -16,6 +16,7 @@ app.use(
   })
 );
 
+
 mongoose
   .connect("mongodb+srv://padiapiyush12:padiapiyush12@cluster0.xfht4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => console.log("MongoDB Connected"))
