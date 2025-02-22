@@ -10,7 +10,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://your-frontend-domain.com"],
+    origin: ["http://localhost:3000", "https://sooru-ai-ftwp.vercel.app/"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true, 
   })
