@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import { FaUser, FaPhone, FaMapMarkerAlt, FaCity, FaGlobe, FaKey } from "react-icons/fa";
 
+
+
 const Profile = () => {
+  
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -54,6 +60,7 @@ const Profile = () => {
     try {
       await axios.put(`https://sooru-ai.onrender.com/api/user/${userId}`, profile);
       alert("✅ Profile Updated!");
+      navigate("/home");
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("❌ Failed to update profile");
