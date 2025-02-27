@@ -147,6 +147,20 @@ router.post("/logout", (req, res) => {
   }
 });
 
+router.post("/checkuser", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.status(200).json({ exists: true });
+    }
+    res.status(200).json({ exists: false });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 
 const checkBlacklist = (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1];

@@ -35,13 +35,22 @@ const Login = () => {
       return;
     }
     try {
-      await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", { email: resetData.email });
-      setOtpSent(true);
-      alert(`OTP sent to ${resetData.email}`);
+      
+      const userCheckRes = await axios.post("https://sooru-ai.onrender.com/api/auth/checkuser", { email: resetData.email });
+      
+      if (userCheckRes.data.exists) {
+     
+        await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", { email: resetData.email });
+        setOtpSent(true);
+        alert(`OTP sent to ${resetData.email}`);
+      } else {
+        alert("User does not exist. Please enter a registered email.");
+      }
     } catch (error) {
-      alert("Failed to send OTP. Please try again.");
+      alert("Error verifying email. Please try again.");
     }
   };
+  
 
   const handleResetSubmit = async () => {
     try {

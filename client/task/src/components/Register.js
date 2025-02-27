@@ -38,10 +38,21 @@ const Register = () => {
 
   const sendOtp = async () => {
     try {
+     
+      const existingUserResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/checkuser", {
+        email: formData.email,
+      });
+  
+      if (existingUserResponse.data.exists) {
+        setErrors({ apiError: "User already exists. Please log in." });
+        return;
+      }
+  
+    
       const response = await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", {
         email: formData.email,
       });
-
+  
       if (response.status === 200) {
         setShowOtpPopup(true);
       }
@@ -49,6 +60,7 @@ const Register = () => {
       setErrors({ apiError: error.response?.data?.message || "Failed to send OTP" });
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,22 +75,27 @@ const Register = () => {
         email: formData.email,
         otp: otp,
       });
-
+  
       if (response.status === 200) {
-        const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", formData);
-
-        if (registerResponse.status === 201) {
-          setSuccessMessage("User registered successfully!");
-          alert("User registered successfully!.");
-          setShowOtpPopup(false);
-          setFormData({ firstName: "", lastName: "", email: "", password: "", phone: "" });
-          navigate("/login");
+        try {
+          const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", formData);
+  
+          if (registerResponse.status === 201) {
+            setSuccessMessage("User registered successfully!");
+            alert("User registered successfully!");
+            setShowOtpPopup(false);
+            setFormData({ firstName: "", lastName: "", email: "", password: "", phone: "" });
+            navigate("/login");
+          }
+        } catch (registerError) {
+          setErrors({ apiError: registerError.response?.data?.message || "Registration failed." });
         }
       }
     } catch (error) {
-      alert("Invalid OTP. Please try again.");
+      setErrors({ apiError: error.response?.data?.message || "Invalid OTP. Please try again." });
     }
   };
+  
 
   return (
     <div className="register-container">
