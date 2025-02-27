@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+.pricing-page {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+    height: 100vh;
+}
+
+
+.pricing-page h1 {
+    font-size: 3.2rem;
+    background: linear-gradient(90deg, #38bdf8, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pricing-subtitle {
+    font-size: 1.4rem;
+    color: #cbd5e1;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+
+.pricing-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.pricing-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    width: 320px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    border: 1px solid #334155;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pricing-card:hover {
+    transform: translateY(-10px);
+    border-color: #38bdf8;
+}
+
+
+.pricing-card h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #38bdf8;
+    margin-bottom: 10px;
+}
+
+
+.pricing-price {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.pricing-desc {
+    font-size: 1rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+
+.pricing-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+}
+
+.pricing-card ul li {
+    font-size: 1rem;
+    color: #e2e8f0;
+    padding: 5px 0;
+}
+
+.pricing-btn {
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #38bdf8, #06b6d4);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.pricing-btn:hover {
+    transform: scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+    .pricing-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+}
