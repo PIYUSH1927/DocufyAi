@@ -16,7 +16,6 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
@@ -44,7 +43,7 @@ const Register = () => {
       });
   
       if (existingUserResponse.data.exists) {
-        setErrors({ apiError: "User already exists. Please log in." });
+        setErrors({ apiError: "User already exists." });
         return;
       }
   
@@ -88,14 +87,17 @@ const Register = () => {
             navigate("/login");
           }
         } catch (registerError) {
-          setErrors({ apiError: registerError.response?.data?.message || "Registration failed." });
+          const errorMessage = registerError.response?.data?.message || "Registration failed.";
+          setErrors({ apiError: errorMessage });
+          alert(errorMessage);
         }
       }
     } catch (error) {
-      setErrors({ apiError: error.response?.data?.message || "Invalid OTP. Please try again." });
+      const errorMessage = error.response?.data?.message || "Invalid OTP. Please try again.";
+      setErrors({ apiError: errorMessage });
+      alert(errorMessage); // Show the alert when OTP is wrong
     }
   };
-  
 
   return (
     <div className="register-container">
