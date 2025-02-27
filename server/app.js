@@ -21,7 +21,7 @@ app.options("*", cors());
 
 
 mongoose
-  .connect("mongodb+srv://padiapiyush12:padiapiyush12@cluster0.xfht4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+  .connect(process.env.MONGO_URI) // Use the environment variable
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 

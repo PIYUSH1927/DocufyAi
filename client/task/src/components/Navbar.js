@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import "./Navbar.css"; 
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -11,12 +12,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={styles.navbar}>
+    <nav className="navbar" style={styles.navbar}>
 
       <img
-        src="/imgg.png"
+        src="/imgg.jpg"
         alt="Logo"
-        style={styles.logo}
+        className="logo"
         onClick={() => navigate(isAuthenticated ? "/home" : "/login")}
 
       />
@@ -41,12 +42,11 @@ const Navbar = () => {
 const styles = {
   navbar: {
     width: "100%",
-    height: "70px",
     background: "#222",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "0 20px",
+    padding: "0 5px",
     position: "fixed",
     top: 0,
     left: 0,
@@ -56,6 +56,7 @@ const styles = {
   logo: {
     height: "60px",
     cursor: "pointer",
+    transition: "all 0.3s ease-in-out",
   },
   navItems: {
     display: "flex",

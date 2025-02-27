@@ -14,6 +14,9 @@ const Register = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
@@ -33,23 +36,46 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const sendOtp = async () => {
+    try {
+      const response = await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", {
+        email: formData.email,
+      });
+
+      if (response.status === 200) {
+        setShowOtpPopup(true);
+      }
+    } catch (error) {
+      setErrors({ apiError: error.response?.data?.message || "Failed to send OTP" });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      try {
-        const response = await axios.post("https://sooru-ai.onrender.com/api/auth/register", formData);
+      sendOtp(); 
+    }
+  };
 
-        if (response.status === 201) {
+  const handleOtpSubmit = async () => {
+    try {
+      const response = await axios.post("https://sooru-ai.onrender.com/api/auth/verifyotp", {
+        email: formData.email,
+        otp: otp,
+      });
+
+      if (response.status === 200) {
+        const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", formData);
+
+        if (registerResponse.status === 201) {
           setSuccessMessage("User registered successfully!");
+          setShowOtpPopup(false);
           setFormData({ firstName: "", lastName: "", email: "", password: "", phone: "" });
-          
-          alert("User registered successfully!");
           navigate("/login");
-
         }
-      } catch (error) {
-        setErrors({ apiError: error.response?.data?.message || "Registration failed" });
       }
+    } catch (error) {
+      alert("Invalid OTP. Please try again.");
     }
   };
 
@@ -87,6 +113,25 @@ const Register = () => {
         </p>
 
       </div>
+
+      {showOtpPopup && (
+        <div className="otp-popup">
+          <div className="otp-box">
+            <h2 className="close-popup" onClick={() => setShowOtpPopup(false)}>×</h2>
+            <h3>OTP Verification</h3>
+            <p className="otp-message">The OTP has been sent to {formData.email}</p>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              maxLength={4}
+            />
+            <button onClick={handleOtpSubmit}>Verify OTP</button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -4,6 +4,7 @@
     align-items: center;
     height: 100vh;
   
+  
   }
   
   .form-container {
@@ -64,3 +65,69 @@
     text-decoration: underline;
   }
   
+  @media (max-width: 768px) {
+    .login-container {
+        padding: 10px;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 350px;
+        padding: 25px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    input {
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .register-link {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        max-width: 80%;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 15px;
+    }
+
+    .register-link {
+        font-size: 12px;
+    }
+}
+
+.forgot-password {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+  color: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
