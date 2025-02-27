@@ -23,14 +23,14 @@
   @media (max-width: 768px) {
     .logo {
       height: 50px;
-      width: 145px;
+      width: 150px;
     }
   }
   
   @media (max-width: 480px) {
     .logo {
       height: 40px;
-      width: 115px;
+      width: 120px;
     }
     .navbar {
         height: 50px;

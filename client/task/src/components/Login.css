@@ -97,8 +97,9 @@
 
 @media (max-width: 480px) {
     .form-container {
-        max-width: 80%;
+        max-width: 90%;
         padding: 20px;
+        margin-bottom: 50px;
     }
 
     h2 {

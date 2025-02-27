@@ -33,6 +33,7 @@ body {
   max-width: 420px;
   text-align: center;
   border: 3px solid #4f46e5;
+
 }
 
 h2 {
@@ -119,7 +120,7 @@ button:hover {
 @media (max-width: 480px) {
   .form-container {
     padding: 20px;
-    width: 95%;
+    width: 100%;
   }
 
   h2 {
