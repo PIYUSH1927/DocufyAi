@@ -1,73 +1,156 @@
-.navbar {
-    width: 100%;
-    height: 70px;
-    background: #222;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 0px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    box-shadow: 0px 4px 10px rgba(235, 228, 228, 0.2);
+/* General Navbar Styles */
+.nb {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, #101826, #1b2940);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Logo */
+.nb-logo {
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.nb-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Navigation Links */
+.nb-links {
+  display: flex;
+  gap: 50px;
+}
+
+.nb-link {
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
+  font-weight: 500;
+}
+
+.nb-link:hover {
+  color: #38bdf8;
+  text-shadow: 0px 0px 5px rgba(56, 189, 248, 0.5);
+}
+
+/* User Section */
+.nb-user {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-right: 20px;
+}
+
+/* Logout Button */
+.nb-logout {
+  color: #ff4d4d;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.nb-logout:hover {
+  color: #ff7373;
+}
+
+/* Profile Section */
+.nb-profile {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease-in-out;
+}
+
+.nb-profile:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nb-avatar {
+  height: 42px;
+  border-radius: 50%;
+}
+
+.nb-profile-text {
+  color: white;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.nb-menu-icon {
+  display: none;
+  cursor: pointer;
+}
+
+.nb-mobile-menu {
+  position: absolute;
+  top: 65px;
+  right: 20px;
+  background: rgba(27, 41, 64, 0.95);
+  border-radius: 8px;
+  width: 200px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.nb-mobile-menu p {
+  color: white;
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nb-mobile-menu p:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+/* 📱 Mobile View */
+@media screen and (max-width: 768px) {
+  .nb-links, .nb-user {
+      display: none;
   }
-  
-  .logo {
-    height: 60px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+
+  .nb-menu-icon {
+      display: block;
   }
-  
-  /* Responsive logo size */
-  @media (max-width: 768px) {
-    .logo {
-      height: 50px;
-      width: 150px;
-    }
+}
+
+/* 📱 Small Mobile View */
+@media screen and (max-width: 480px) {
+  .nb {
+      padding: 10px 20px;
   }
-  
-  @media (max-width: 480px) {
-    .logo {
+
+  .nb-logo {
       height: 40px;
-      width: 120px;
-    }
-    .navbar {
-        height: 50px;
-    }
-        
   }
-  
-  .nav-items {
-    display: flex;
-    align-items: center;
+
+  .nb-mobile-menu {
+      width: 180px;
   }
-  
-  .logout-button {
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 20px;
-    font-size: 16px;
+
+  .nb-mobile-menu p {
+      font-size: 15px;
   }
-  
-  .profile-container {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-  
-  .profile-pic {
-    height: 40px;
-    border-radius: 50%;
-  }
-  
-  .profile-text {
-    margin-left: 10px;
-    color: white;
-    font-size: 18px;
-  }
-  
+}

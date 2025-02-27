@@ -1,91 +1,85 @@
-import React from "react";
+import React, { useState , useEffect} from "react";  
 import { useNavigate } from "react-router-dom";
-import "./Navbar.css"; 
+import { FaBars, FaTimes, FaHome, FaInfoCircle, FaTags, FaUserPlus, FaSignOutAlt, FaUser } from "react-icons/fa";
+import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem("token"); 
+  const isAuthenticated = !!localStorage.getItem("token");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setMenuOpen(false);  // ✅ Close menu when navigating
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login"); 
+    handleNavigation("/login");
   };
 
-  return (
-    <nav className="navbar" style={styles.navbar}>
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setMenuOpen(false);
+      }
+    };
 
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return (
+    <nav className="nb">
+      {/* Logo */}
       <img
         src="/imgg.jpg"
         alt="Logo"
-        className="logo"
-        onClick={() => navigate(isAuthenticated ? "/home" : "/login")}
-
+        className="nb-logo"
+        onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")}
       />
 
-{isAuthenticated && (
-        <div style={styles.navItems}>
+      {/* Desktop Navigation */}
+      <div className="nb-links">
+        <p onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")} className="nb-link">Home</p>
+        <p onClick={() => handleNavigation("/about")} className="nb-link">About</p>
+        <p onClick={() => handleNavigation("/pricing")} className="nb-link">Pricing</p>
+        {!isAuthenticated && <p onClick={() => handleNavigation("/register")} className="nb-link">Sign Up</p>}
+      </div>
 
-          <button style={styles.logoutButton} onClick={handleLogout}>
-            Logout
-          </button>
+      {/* Mobile Hamburger Menu */}
+      <div className="nb-menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <FaTimes size={30} color="white" /> : <FaBars size={30} color="white" />}
+      </div>
 
-          <div onClick={() => navigate("/profile")} style={styles.profileContainer}>
-            <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Profile" style={styles.profilePic} />
-            <p style={styles.profileText}>Profile</p>
+      {/* Mobile Dropdown Menu */}
+      {menuOpen && (
+        <div className="nb-mobile-menu">
+          <p onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")}><FaHome /> Home</p>
+          <p onClick={() => handleNavigation("/about")}><FaInfoCircle /> About</p>
+          <p onClick={() => handleNavigation("/pricing")}><FaTags /> Pricing</p>
+          {!isAuthenticated && <p onClick={() => handleNavigation("/register")}><FaUserPlus /> Sign Up</p>}
+          {isAuthenticated && (
+            <>
+              <p onClick={handleLogout}><FaSignOutAlt /> Logout</p>
+              <p onClick={() => handleNavigation("/profile")}><FaUser /> Profile</p>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Profile & Logout (Only when authenticated) */}
+      {isAuthenticated && (
+        <div className="nb-user">
+          <p onClick={handleLogout} className="nb-logout">Logout</p>
+          <div onClick={() => handleNavigation("/profile")} className="nb-profile">
+            <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Profile" className="nb-avatar" />
+            <p className="nb-profile-text">Profile</p>
           </div>
         </div>
       )}
     </nav>
   );
-};
-
-const styles = {
-  navbar: {
-    width: "100%",
-    background: "#222",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "0 5px",
-    position: "fixed",
-    top: 0,
-    left: 0,
-    zIndex: 1000,
-    boxShadow: "0px 4px 10px rgba(235, 228, 228, 0.2)",
-  },
-  logo: {
-    height: "60px",
-    cursor: "pointer",
-    transition: "all 0.3s ease-in-out",
-  },
-  navItems: {
-    display: "flex",
-    alignItems: "center",
-  },
-  logoutButton: {
-    background: "#ff4d4d",
-    color: "white",
-    border: "none",
-    padding: "8px 15px",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginRight: "20px",
-    fontSize: "16px",
-  },
-  profileContainer: {
-    display: "flex",
-    alignItems: "center",
-    cursor: "pointer",
-  },
-  profilePic: {
-    height: "40px",
-    borderRadius: "50%",
-  },
-  profileText: {
-    marginLeft: "10px",
-    color: "white",
-    fontSize: "18px",
-  },
 };
 
 export default Navbar;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; 
 import "./Register.css";
@@ -17,6 +17,8 @@ const Register = () => {
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,6 +39,7 @@ const Register = () => {
 
   const sendOtp = async () => {
     try {
+      setLoading(true);
      
       const existingUserResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/checkuser", {
         email: formData.email,
@@ -44,6 +47,7 @@ const Register = () => {
   
       if (existingUserResponse.data.exists) {
         setErrors({ apiError: "User already exists." });
+        setLoading(false);
         return;
       }
   
@@ -54,12 +58,23 @@ const Register = () => {
   
       if (response.status === 200) {
         setShowOtpPopup(true);
+        setTimer(60);
       }
     } catch (error) {
       setErrors({ apiError: error.response?.data?.message || "Failed to send OTP" });
+    } finally {
+      setLoading(false); 
     }
   };
   
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,6 +85,7 @@ const Register = () => {
 
   const handleOtpSubmit = async () => {
     try {
+      setLoading(true);
       const response = await axios.post("https://sooru-ai.onrender.com/api/auth/verifyotp", {
         email: formData.email,
         otp: otp,
@@ -95,12 +111,19 @@ const Register = () => {
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Invalid OTP. Please try again.";
       setErrors({ apiError: errorMessage });
-      alert(errorMessage); // Show the alert when OTP is wrong
+      alert(errorMessage);
+    } finally {
+      setLoading(false); 
     }
   };
 
   return (
     <div className="register-container">
+            {loading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+        </div>
+      )}
       <div className="form-container">
         <h2>Register</h2>
         {successMessage && <p className="success" style={{color:"lightgreen"}}>{successMessage}</p>}
@@ -122,7 +145,7 @@ const Register = () => {
 
           {errors.apiError && <span style={{marginLeft:"80px",marginTop:"10px", fontSize:"medium"}} className="error">{errors.apiError}</span>}
 
-          <button type="submit">Register</button>
+          <button type="submit" disabled={loading}>Register</button>
         </form>
 
         <p className="login-link">
@@ -147,7 +170,7 @@ const Register = () => {
               onChange={(e) => setOtp(e.target.value)}
               maxLength={4}
             />
-            <button onClick={handleOtpSubmit}>Verify OTP</button>
+             <button onClick={handleOtpSubmit} disabled={loading}>Verify OTP</button>
           </div>
         </div>
       )}
