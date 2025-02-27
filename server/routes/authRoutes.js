@@ -78,13 +78,14 @@ router.post("/resetpassword", async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    delete otpStore[email]; 
+    delete otpStore[email]; // Now delete OTP after successful reset
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
 
 
 router.post("/register", async (req, res) => {

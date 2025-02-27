@@ -50,7 +50,7 @@ const Login = () => {
         otp: resetData.otp,
       });
       if (verifyRes.status === 200) {
-        await axios.put("https://sooru-ai.onrender.com/api/users/resetpassword", {
+        await axios.put("https://sooru-ai.onrender.com/api/auth/resetpassword", {
           email: resetData.email,
           newPassword: resetData.newPassword,
         });
