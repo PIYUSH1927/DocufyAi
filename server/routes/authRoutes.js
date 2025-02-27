@@ -74,13 +74,16 @@ router.post("/resetpassword", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    if (otpStore[email] && otpStore[email] === otp) {
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
 
-    delete otpStore[email]; // Now delete OTP after successful reset
+    delete otpStore[email]; 
 
     res.status(200).json({ message: "Password reset successful" });
+    }
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

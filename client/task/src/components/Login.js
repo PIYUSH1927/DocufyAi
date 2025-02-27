@@ -52,24 +52,25 @@ const Login = () => {
   };
   
 
-  const handleResetSubmit = async () => {
-    try {
-      const res = await axios.put("https://sooru-ai.onrender.com/api/auth/resetpassword", {
-        email: resetData.email,
-        otp: resetData.otp,  // <-- Include OTP in the request
-        newPassword: resetData.newPassword,
-      });
-  
-      if (res.status === 200) {
-        alert("Password reset successful!");
-        setShowForgotPassword(false);
-        setOtpSent(false);
-        setResetData({ email: "", newPassword: "", otp: "" });
-      }
-    } catch (error) {
-      alert(error.response?.data?.message || "Invalid OTP or failed to reset password. Please try again.");
+const handleResetSubmit = async () => {
+  try {
+    const res = await axios.put("https://sooru-ai.onrender.com/api/auth/resetpassword", {
+      email: resetData.email,
+      otp: resetData.otp,  // <-- Include OTP in the request
+      newPassword: resetData.newPassword,
+    });
+
+    
+    if (res.status === 200) {
+      alert("Password reset successful!");
+      setShowForgotPassword(false);
+      setOtpSent(false);
+      setResetData({ email: "", newPassword: "", otp: "" });
     }
-  };
+  } catch (error) {
+    alert(error.response?.data?.message || "Invalid OTP or failed to reset password. Please try again.");
+  }
+};
 
   return (
     <div className="login-container">
