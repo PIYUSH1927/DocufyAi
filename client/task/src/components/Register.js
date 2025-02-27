@@ -118,7 +118,7 @@ const Register = () => {
   };
 
   return (
-    <div className="register-container">
+    <div className="register-container body">
             {loading && (
         <div className="loading-overlay">
           <div className="loading-spinner"></div>

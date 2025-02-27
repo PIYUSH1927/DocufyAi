@@ -98,7 +98,7 @@ const handleResetSubmit = async () => {
 };
 
   return (
-    <div className="login-container">
+    <div className="login-container body">
         {loading && (
       <div className="loading-overlay">
         <div className="loading-spinner"></div>

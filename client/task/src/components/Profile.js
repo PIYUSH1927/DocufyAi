@@ -69,7 +69,7 @@ const Profile = () => {
 
 
   return (
-    <div>
+    <div className="bod">
     <div className="profile-container">
       <h2 style={{marginBottom:"5px"}}>My Profile</h2>
       <div className="profile-picture">

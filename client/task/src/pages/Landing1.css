@@ -27,14 +27,13 @@
     color: white;
     padding-bottom: 50px; 
     overflow-y: auto;
-    margin-top: 40px;
   }
   
   .ln-hero {
     width: 90%;
     max-width: 1200px;
-    margin-top: 15vh; 
-    padding: 20px;
+    margin-top: 9vh; 
+   
   }
   
   .ln-title {
@@ -119,16 +118,11 @@
     text-align: justify;
   }
   @media screen and (max-width: 1300px) {
-    .ln{
-        margin-top: 380px;
-    }
-    
+
   }
   @media screen and (max-width: 810px) {
 
-    .ln{
-        margin-top: 700px;
-    }
+  
     .ln-title {
       font-size: 3rem;
     }
@@ -148,17 +142,11 @@
   }
   @media screen and (max-width: 600px) {
 
-    .ln{
-       position: relative;
-       top: 65px;
-    }
+
   }
   @media screen and (max-width: 450px) {
 
-    .ln{
-       position: relative;
-       top: 70px;
-    }
+   
 
     .ln-title {
       font-size: 2.5rem;
@@ -180,9 +168,6 @@
 
   @media screen and (max-width: 385px) {
 
-    .ln{
-       position: relative;
-       top: 130px;
-    }
+   
   }
   
