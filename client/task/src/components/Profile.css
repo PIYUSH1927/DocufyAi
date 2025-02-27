@@ -35,6 +35,11 @@
     gap: 10px;
     padding-bottom: 10px;
 }
+@media (max-width: 1285px) {
+    .profile-container {
+        margin-top: 110px;
+    }
+}
 
 @media (min-width: 600px) {
     .row {
@@ -43,7 +48,7 @@
 }
 @media (max-width: 600px) {
     .profile-container {
-        margin-top: 820px;
+        margin-top: 730px;
         width: 90vw;
     }
 }

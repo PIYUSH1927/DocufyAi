@@ -22,7 +22,8 @@ const Landing = () => {
           whileTap={{ scale: 0.9 }}
           className="ln-btn"
         >
-          Get Started
+          <a href="/register" style={{textDecoration:"none"}}>Get Started</a>
+          
         </motion.button>
       </motion.div>
       

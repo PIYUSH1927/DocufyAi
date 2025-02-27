@@ -67,10 +67,6 @@ const Profile = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setProfile({ ...profile, profilePic: URL.createObjectURL(file) });
-  };
 
   return (
     <div>
@@ -78,7 +74,6 @@ const Profile = () => {
       <h2 style={{marginBottom:"5px"}}>My Profile</h2>
       <div className="profile-picture">
         <img src={profile.profilePic || "https://www.w3schools.com/howto/img_avatar.png"} alt="Profile" />
-        <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="row">

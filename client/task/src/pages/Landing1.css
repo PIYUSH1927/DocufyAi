@@ -157,7 +157,7 @@
 
     .ln{
        position: relative;
-       top: 85px;
+       top: 70px;
     }
 
     .ln-title {
@@ -178,11 +178,11 @@
     }
   }
 
-  @media screen and (max-width: 390px) {
+  @media screen and (max-width: 385px) {
 
     .ln{
        position: relative;
-       top: 120px;
+       top: 130px;
     }
   }
   
