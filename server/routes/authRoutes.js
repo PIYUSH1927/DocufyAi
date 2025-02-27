@@ -56,6 +56,37 @@ router.post("/verifyotp", async (req, res) => {
   }
 });
 
+
+router.post("/resetpassword", async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!otpStore[email] || otpStore[email] !== otp) {
+    return res.status(400).json({ message: "Invalid or expired OTP" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    delete otpStore[email]; 
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+
 router.post("/register", async (req, res) => {
   try {
     const { firstName, lastName, email, password, phone } = req.body;

@@ -34,18 +34,33 @@ const Login = () => {
       alert("Please enter your email before requesting OTP.");
       return;
     }
-    setOtpSent(true);
-    alert(`OTP sent to ${resetData.email}`);
+    try {
+      await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", { email: resetData.email });
+      setOtpSent(true);
+      alert(`OTP sent to ${resetData.email}`);
+    } catch (error) {
+      alert("Failed to send OTP. Please try again.");
+    }
   };
 
   const handleResetSubmit = async () => {
-    if (resetData.otp === "1234") { 
-      alert("Password reset successful!");
-      setShowForgotPassword(false);
-      setOtpSent(false);
-      setResetData({ email: "", newPassword: "", otp: "" });
-    } else {
-      alert("Invalid OTP. Please try again.");
+    try {
+      const verifyRes = await axios.post("https://sooru-ai.onrender.com/api/auth/verifyotp", {
+        email: resetData.email,
+        otp: resetData.otp,
+      });
+      if (verifyRes.status === 200) {
+        await axios.put("https://sooru-ai.onrender.com/api/users/resetpassword", {
+          email: resetData.email,
+          newPassword: resetData.newPassword,
+        });
+        alert("Password reset successful!");
+        setShowForgotPassword(false);
+        setOtpSent(false);
+        setResetData({ email: "", newPassword: "", otp: "" });
+      }
+    } catch (error) {
+      alert("Invalid OTP or failed to reset password. Please try again.");
     }
   };
 
