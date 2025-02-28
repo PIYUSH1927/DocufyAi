@@ -1,8 +1,17 @@
 import React from "react";
 import "./About.css";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+
+  const navigate = useNavigate();
+  const isAuthenticated = !!localStorage.getItem("token");
+
+  const handleGetStarted = () => {
+    navigate(isAuthenticated ? "/home" : "/register");
+  };
+
   return (
     <div className="about-page " style={{marginTop:"30px"}} >
  
@@ -78,7 +87,7 @@ const About = () => {
       <section className="about-cta">
         <h2 style={{color:"grey"}}>Join the Future of Documentation</h2>
         <p>We are building something revolutionary. Be part of it.</p>
-        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="about-btn">
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="about-btn" onClick={handleGetStarted}>
           Get Started
         </motion.button>
       </section>
