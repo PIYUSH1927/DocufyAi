@@ -1,8 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Pricing.css";
 import { motion } from "framer-motion";
 
 const Pricing = () => {
+    const navigate = useNavigate();
+    const isAuthenticated = localStorage.getItem("token");
+
+    const handlePlanSelection = () => {
+        if (!isAuthenticated) {
+          navigate("/register"); 
+        } else {
+          navigate("/home"); 
+        }
+      };
+
+      
   return (
     <div className="pricing-page" style={{ position: "relative", top: "50px" }}>
       <motion.h1
@@ -72,8 +85,9 @@ const Pricing = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               className="pricing-btn"
+              onClick={handlePlanSelection}
             >
-              {plan.title === "Free Plan" ? "Activated" : "Get Started"}
+              {plan.title === "Free Plan" ? "Activated" : "Upgrade Plan"}
             </motion.button>
 
             <br />
