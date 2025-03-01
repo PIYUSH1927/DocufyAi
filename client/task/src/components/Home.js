@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
 import "./Home.css";
 import { FaGithub, FaPlus } from "react-icons/fa";
 
@@ -21,8 +20,11 @@ const Home = () => {
           return;
         }
 
+        const decoded = JSON.parse(atob(token.split(".")[1])); 
+        const userId = decoded.id;
+
         const response = await axios.get(
-          "https://sooru-ai.onrender.com/api/user/profile",
+          `https://sooru-ai.onrender.com/api/user/${userId}`, 
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -57,8 +59,9 @@ const Home = () => {
   }, [navigate]);
 
   const handleGitHubConnect = () => {
-    window.location.href =
-      "https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&scope=repo";
+    const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    const redirectUri = "https://sooru-ai.onrender.com/api/auth/github"; 
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo&redirect_uri=${redirectUri}`;
   };
 
   const handleCreateDocument = () => {
@@ -70,21 +73,19 @@ const Home = () => {
   };
 
   return (
-    <div className="home-container">
-      <Navbar />
-      
+    <div className="home-container" style={{position:"relative",top:"70px"}}>
       {/* Dashboard Header */}
       <div className="dashboard-header">
         <h1>Dashboard</h1>
         <div className="buttons">
-          <button className="create-btn" onClick={handleCreateDocument}>
-            <FaPlus className="icon" /> Create New Document
-          </button>
           {!user?.githubId && (
             <button className="github-btn" onClick={handleGitHubConnect}>
               <FaGithub className="github-icon" /> Connect to GitHub
             </button>
           )}
+          <button className="create-btn" onClick={handleCreateDocument}>
+            <FaPlus className="icon" /> Create New Document
+          </button>
         </div>
       </div>
 

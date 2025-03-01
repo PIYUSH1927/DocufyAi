@@ -20,6 +20,7 @@
   
   .dashboard-header h1 {
     font-size: 2rem;
+    color:white;
   }
   
   .buttons {
@@ -29,7 +30,7 @@
   
   /* Buttons */
   .create-btn, .github-btn {
-    background-color: #1f6feb;
+    background-color: #1a53a8;
     color: white;
     border: none;
     padding: 12px 16px;
@@ -40,14 +41,16 @@
     align-items: center;
     gap: 8px;
     transition: 0.3s ease-in-out;
+    width: 250px;
+    height: 60px;
   }
   
   .github-btn {
-    background-color: #24292f;
+    background-color:black;
   }
   
   .create-btn:hover {
-    background-color: #164bb2;
+    background-color: #142f67;
   }
   
   .github-btn:hover {
