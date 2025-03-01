@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import axios from "axios";
 import Navbar from "./Navbar";
-import { FaGithub } from "react-icons/fa";
-import { motion } from "framer-motion";
+import "./Home.css";
+import { FaGithub, FaUser, FaCheckCircle } from "react-icons/fa";
 
 const Home = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [showConnectButton, setShowConnectButton] = useState(false);
-  const [error, setError] = useState(false); // Track API failure
+  const [repos, setRepos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -21,40 +20,88 @@ const Home = () => {
           return;
         }
 
-        const res = await axios.get("https://sooru-ai.onrender.com/api/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "https://sooru-ai.onrender.com/api/user/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUser(response.data);
+        setLoading(false);
 
-        setUser(res.data);
-        setShowConnectButton(!res.data.githubId);
+        if (response.data.githubId) {
+          fetchRepositories();
+        }
       } catch (error) {
-        console.error("Error fetching user:", error);
-        setError(true); // Stop re-calling API
-        localStorage.removeItem("token"); // Prevent infinite loop
-        navigate("/login");
+        console.error("Error fetching profile:", error);
+        setLoading(false);
       }
     };
 
-    if (!error) fetchUser();
-  }, [navigate, error]); // Prevent infinite API calls
+    const fetchRepositories = async () => {
+      try {
+        const response = await axios.get(
+          "https://sooru-ai.onrender.com/api/github/repos",
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          }
+        );
+        setRepos(response.data);
+      } catch (error) {
+        console.error("Error fetching repos:", error);
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
 
   const handleGitHubConnect = () => {
-    window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
+    window.location.href =
+      "https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&scope=repo";
   };
 
   return (
     <div className="home-container">
       <Navbar />
       <div className="home-content">
-        <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-          Welcome, {user?.firstName || "User"} 👋
-        </motion.h1>
-        <p className="home-subtext">Get started with AI-powered documentation for your GitHub repositories.</p>
+        {loading ? (
+          <h2>Loading...</h2>
+        ) : (
+          <>
+            <h1>Welcome, {user?.firstName || "User"}! 👋</h1>
 
-        {showConnectButton && (
-          <motion.button onClick={handleGitHubConnect} className="github-connect-btn" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-            <FaGithub size={22} /> Connect to GitHub
-          </motion.button>
+            <div className="profile-info">
+              <div className="info-item">
+                <FaUser className="icon" />
+                <p>{user?.email}</p>
+              </div>
+              <div className="info-item">
+                <FaCheckCircle className="icon" />
+                <p>{user?.currentPlan}</p>
+              </div>
+            </div>
+
+            {user?.githubId ? (
+              <>
+                <h2>Your GitHub Repositories</h2>
+                <ul className="repo-list">
+                  {repos.length > 0 ? (
+                    repos.map((repo) => (
+                      <li key={repo.id} className="repo-item">
+                        {repo.name}
+                      </li>
+                    ))
+                  ) : (
+                    <p>No repositories found.</p>
+                  )}
+                </ul>
+              </>
+            ) : (
+              <button className="github-btn" onClick={handleGitHubConnect}>
+                <FaGithub className="github-icon" /> Connect to GitHub
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
