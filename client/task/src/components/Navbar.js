@@ -61,8 +61,9 @@ const Navbar = () => {
           {!isAuthenticated && <p onClick={() => handleNavigation("/register")}><FaUserPlus /> Sign Up</p>}
           {isAuthenticated && (
             <>
-              <p onClick={handleLogout}><FaSignOutAlt /> Logout</p>
-              <p onClick={() => handleNavigation("/profile")}><FaUser /> Profile</p>
+            <p onClick={() => handleNavigation("/profile")}><FaUser /> Profile</p>
+              <p onClick={handleLogout} style={{color:"red"}}><FaSignOutAlt /> Logout</p>
+              
             </>
           )}
         </div>

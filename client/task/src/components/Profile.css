@@ -1,13 +1,16 @@
 .profile-container {
     width: 80vw;
+    max-width: 600px;
     margin: auto;
     padding: 20px;
-    background: #fff;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
     text-align: center;
     margin-top: 90px;
-    padding-bottom: 100px;
+    padding-bottom: 20px;
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .bod {
@@ -15,9 +18,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-   
-  
-  }
+}
+
+.profile-title {
+    margin-bottom: 10px;
+    color: white;
+}
 
 .profile-picture {
     display: flex;
@@ -34,41 +40,33 @@
     border: 2px solid #ddd;
 }
 
-.profile-picture input {
-    margin-top: 10px;
-    font-size: 14px;
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
 }
 
-.row {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding-bottom: 15px;
-}
-@media (max-width: 1285px) {
-
-}
-
-@media (min-width: 600px) {
-    .row {
-        flex-direction: row;
-    }
-}
-@media (max-width: 600px) {
-    .profile-container {
-       
-        width: 90vw;
-    }
+.form-group label {
+    display: block;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
 }
 
 .input-group {
-    flex: 1;
     display: flex;
     align-items: center;
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 3px;
     border-radius: 8px;
     background: #f9f9f9;
+}
+
+.input-group input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
 }
 
 .icon {
@@ -92,4 +90,50 @@
 
 .update-button:hover {
     background: #0056b3;
+}
+
+.plan-group {
+  
+    text-align:left;
+    justify-content: start;
+    padding: 6px 10px; 
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 15px;
+    height: 60px;
+}
+
+.plan-text {
+    flex-grow: 0; 
+    font-size: 15px;
+    color: #333;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%; 
+}
+
+.small-upgrade-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+    margin-left: 10px;
+    width: 80px;  
+    height: 40px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; 
+    position: relative;
+    bottom: 8px;
+}
+
+.small-upgrade-button:hover {
+    background: #218838;
 }

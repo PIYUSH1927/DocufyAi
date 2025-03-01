@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import { FaUser, FaPhone, FaMapMarkerAlt, FaCity, FaGlobe, FaKey } from "react-icons/fa";
+import { FaUser, FaPhone, FaMapMarkerAlt, FaKey } from "react-icons/fa";
 
 
 
@@ -15,15 +15,7 @@ const Profile = () => {
     lastName: "",
     email: "",
     phone: "",
-    address1: "",
-    address2: "",
-    address3: "",
-    city: "",
-    state: "",
-    country: "",
-    pinCode: "",
-    gst: "",
-    profilePic: "",
+    currentPlan: "",
   });
 
   const token = localStorage.getItem("token");
@@ -70,39 +62,64 @@ const Profile = () => {
 
   return (
     <div className="bod">
-    <div className="profile-container">
-      <h2 style={{marginBottom:"5px"}}>My Profile</h2>
-      <div className="profile-picture">
-        <img src={profile.profilePic || "https://www.w3schools.com/howto/img_avatar.png"} alt="Profile" />
+      <div className="profile-container">
+        <h2 className="profile-title" style={{paddingBottom:"8px"}}>My Profile</h2>
+
+        <form onSubmit={handleSubmit} className="profile-form">
+          <div className="form-group">
+            <label>First Name:</label>
+            <div className="input-group">
+              <FaUser className="icon" />
+              <input type="text" name="firstName" value={profile.firstName} onChange={handleChange} required />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Last Name:</label>
+            <div className="input-group">
+              <FaUser className="icon" />
+              <input type="text" name="lastName" value={profile.lastName} onChange={handleChange} required />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Email:</label>
+            <div className="input-group">
+              <FaKey className="icon" />
+              <input type="email" name="email" value={profile.email} readOnly style={{ opacity: "0.7" }} />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Phone:</label>
+            <div className="input-group">
+              <FaPhone className="icon" />
+              <input type="text" name="phone" value={profile.phone} onChange={handleChange} required />
+            </div>
+          </div>
+
+          <div className="form-group">
+  <label>Current Plan:</label>
+  <div className="input-group plan-group">
+    <FaMapMarkerAlt className="icon" />
+    <span className="plan-text">{profile.currentPlan}</span>
+    {profile.currentPlan !== "Enterprise Plan (₹1,999/month)" && (
+      <button
+        type="button"
+        className="small-upgrade-button"
+        onClick={() => navigate("/pricing")}
+      >
+        Upgrade
+      </button>
+    )}
+  </div>
+</div>
+
+
+          <button type="submit" className="update-button">💾 Save Changes</button>
+        </form>
       </div>
-      <form onSubmit={handleSubmit} className="profile-form">
-        <div className="row">
-          <div className="input-group"><FaUser className="icon" /><input type="text" name="firstName" value={profile.firstName} onChange={handleChange} placeholder="First Name" required /></div>
-          <div className="input-group"><FaUser className="icon" /><input type="text" name="lastName" value={profile.lastName} onChange={handleChange} placeholder="Last Name" required /></div>
-          <div className="input-group"><FaKey className="icon" /><input type="email" name="email" value={profile.email} readOnly /></div>
-        </div>
-        <div className="row">
-          <div className="input-group"><FaPhone className="icon" /><input type="text" name="phone" value={profile.phone} onChange={handleChange} placeholder="Phone" required /></div>
-          <div className="input-group"><FaMapMarkerAlt className="icon" /><input type="text" name="address1" value={profile.address1} onChange={handleChange} placeholder="Address Line 1" required /></div>
-          <div className="input-group"><FaMapMarkerAlt className="icon" /><input type="text" name="address2" value={profile.address2} onChange={handleChange} placeholder="Address Line 2" /></div>
-          
-        </div>
-        <div className="row">
-       <div className="input-group"><FaMapMarkerAlt className="icon" /><input type="text" name="address3" value={profile.address3} onChange={handleChange} placeholder="Address Line 3" /></div>
-          <div className="input-group"><FaCity className="icon" /><input type="text" name="city" value={profile.city} onChange={handleChange} placeholder="City" required /></div>
-          <div className="input-group"><FaGlobe className="icon" /><input type="text" name="state" value={profile.state} onChange={handleChange} placeholder="State" required /></div>
-          
-        </div>
-        <div className="row">
-        <div className="input-group"><FaGlobe className="icon" /><input type="text" name="country" value={profile.country} onChange={handleChange} placeholder="Country" required /></div>
-          <div className="input-group"><FaKey className="icon" /><input type="text" name="pinCode" value={profile.pinCode} onChange={handleChange} placeholder="PIN Code" required /></div>
-          <div className="input-group"><FaKey className="icon" /><input type="text" name="gst" value={profile.gst} onChange={handleChange} placeholder="GST (Optional)" /></div>
-        </div>
-        <br />
-        <button type="submit" className="update-button">💾 Save Changes</button>
-      </form>
-    </div>
-    <br />
+      <br />
     </div>
   );
 };
