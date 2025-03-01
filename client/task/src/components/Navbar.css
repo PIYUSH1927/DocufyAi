@@ -31,6 +31,7 @@
 .nb-links {
   display: flex;
   gap: 50px;
+  margin-right: 20px;
 }
 
 .nb-link {

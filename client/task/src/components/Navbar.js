@@ -39,7 +39,7 @@ const Navbar = () => {
         onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")}
       />
 
-      {/* Desktop Navigation */}
+     
       <div className="nb-links">
         <p onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")} className="nb-link">Home</p>
         <p onClick={() => handleNavigation("/about")} className="nb-link">About</p>
@@ -69,7 +69,6 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Profile & Logout (Only when authenticated) */}
       {isAuthenticated && (
         <div className="nb-user">
           <p onClick={handleLogout} className="nb-logout">Logout</p>
