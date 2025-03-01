@@ -28,6 +28,7 @@ passport.use(
         }
         return done(null, user);
       } catch (error) {
+        console.error("GitHub OAuth Error:", error);
         return done(error, null);
       }
     }

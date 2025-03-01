@@ -174,12 +174,15 @@ router.post("/checkuser", async (req, res) => {
 router.get("/github", passport.authenticate("github", { scope: ["user:email", "repo"] }));
 
 router.get("/github/callback",
-  passport.authenticate("github", { failureRedirect: "http://localhost:3000/login" }),
+  passport.authenticate("github", { failureRedirect: "https://docufy-ai.vercel.app/login" }),
   (req, res) => {
+    if (!req.user) {
+      return res.redirect("https://docufy-ai.vercel.app/login?error=UserNotAuthenticated");
+    }
 
     const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-    res.redirect(`http://localhost:3000/home?token=${token}`);
+    res.redirect(`https://docufy-ai.vercel.app/home?token=${token}`);
   }
 );
 
