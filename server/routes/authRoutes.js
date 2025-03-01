@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");  
 const User = require("../models/User"); 
 const nodemailer = require("nodemailer");
+const passport = require("passport");
 const router = express.Router();
 
 
