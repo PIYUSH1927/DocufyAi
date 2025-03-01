@@ -161,12 +161,14 @@ const Register = () => {
           </span>
         </p>
 
-      </div>
-
-      <button className="github-btn" onClick={handleGitHubLogin}>
+        <button className="github-btn" onClick={handleGitHubLogin} >
         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
         Sign Up with GitHub
       </button>
+
+      </div>
+
+
 
       {showOtpPopup && (
         <div className="otp-popup">

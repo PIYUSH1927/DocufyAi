@@ -7,7 +7,7 @@ const userRoutes = require("./routes/userRoutes");
 
 require("./config/passport");
 require("dotenv").config();
-require("./config/passportSetup"); 
+
 
 
 const app = express();

@@ -1,12 +1,16 @@
-require("dotenv").config();
+
 const express = require("express");
+const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");  
 const User = require("../models/User"); 
 const nodemailer = require("nodemailer");
-const passport = require("passport");
+
 const router = express.Router();
 
+require("dotenv").config();
+
+require("../config/passport");
 
 const blacklistedTokens = new Set();
 
