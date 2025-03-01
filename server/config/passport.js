@@ -16,6 +16,18 @@ passport.use(
         let user = await User.findOne({ githubId: profile.id });
 
         if (!user) {
+          // First check if an account with this email exists
+          const existingUser = await User.findOne({ email: profile.emails?.[0]?.value });
+        
+          if (existingUser) {
+            // Update existing user to link GitHub account
+            existingUser.githubId = profile.id;
+            existingUser.accessToken = accessToken;
+            await existingUser.save();
+            return done(null, existingUser);
+          }
+        
+          // If email doesn't exist, create a new user
           user = new User({
             githubId: profile.id,
             username: profile.username,
@@ -23,9 +35,10 @@ passport.use(
             avatar: profile.photos?.[0]?.value,
             accessToken, // Store GitHub token
           });
-
+        
           await user.save();
         }
+        
         return done(null, user);
       } catch (error) {
         console.error("GitHub OAuth Error:", error);
