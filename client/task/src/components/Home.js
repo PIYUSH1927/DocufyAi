@@ -13,6 +13,7 @@ const Home = () => {
 
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
+    window.location.reload();
   };
 
   useEffect(() => {
