@@ -28,7 +28,7 @@ const Login = () => {
       localStorage.setItem("token", res.data.token);
       navigate("/home");
     } catch (err) {
-      alert(err.response?.data?.error || "Login failed!");
+      alert( "Login failed! Incorrect username or password");
     } finally {
       setLoading(false);
     }
