@@ -8,7 +8,6 @@ const userRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 require("./config/passportSetup"); 
 
-const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 app.use(express.json());
