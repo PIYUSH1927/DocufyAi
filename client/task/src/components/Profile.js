@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import { FaUser, FaPhone, FaMapMarkerAlt, FaKey } from "react-icons/fa";
+import { FaUser, FaPhone, FaMapMarkerAlt, FaKey, FaCrown  } from "react-icons/fa";
 
 
 
@@ -49,6 +49,14 @@ const Profile = () => {
       alert("User ID not found. Please log in again.");
       return;
     }
+
+    const phonePattern = /^[0-9]{10}$/;
+    if (!phonePattern.test(profile.phone)) {
+      alert("❌ Please enter a valid 10-digit phone number.");
+      return;
+    }
+  
+
     try {
       await axios.put(`https://sooru-ai.onrender.com/api/user/${userId}`, profile);
       alert("✅ Profile Updated!");
@@ -63,7 +71,7 @@ const Profile = () => {
   return (
     <div className="bod">
       <div className="profile-container">
-        <h2 className="profile-title" style={{paddingBottom:"8px"}}>My Profile</h2>
+        <h2 className="profile-title" style={{paddingBottom:"8px", color:"rgb(0, 164, 235)"}}>My Profile</h2>
 
         <form onSubmit={handleSubmit} className="profile-form">
           <div className="form-group">
@@ -101,7 +109,7 @@ const Profile = () => {
           <div className="form-group">
   <label>Current Plan:</label>
   <div className="input-group plan-group">
-    <FaMapMarkerAlt className="icon" />
+    <FaCrown className="icon" />
     <span className="plan-text">{profile.currentPlan}</span>
     {profile.currentPlan !== "Enterprise Plan (₹1,999/month)" && (
       <button

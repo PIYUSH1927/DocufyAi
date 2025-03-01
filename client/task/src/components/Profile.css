@@ -1,7 +1,7 @@
 .profile-container {
-    width: 80vw;
-    max-width: 600px;
-    margin: auto;
+    width: 95vw;
+    max-width: 650px;
+    
     padding: 20px;
     background: linear-gradient(135deg, #141e30, #243b55);
     box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.5);
@@ -9,7 +9,6 @@
     text-align: center;
     margin-top: 90px;
     padding-bottom: 20px;
-    z-index: 1000;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 

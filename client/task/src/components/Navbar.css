@@ -1,12 +1,14 @@
 /* General Navbar Styles */
 .nb {
+
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top, 0);
+  padding: calc(env(safe-area-inset-top, 0) + 10px) 20px 10px;
   left: 0;
   z-index: 1000;
   background: linear-gradient(135deg, #101826, #1b2940);

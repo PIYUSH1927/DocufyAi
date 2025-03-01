@@ -26,14 +26,14 @@ const About = () => {
       <br />
       <br />
   
-      <section className="about-docufy">
-        <motion.h2 whileHover={{ scale: 1.05 }}>What is Docufy.ai?</motion.h2>
+      <section className="about-docufy" style={{textAlign:"justify"}}>
+        <motion.h2 whileHover={{ scale: 1.05 }} style={{textAlign:"center"}}>What is Docufy.ai?</motion.h2>
         <p>
           <strong>Docufy.ai</strong> is an AI-powered documentation generator that automates the process of creating technical docs.
           It integrates with GitHub repositories to analyze your codebase and generates structured, interactive, and real-time documentation.
         </p>
         <p>
-          No more outdated docs or time-consuming documentation updates—Docufy.ai keeps your docs up-to-date automatically.
+          No more outdated docs or time-consuming documentation updates — Docufy.ai keeps your docs up-to-date automatically.
         </p>
       </section>
       <br />
@@ -43,7 +43,7 @@ const About = () => {
         <motion.div className="timeline-item" whileHover={{ scale: 1.05 }}>
           <div className="year">2024</div>
           <div className="content">
-            <h2 style={{color:"black"}}>The Idea was Born</h2>
+            <h2 style={{color:"maroon"}}>The Idea was Born</h2>
             <p>
               We realized that developers waste too much time writing and maintaining documentation.
               The vision of AI-powered, auto-updating documentation was created.
@@ -54,7 +54,7 @@ const About = () => {
         <motion.div className="timeline-item" whileHover={{ scale: 1.05 }}>
           <div className="year">2025</div>
           <div className="content">
-            <h2 style={{color:"black"}}>Docufy.ai Launched</h2>
+            <h2 style={{color:"maroon"}}>Docufy.ai Launched</h2>
             <p>
               After months of hard work, Docufy.ai launched with GitHub integration, API documentation, and
               real-time AI-powered summaries.
@@ -65,7 +65,7 @@ const About = () => {
         <motion.div className="timeline-item" whileHover={{ scale: 1.05 }}>
           <div className="year">Future</div>
           <div className="content">
-            <h2 style={{color:"black"}}>Expanding to More Languages</h2>
+            <h2 style={{color:"maroon"}}>Expanding to More Languages</h2>
             <p>
               Our goal is to support Python, Java, Go, Rust, and more, making Docufy.ai the universal standard for AI-powered code documentation.
             </p>
@@ -74,15 +74,7 @@ const About = () => {
       </section>
      <br />
      <br />
-    
-      <section className="about-team">
-        <h2 style={{color:"maroon"}}>Meet the Creator</h2>
-        <motion.div className="team-member" whileHover={{ scale: 1.05 }}>
-          <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Founder" />
-          <h3>Piyush Padia</h3>
-          <p>Founder & Developer of Docufy.ai</p>
-        </motion.div>
-      </section>
+  
 
       <section className="about-cta">
         <h2 style={{color:"grey"}}>Join the Future of Documentation</h2>
