@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const session = require("express-session");
 const passport = require("passport");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -22,6 +23,16 @@ app.use(
     credentials: true, 
   })
 );
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "random_secret_key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Set to true if using HTTPS
+  })
+);
+
 app.use(passport.initialize());
 
 app.options("*", cors());
