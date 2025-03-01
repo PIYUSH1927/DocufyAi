@@ -1,0 +1,55 @@
+.home-container {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+  }
+  
+  .home-content {
+    max-width: 700px;
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #38bdf8, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .home-subtext {
+    font-size: 1.2rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+  }
+  
+  .github-connect-btn {
+    background: black;
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .github-connect-btn:hover {
+    background: #222;
+    transform: scale(1.05);
+  }
+  
+  .github-connect-btn svg {
+    color: white;
+  }
+  
