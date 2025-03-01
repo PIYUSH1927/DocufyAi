@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
   avatar: { type: String },
   accessToken: { type: String }, 
 
-  currentPlan: { type: String, default: "Free" },
+  currentPlan: { type: String, default: "Free Plan (₹0/month)" },
 });
 
 

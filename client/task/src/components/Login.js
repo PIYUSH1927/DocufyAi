@@ -35,7 +35,6 @@ const Login = () => {
   };
 
   const handleGitHubLogin = () => {
-    console.log("GitHub Login Clicked"); // Debugging step
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
   };
 
