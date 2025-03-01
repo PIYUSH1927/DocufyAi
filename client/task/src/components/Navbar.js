@@ -33,7 +33,7 @@ const Navbar = () => {
     <nav className="nb">
       {/* Logo */}
       <img
-        src="/imgg.jpg"
+        src="/imgg.png"
         alt="Logo"
         className="nb-logo"
         onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")}
