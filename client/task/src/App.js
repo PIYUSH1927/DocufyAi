@@ -11,8 +11,14 @@ import About from "./pages/About";
 import Pricing from "./pages/Pricing"; 
 
 const ProtectedRoute = ({ element }) => {
-  const isAuthenticated = !!localStorage.getItem("token");
-  return isAuthenticated ? element : <Navigate to="/login" />;
+  const token = localStorage.getItem("token") || new URLSearchParams(window.location.search).get("token");
+
+  if (token) {
+    localStorage.setItem("token", token); // Store it if found in URL
+    return element;
+  }
+
+  return <Navigate to="/login" />;
 };
 
 const AuthRoute = ({ element }) => {
