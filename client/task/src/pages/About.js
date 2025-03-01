@@ -41,7 +41,7 @@ const About = () => {
      
       <section className="about-timeline">
         <motion.div className="timeline-item" whileHover={{ scale: 1.05 }}>
-          <div className="year">2023</div>
+          <div className="year">2024</div>
           <div className="content">
             <h2 style={{color:"black"}}>The Idea was Born</h2>
             <p>
@@ -52,7 +52,7 @@ const About = () => {
         </motion.div>
 
         <motion.div className="timeline-item" whileHover={{ scale: 1.05 }}>
-          <div className="year">2024</div>
+          <div className="year">2025</div>
           <div className="content">
             <h2 style={{color:"black"}}>Docufy.ai Launched</h2>
             <p>
