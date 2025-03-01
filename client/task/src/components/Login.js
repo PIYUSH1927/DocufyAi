@@ -137,7 +137,7 @@ const handleResetSubmit = async () => {
       {showForgotPassword && (
         <div className="otp-popup">
           <div className="otp-box">
-            <h2 className="close-btn" style={{cursor:"pointer"}} onClick={() => setShowForgotPassword(false)}>×</h2>
+            <h2 className="close-popup"  style={{cursor:"pointer"}}  onClick={() => setShowForgotPassword(false)}>×</h2>
             <h3>Reset Password</h3>
             <input type="email" name="email" placeholder="Email" value={resetData.email} onChange={handleResetChange} />
             <button onClick={sendOtp} disabled={loading || countdown > 0}>
@@ -147,7 +147,7 @@ const handleResetSubmit = async () => {
               <>
                 <input type="text" name="otp" placeholder="Enter OTP" value={resetData.otp} onChange={handleResetChange} maxLength={4} />
                 <input type="password" name="newPassword" placeholder="New Password" value={resetData.newPassword} onChange={handleResetChange} />
-                <button onClick={handleResetSubmit} disabled={loading}>Reset Password</button>
+                <button onClick={handleResetSubmit} disabled={loading} style={{background:"green"}}>Reset Password</button>
               </>
             )}
           </div>

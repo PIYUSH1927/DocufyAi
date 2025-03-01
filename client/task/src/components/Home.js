@@ -11,6 +11,10 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
+  const handleGitHubLogin = () => {
+    window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -41,6 +45,8 @@ const Home = () => {
       }
     };
 
+ 
+
     const fetchRepositories = async () => {
       try {
         const response = await axios.get(
@@ -60,9 +66,11 @@ const Home = () => {
 
   const handleGitHubConnect = () => {
     const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
-    const redirectUri = "https://sooru-ai.onrender.com/api/auth/github"; 
+    const redirectUri = encodeURIComponent("https://sooru-ai.onrender.com/api/auth/github/callback");
+    
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo&redirect_uri=${redirectUri}`;
   };
+  
 
   const handleCreateDocument = () => {
     if (user?.githubId) {
@@ -76,18 +84,20 @@ const Home = () => {
     <div className="home-container" style={{position:"relative",top:"70px"}}>
       {/* Dashboard Header */}
       <div className="dashboard-header">
-        <h1>Dashboard</h1>
-        <div className="buttons">
-          {!user?.githubId && (
-            <button className="github-btn" onClick={handleGitHubConnect}>
-              <FaGithub className="github-icon" /> Connect to GitHub
-            </button>
-          )}
-          <button className="create-btn" onClick={handleCreateDocument}>
-            <FaPlus className="icon" /> Create New Document
-          </button>
-        </div>
-      </div>
+  <h1>Dashboard</h1>
+  <div className="buttons">
+    {!user?.githubId && (
+      <button className="github-btn" onClick={handleGitHubLogin}>
+        <FaGithub className="github-icon" /> Connect to GitHub
+      </button>
+    )}
+    {user?.githubId && (
+      <button className="create-btn" onClick={handleCreateDocument}>
+        <FaPlus className="icon" /> Create New Project
+      </button>
+    )}
+  </div>
+</div>
 
       {/* Welcome Message */}
       <div className="home-content">

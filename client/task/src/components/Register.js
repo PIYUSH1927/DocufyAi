@@ -173,7 +173,7 @@ const Register = () => {
       {showOtpPopup && (
         <div className="otp-popup">
           <div className="otp-box">
-            <h2 className="close-popup" onClick={() => setShowOtpPopup(false)}>×</h2>
+            <h2 className="close-popup" onClick={() => setShowOtpPopup(false)} style={{cursor:"pointer"}}>×</h2>
             <h3>OTP Verification</h3>
             <p style={{color:"darkgreen"}} className="otp-message">The OTP has been sent to {formData.email}</p>
             <input
