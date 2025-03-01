@@ -7,20 +7,27 @@
     align-items: center;
     text-align: center;
     font-family: "Arial", sans-serif;
+    position: relative;
+    top: 70px;
   }
   
   /* Dashboard Header */
   .dashboard-header {
-    width: 80%;
+    width: 90%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
+    display: flex;
+   
+ 
   }
   
-  .dashboard-header h1 {
-    font-size: 2rem;
-    color:white;
+  .dashboard-header h2 {
+    font-size: 5vh;
+    color: maroon;
+    font-weight: bolder;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); 
+    text-decoration: underline;
   }
   
   .buttons {
@@ -63,12 +70,12 @@
   
   /* Welcome Section */
   .home-content {
-    margin-top: 30px;
-    padding: 20px;
+
     background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.2);
-    width: 50%;
+    width: 90%;
+    min-height: 80vh;
   }
   
   /* Popup */
@@ -125,3 +132,24 @@
     cursor: pointer;
   }
   
+  @media (max-width: 500px) {
+
+    .home-container {
+        position: relative;
+        top: 55px;
+      }
+
+      .dashboard-header h2 {
+        font-size: 4vh;
+      }
+
+      
+  .create-btn, .github-btn {
+
+    padding: 12px 16px;
+    font-size: 0.7rem;
+
+  }
+  
+      
+  }

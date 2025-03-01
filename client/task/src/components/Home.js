@@ -81,27 +81,28 @@ const Home = () => {
   };
 
   return (
-    <div className="home-container" style={{position:"relative",top:"70px"}}>
+    <div className="home-container" >
       {/* Dashboard Header */}
       <div className="dashboard-header">
-  <h1>Dashboard</h1>
-  <div className="buttons">
+  <h2 style={{position:"relative", top:"9px"}}>Dashboard</h2>
+  <div className="buttons" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
     {!user?.githubId && (
-      <button className="github-btn" onClick={handleGitHubLogin}>
+      <button className="github-btn" onClick={handleGitHubLogin} style={{ width: "auto", height: "auto" }}>
         <FaGithub className="github-icon" /> Connect to GitHub
       </button>
     )}
     {user?.githubId && (
-      <button className="create-btn" onClick={handleCreateDocument}>
+      <button className="create-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" }}>
         <FaPlus className="icon" /> Create New Project
       </button>
     )}
   </div>
 </div>
 
+
       {/* Welcome Message */}
       <div className="home-content">
-        {loading ? <h2>Loading...</h2> : <h2>Welcome, {user?.firstName || "User"}! 👋</h2>}
+        
       </div>
 
       {/* Popup for Selecting Repo */}

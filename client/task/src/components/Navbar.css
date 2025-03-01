@@ -19,8 +19,6 @@
   height: 40px;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
-  position: relative;
-  right: 10px;
 }
 
 .nb-logo:hover {
