@@ -93,7 +93,9 @@ const Register = () => {
   
       if (response.status === 200) {
         try {
-          const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", formData);
+          const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", {
+            ...formData,  
+            currentPlan: "Free Plan (₹0/month)", });
   
           if (registerResponse.status === 201) {
             setSuccessMessage("User registered successfully!");
