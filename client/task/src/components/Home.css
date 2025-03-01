@@ -76,6 +76,7 @@
     box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.2);
     width: 90%;
     min-height: 80vh;
+    margin-top: 6px;
   }
   
   /* Popup */
@@ -140,14 +141,14 @@
       }
 
       .dashboard-header h2 {
-        font-size: 4vh;
+        font-size: 4.3vh;
       }
 
       
   .create-btn, .github-btn {
 
     padding: 12px 16px;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
 
   }
   
