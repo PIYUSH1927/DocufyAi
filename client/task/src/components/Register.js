@@ -24,6 +24,10 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleGitHubLogin = () => {
+    window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
+  };
+
   const validateForm = () => {
     let newErrors = {};
     if (!formData.firstName.trim()) newErrors.firstName = "First Name is required";
@@ -158,6 +162,11 @@ const Register = () => {
         </p>
 
       </div>
+
+      <button className="github-btn" onClick={handleGitHubLogin}>
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
+        Sign Up with GitHub
+      </button>
 
       {showOtpPopup && (
         <div className="otp-popup">

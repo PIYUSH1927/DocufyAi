@@ -34,6 +34,10 @@ const Login = () => {
     }
   };
 
+  const handleGitHubLogin = () => {
+    window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
+  };
+
   const sendOtp = async () => {
     if (!resetData.email.trim()) {
       alert("Please enter your email before requesting OTP.");
@@ -120,6 +124,14 @@ const handleResetSubmit = async () => {
         </p>
 
         <p className="forgot-password" onClick={() => setShowForgotPassword(true)}>Forgot Password?</p>
+        <br />
+  
+        <button className="github-btn" onClick={handleGitHubLogin}>
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
+        Login with GitHub
+      </button>
+
+
       </div>
 
       {showForgotPassword && (

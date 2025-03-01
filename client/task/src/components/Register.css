@@ -212,3 +212,34 @@ button:hover {
     transform: rotate(360deg);
   }
 }
+
+.github-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: black;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 20px;
+  border: 2px solid white; /* ✅ White Border for Visibility */
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 350px;
+  margin: 15px auto;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2); /* ✅ White Shadow */
+}
+
+.github-btn:hover {
+  background: #222;
+  border-color: #38bdf8; /* ✅ Highlighted Blue on Hover */
+  box-shadow: 0px 4px 15px rgba(56, 189, 248, 0.4); /* ✅ Brighter Shadow on Hover */
+}
+
+.github-logo {
+  width: 22px;
+  height: 22px;
+}

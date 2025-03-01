@@ -1,5 +1,6 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Home from "./components/Home";
@@ -20,6 +21,19 @@ const AuthRoute = ({ element }) => {
 };
 
 const App = () => {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const token = query.get("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate("/home");
+    }
+  }, [navigate]);
+
   return (
     <>
       <Navbar />

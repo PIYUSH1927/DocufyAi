@@ -1,8 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const passport = require("passport");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+
+require("dotenv").config();
+require("./config/passportSetup"); 
+
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 app.use(express.json());
@@ -16,6 +22,7 @@ app.use(
     credentials: true, 
   })
 );
+app.use(passport.initialize());
 
 app.options("*", cors());
 

@@ -166,6 +166,19 @@ router.post("/checkuser", async (req, res) => {
 });
 
 
+router.get("/github", passport.authenticate("github", { scope: ["user:email", "repo"] }));
+
+router.get("/github/callback",
+  passport.authenticate("github", { failureRedirect: "http://localhost:3000/login" }),
+  (req, res) => {
+
+    const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.redirect(`http://localhost:3000/home?token=${token}`);
+  }
+);
+
+
 const checkBlacklist = (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1];
 
