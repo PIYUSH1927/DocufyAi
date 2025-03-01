@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
 import "./Home.css";
-import { FaGithub, FaUser, FaCheckCircle } from "react-icons/fa";
+import { FaGithub, FaPlus } from "react-icons/fa";
 
 const Home = () => {
   const [user, setUser] = useState(null);
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,50 +61,58 @@ const Home = () => {
       "https://github.com/login/oauth/authorize?client_id=YOUR_GITHUB_CLIENT_ID&scope=repo";
   };
 
+  const handleCreateDocument = () => {
+    if (user?.githubId) {
+      setShowPopup(true);
+    } else {
+      handleGitHubConnect();
+    }
+  };
+
   return (
     <div className="home-container">
       <Navbar />
-      <div className="home-content">
-        {loading ? (
-          <h2>Loading...</h2>
-        ) : (
-          <>
-            <h1>Welcome, {user?.firstName || "User"}! 👋</h1>
-
-            <div className="profile-info">
-              <div className="info-item">
-                <FaUser className="icon" />
-                <p>{user?.email}</p>
-              </div>
-              <div className="info-item">
-                <FaCheckCircle className="icon" />
-                <p>{user?.currentPlan}</p>
-              </div>
-            </div>
-
-            {user?.githubId ? (
-              <>
-                <h2>Your GitHub Repositories</h2>
-                <ul className="repo-list">
-                  {repos.length > 0 ? (
-                    repos.map((repo) => (
-                      <li key={repo.id} className="repo-item">
-                        {repo.name}
-                      </li>
-                    ))
-                  ) : (
-                    <p>No repositories found.</p>
-                  )}
-                </ul>
-              </>
-            ) : (
-              <button className="github-btn" onClick={handleGitHubConnect}>
-                <FaGithub className="github-icon" /> Connect to GitHub
-              </button>
-            )}
-          </>
-        )}
+      
+      {/* Dashboard Header */}
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+        <div className="buttons">
+          <button className="create-btn" onClick={handleCreateDocument}>
+            <FaPlus className="icon" /> Create New Document
+          </button>
+          {!user?.githubId && (
+            <button className="github-btn" onClick={handleGitHubConnect}>
+              <FaGithub className="github-icon" /> Connect to GitHub
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Welcome Message */}
+      <div className="home-content">
+        {loading ? <h2>Loading...</h2> : <h2>Welcome, {user?.firstName || "User"}! 👋</h2>}
+      </div>
+
+      {/* Popup for Selecting Repo */}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <h2>Select a Repository</h2>
+            <button className="close-btn" onClick={() => setShowPopup(false)}>✖</button>
+            <ul className="repo-list">
+              {repos.length > 0 ? (
+                repos.map((repo) => (
+                  <li key={repo.id} className="repo-item">
+                    {repo.name}
+                  </li>
+                ))
+              ) : (
+                <p>No repositories found.</p>
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
