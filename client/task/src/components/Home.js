@@ -10,27 +10,33 @@ const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [showConnectButton, setShowConnectButton] = useState(false);
+  const [error, setError] = useState(false); // Track API failure
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return navigate("/login");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
 
         const res = await axios.get("https://sooru-ai.onrender.com/api/user/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         setUser(res.data);
-        setShowConnectButton(!res.data.githubId); 
+        setShowConnectButton(!res.data.githubId);
       } catch (error) {
         console.error("Error fetching user:", error);
+        setError(true); // Stop re-calling API
+        localStorage.removeItem("token"); // Prevent infinite loop
         navigate("/login");
       }
     };
 
-    fetchUser();
-  }, [navigate]);
+    if (!error) fetchUser();
+  }, [navigate, error]); // Prevent infinite API calls
 
   const handleGitHubConnect = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
@@ -40,25 +46,13 @@ const Home = () => {
     <div className="home-container">
       <Navbar />
       <div className="home-content">
-        <motion.h1 
-          initial={{ opacity: 0, y: -20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 1 }}
-        >
+        <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
           Welcome, {user?.firstName || "User"} 👋
         </motion.h1>
-
-        <p className="home-subtext">
-          Get started with AI-powered documentation for your GitHub repositories.
-        </p>
+        <p className="home-subtext">Get started with AI-powered documentation for your GitHub repositories.</p>
 
         {showConnectButton && (
-          <motion.button
-            onClick={handleGitHubConnect}
-            className="github-connect-btn"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <motion.button onClick={handleGitHubConnect} className="github-connect-btn" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
             <FaGithub size={22} /> Connect to GitHub
           </motion.button>
         )}
