@@ -124,7 +124,6 @@ const handleResetSubmit = async () => {
         </p>
 
         <p className="forgot-password" onClick={() => setShowForgotPassword(true)}>Forgot Password?</p>
-        <br />
   
         <button className="github-btn" onClick={handleGitHubLogin} style={{background:"black"}}>
         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
