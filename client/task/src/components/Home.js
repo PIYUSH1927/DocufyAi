@@ -15,7 +15,9 @@ const Home = () => {
   useEffect(() => {
     if (!sessionStorage.getItem("refreshed")) {
         sessionStorage.setItem("refreshed", "true");
-        window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     }
 }, []);
 
