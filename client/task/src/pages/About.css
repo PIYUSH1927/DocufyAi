@@ -169,3 +169,52 @@
     }
    
 }
+
+.about-timeline {
+    max-width: 750px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #38bdf8;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.timeline-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.year {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #38bdf8;
+    width: 80px;
+    text-align: center;
+}
+
+.content {
+    flex-grow: 1;
+}
+
+.content h2 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    color: #f8fafc;
+}
+
+.content p {
+    font-size: 1rem;
+    color: #e2e8f0;
+    line-height: 1.5;
+}
