@@ -171,7 +171,7 @@ router.post("/checkuser", async (req, res) => {
 });
 
 
-router.get("/github", passport.authenticate("github", { scope: ["user:email", "repo"] }));
+router.get("/github", passport.authenticate("github", { scope: ["read:user", "repo"] }));
 
 router.get("/github/callback",
   passport.authenticate("github", { failureRedirect: "https://docufy-ai.vercel.app/login" }),
