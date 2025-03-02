@@ -110,7 +110,7 @@ const Home = () => {
         <div className="popup-overlay">
           <div className="popup-box">
             <h2>Select a Repository</h2>
-            <button className="close-btn" onClick={() => setShowPopup(false)}>✖</button>
+            <h2 className="close-btn" onClick={() => setShowPopup(false)}>✖</h2>
             <ul className="repo-list">
               {repos.length > 0 ? (
                 repos.map((repo) => (
