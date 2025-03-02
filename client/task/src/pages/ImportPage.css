@@ -47,62 +47,46 @@
     align-self: flex-start;
     text-align: left;
   }
-  
-  /* Input Box and Buttons */
   .import-input-container {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px;
-    background: #1e293b;
-    border-radius: 8px;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    padding: 10px 20px;
+    gap: 10px;
   }
   
-  
-  /* Large Text Area */
   .import-text-input {
     flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    background: #334155;
-    color: white;
-    height: 45px;
+    height: 40px;
+    padding: 10px;
     font-size: 16px;
-    resize: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
   }
-  /* Buttons */
+  
   .import-generate-btn,
   .import-download-btn {
-    padding: 6px 10px;
+    padding: 5px 10px;
     font-size: 14px;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    min-width: 80px; /* Prevents too wide buttons */
-    white-space: nowrap;
   }
-
-.import-generate-btn {
-  background: #3b82f6;
-  color: white;
-}
-.import-download-btn {
-    background: #22c55e;
+  
+  .import-generate-btn {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .import-download-btn {
+    background-color: #28a745;
     color: white;
   }
   
   .import-generate-btn:hover {
-    background: #2563eb;
+    background-color: #0056b3;
   }
   
   .import-download-btn:hover {
-    background: #16a34a;
+    background-color: #1e7e34;
   }
   
 
