@@ -109,7 +109,7 @@ const Home = () => {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <h2>Select a Repository</h2>
+            <h2 style={{color:"white"}}>Select a Repository</h2>
             <h2 className="close-btn" onClick={() => setShowPopup(false)}>✖</h2>
             <ul className="repo-list">
               {repos.length > 0 ? (
@@ -119,7 +119,7 @@ const Home = () => {
                   </li>
                 ))
               ) : (
-                <p>No repositories found.</p>
+                <p style={{color:"red"}} >No repositories found.</p>
               )}
             </ul>
           </div>
