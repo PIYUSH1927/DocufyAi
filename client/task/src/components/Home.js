@@ -13,13 +13,11 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!sessionStorage.getItem("refreshed")) {
-        sessionStorage.setItem("refreshed", "true");
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
-    }
+    setTimeout(() => {
+        window.location.href = window.location.href;
+    }, 500);
 }, []);
+
 
 
   const handleGitHubLogin = () => {
