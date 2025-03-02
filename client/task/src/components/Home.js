@@ -60,8 +60,7 @@ const Home = () => {
       } catch (error) {
         console.error("Error fetching repos:", error);
         if (error.response && error.response.status === 401) {
-          alert("GitHub session expired. Please reconnect.");
-          handleGitHubConnect(); 
+          handleGitHubLogin(); 
         }
       }
     };
