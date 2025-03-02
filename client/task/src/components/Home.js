@@ -92,8 +92,8 @@ const Home = () => {
       </button>
     )}
     {user?.githubId && (
-      <button className="create-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" }}>
-        <FaPlus className="icon" style={{color:"black", background:"green"}} /> Create New Project
+      <button className="github-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" }}>
+        <FaPlus className="icon" style={{color:"white"}} /> Create New Project
       </button>
     )}
   </div>
