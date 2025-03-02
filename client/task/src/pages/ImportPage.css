@@ -5,6 +5,8 @@
     background: #0f172a;
     color: white;
     padding: 20px;
+    position: relative;
+    top:60px;
   }
   
   /* Chat Box */
@@ -15,7 +17,7 @@
     border: 1px solid #334155;
     border-radius: 8px;
     background: #1e293b;
-    height: 65vh;
+    height: 60vh;
   }
   
   /* Repo Name Inside Chat Box */
@@ -23,9 +25,6 @@
     font-size: 18px;
     font-weight: bold;
     text-align: center;
-    background: #3b82f6;
-    padding: 10px;
-    border-radius: 6px;
     margin-bottom: 10px;
   }
   
@@ -133,5 +132,9 @@
     .import-download-btn {
       width: 100%;
       text-align: center;
+    }
+
+    .import-page-container{
+        top:50px;
     }
   }

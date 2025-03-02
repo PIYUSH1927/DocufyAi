@@ -62,7 +62,7 @@ const ImportPage = () => {
   };
 
   return (
-    <div className="import-page-container" style={{position:"relative", top:"60px"}}>
+    <div className="import-page-container" >
       <div className="import-chat-container">
         {/* Repo Name as Heading Inside Chat */}
         <div className="import-repo-name">{repoName} - Documentation</div>
