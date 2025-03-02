@@ -31,22 +31,22 @@ const Landing = () => {
         {[
           {
             title: "Automated Documentation",
-            description: "Docufy.ai uses AI to scan your codebase, extract functions, classes, and API endpoints, and generate structured easy-to-read documentation keeping everything up to date without manual effort.",
+            description: " uses AI to scan your codebase, extract functions, classes, and API endpoints, and generate structured easy-to-read documentation keeping everything up to date without manual effort.",
             icon: <FaCogs size={40} color="#38bdf8" />
           },
           {
             title: "GitHub Integration",
-            description: "Easily connect your GitHub repository to Docufy.ai, and it will automatically update your documentation whenever your code changes keeping everything in sync effortlessly.",
+            description: "Easily connect your GitHub repository to Docufy.Ai, and it will automatically update your documentation whenever your code changes keeping everything in sync effortlessly.",
             icon: <FaGithub size={40} color="#38bdf8" />
           },
           {
             title: "API Reference Docs",
-            description: "Docufy.ai automatically generates detailed API documentation, including endpoints, request parameters, and responses ensuring clear, well structured references for developers.",
+            description: "Docufy.Ai automatically generates detailed API documentation, including endpoints, request parameters, and responses ensuring clear, well structured references for developers.",
             icon: <FaCode size={40} color="#38bdf8" />
           },
           {
             title: "Versioned Documentation",
-            description: "Track changes effortlessly as Docufy.ai maintains versioned documentation, allowing you to compare updates, revert to previous versions, and ensure consistency over time.",
+            description: "Track changes effortlessly as Docufy.Ai maintains versioned documentation, allowing you to compare updates, revert to previous versions, and ensure consistency over time.",
             icon: <FaHistory size={40} color="#38bdf8" />
           }
         ].map((feature, index) => (
