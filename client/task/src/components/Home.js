@@ -17,7 +17,6 @@ const Home = () => {
   };
 
   useEffect(() => {
-    window.location.reload();
     const urlParams = new URLSearchParams(window.location.search);
     const newToken = urlParams.get("token");
   
