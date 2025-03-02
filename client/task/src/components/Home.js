@@ -12,12 +12,6 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!sessionStorage.getItem("pageRefreshed")) {
-      sessionStorage.setItem("pageRefreshed", "true");
-      window.location.reload();
-    }
-  }, []);
 
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";

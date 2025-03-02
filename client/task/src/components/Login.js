@@ -15,12 +15,7 @@ const Login = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleResetChange = (e) => setResetData({ ...resetData, [e.target.name]: e.target.value });
 
-  useEffect(() => {
-    if (!sessionStorage.getItem("pageRefreshed")) {
-      sessionStorage.setItem("pageRefreshed", "true");
-      window.location.reload();
-    }
-  }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
