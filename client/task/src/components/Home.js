@@ -12,6 +12,15 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const hasRefreshed = localStorage.getItem("hasRefreshed");
+
+    if (!hasRefreshed) {
+        localStorage.setItem("hasRefreshed", "true");
+        window.location.reload();
+    }
+}, []);
+
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
   };
