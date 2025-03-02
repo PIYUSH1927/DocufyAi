@@ -1,4 +1,5 @@
 const passport = require("passport");
+const axios = require("axios");
 const GitHubStrategy = require("passport-github2").Strategy;
 const User = require("../models/User"); // User model
 require("dotenv").config();
@@ -9,10 +10,26 @@ passport.use(
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: "https://sooru-ai.onrender.com/api/auth/github/callback",
-      scope: ["user:email", "repo"], // Access to email & repo list
+      scope: ["user:email", "read:user"], // Access to email & repo list
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+
+        let email = profile.emails?.[0]?.value || null;
+
+        // ✅ If email is missing, fetch it manually
+        if (!email) {
+          const emailRes = await axios.get("https://api.github.com/user/emails", {
+            headers: { Authorization: `token ${accessToken}` },
+          });
+          const primaryEmail = emailRes.data.find((e) => e.primary && e.verified)?.email;
+          if (primaryEmail) {
+            email = primaryEmail;
+          } else {
+            return done(new Error("GitHub email not available"), null);
+          }
+        }
+        
         let user = await User.findOne({ githubId: profile.id });
 
         if (!user) {
