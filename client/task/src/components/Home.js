@@ -58,6 +58,10 @@ const Home = () => {
         setRepos(response.data);
       } catch (error) {
         console.error("Error fetching repos:", error);
+        if (error.response && error.response.status === 401) {
+          alert("GitHub session expired. Please reconnect.");
+          handleGitHubConnect(); 
+        }
       }
     };
 
@@ -105,7 +109,6 @@ const Home = () => {
         
       </div>
 
-      {/* Popup for Selecting Repo */}
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">

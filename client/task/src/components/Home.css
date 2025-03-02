@@ -91,6 +91,7 @@
     align-items: center;
     justify-content: center;
     animation: fadeIn 0.3s ease-in-out;
+    max-height: 80vh;
   }
   
   .popup-box {
