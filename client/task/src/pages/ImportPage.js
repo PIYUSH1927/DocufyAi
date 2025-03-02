@@ -8,7 +8,7 @@ const ImportPage = () => {
   const [messages, setMessages] = useState([
     { type: "system", text: `Generating documentation for ${repoName}...` },
   ]);
-  const [input, setInput] = useState("");
+  const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
     fetchInitialDocumentation();
@@ -32,14 +32,14 @@ const ImportPage = () => {
   };
 
   const handleGenerate = async () => {
-    if (!input.trim()) return;
+    if (!userInput.trim()) return;
 
-    setMessages((prev) => [...prev, { type: "user", text: input }]);
+    setMessages((prev) => [...prev, { type: "user", text: userInput }]);
 
     try {
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/generate-docs",
-        { repoName, query: input }
+        { repoName, query: userInput }
       );
 
       setMessages((prev) => [
@@ -53,7 +53,7 @@ const ImportPage = () => {
       ]);
     }
 
-    setInput("");
+    setUserInput(""); // Clear input field after submission
   };
 
   const handleDownloadPDF = () => {
@@ -64,24 +64,27 @@ const ImportPage = () => {
   };
 
   return (
-    <div className="import-page" style={{position:"relative", top:"50px"}}>
-      <div className="header">{repoName} - Documentation</div>
-      <div className="chat-container">
+    <div className="import-page-container">
+      <div className="import-header">{repoName} - Documentation</div>
+      <div className="import-chat-container">
         {messages.map((msg, index) => (
-          <div key={index} className={`chat-message ${msg.type}`}>
+          <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.text}
           </div>
         ))}
       </div>
-      <div className="input-container">
+      <div className="import-input-container">
         <input
           type="text"
+          className="import-text-input"
           placeholder="Ask AI to refine documentation..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
         />
-        <button onClick={handleGenerate}>Generate</button>
-        <button className="download-btn" onClick={handleDownloadPDF}>
+        <button className="import-generate-btn" onClick={handleGenerate}>
+          Generate
+        </button>
+        <button className="import-download-btn" onClick={handleDownloadPDF}>
           Download as PDF
         </button>
       </div>
