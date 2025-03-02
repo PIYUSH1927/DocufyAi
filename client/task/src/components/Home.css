@@ -88,7 +88,7 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
-    align-items:  flex-start;
+    align-items: center;
     justify-content: center;
     animation: fadeIn 0.3s ease-in-out;
   }
@@ -100,7 +100,7 @@
     width: 50%;
     text-align: center;
     position: relative;
-    animation: slideDown 0.5s ease-out;
+    animation: moveUpSlightly 0.4s ease-out;
   }
 
   @keyframes slideDown {
@@ -121,6 +121,17 @@
     to {
         opacity: 1;
     }
+}
+
+@keyframes moveUpSlightly {
+  from {
+      transform: translateY(100px); /* Starts a bit lower */
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0); /* Moves up slightly */
+      opacity: 1;
+  }
 }
   
   .popup-box h2 {
