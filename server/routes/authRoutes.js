@@ -4,6 +4,7 @@ const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");  
 const User = require("../models/User"); 
+const axios = require("axios");
 const nodemailer = require("nodemailer");
 
 const router = express.Router();
@@ -170,6 +171,39 @@ router.post("/checkuser", async (req, res) => {
   }
 });
 
+const authenticate = async (req, res, next) => {
+  try {
+    const token = req.header("Authorization")?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Unauthorized - No token" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    req.user = user; // Attach user to request
+    next();
+  } catch (error) {
+    res.status(500).json({ error: "Authentication failed" });
+  }
+};
+
+// ✅ Route to Fetch User Repositories from GitHub
+router.get("/repos", authenticate, async (req, res) => {
+  try {
+    if (!req.user.accessToken) {
+      return res.status(400).json({ error: "GitHub not connected" });
+    }
+
+    const response = await axios.get("https://api.github.com/user/repos", {
+      headers: { Authorization: `Bearer ${req.user.accessToken}` },
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error("GitHub API Error:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to fetch repositories" });
+  }
+});
 
 router.get("/github", passport.authenticate("github", { scope: ["user:email", "repo"] }));
 
