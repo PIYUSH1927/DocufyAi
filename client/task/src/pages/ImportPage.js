@@ -86,7 +86,7 @@ const ImportPage = () => {
           Generate
         </button>
         <button className="import-download-btn" onClick={handleDownloadPDF}>
-          ⬇ PDF
+          Download PDF
         </button>
       </div>
     </div>
