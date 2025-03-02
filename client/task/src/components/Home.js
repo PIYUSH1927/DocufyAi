@@ -63,26 +63,14 @@ const Home = () => {
     const fetchRepositories = async () => {
       try {
         const token = localStorage.getItem("token");
-        
-        let allRepos = [];
-        let page = 1;
-        let per_page = 100;
-
-         while (true) {
-      const response = await axios.get(
-        `https://api.github.com/user/repos?page=${page}&per_page=${per_page}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (response.data.length === 0) break; // Stop if no more repos
-      allRepos = [...allRepos, ...response.data];
-      page++;
-    }
-
-    setRepos(allRepos);
-    
+        console.log("Fetching Repositories with Token:", token);
+        const response = await axios.get(
+          "https://sooru-ai.onrender.com/api/github/repos",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setRepos(response.data);
       } catch (error) {
         console.error("Error fetching repos:", error);
  
