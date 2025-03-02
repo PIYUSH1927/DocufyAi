@@ -72,7 +72,7 @@
     background: #334155;
     color: white;
     height: 45px;
-    width: 600px;
+    width: 100vw;
     font-size: 16px;
     resize: none;
   }
@@ -84,7 +84,7 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    min-width: 80px; /* Prevents too wide buttons */
+    min-width: 80px;
     white-space: nowrap;
   }
 
@@ -115,7 +115,9 @@
     }
   
     .import-text-input {
-      height: 20px;
+      height: 30px;
+      width: 95%;
+      text-align: center;
       font-size: 14px;
     }
   
