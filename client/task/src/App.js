@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import Landing from "./pages/Landing";
 import About from "./pages/About";  
 import Pricing from "./pages/Pricing"; 
+import ImportPage from "./pages/ImportPage";
 
 const ProtectedRoute = ({ element }) => {
   const token = localStorage.getItem("token") || new URLSearchParams(window.location.search).get("token");
@@ -53,6 +54,7 @@ const App = () => {
 
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+        <Route path="/import/:repoName" element={<ProtectedRoute element={<ImportPage />} />} />
 
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>

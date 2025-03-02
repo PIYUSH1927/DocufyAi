@@ -16,7 +16,7 @@ const Home = () => {
     const hasRefreshed = sessionStorage.getItem("hasRefreshed");
 
     if (!hasRefreshed) {
-      sessionStorage.setItem("hasRefreshed", "true"); // Mark as refreshed
+      sessionStorage.setItem("hasRefreshed", "true"); 
       setTimeout(() => {
         window.location.reload();
       }, 500);
@@ -28,7 +28,9 @@ const Home = () => {
     sessionStorage.removeItem("refreshed"); 
   }, []);
 
-
+  const handleImport = (repoName) => {
+    navigate(`/import/${repoName}`);
+  };
 
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
@@ -117,6 +119,7 @@ const Home = () => {
     repo.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  
   return (
     <div className="home-container" >
       {/* Dashboard Header */}
@@ -172,7 +175,7 @@ const Home = () => {
                   filteredRepos.map((repo) => (
                     <li key={repo.id} className="repo-item">
                       <span>{repo.name}</span>
-                      <button className="import-btn">Import</button>
+                      <button className="import-btn" onClick={() => handleImport(repo.name)}>Import</button>
                     </li>
                   ))
                 ) : (
