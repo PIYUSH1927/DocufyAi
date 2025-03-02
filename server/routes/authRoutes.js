@@ -191,20 +191,27 @@ const authenticate = async (req, res, next) => {
 router.get("/repos", authenticate, async (req, res) => {
   try {
     if (!req.user.accessToken) {
-      console.error("GitHub access token missing for user:", req.user.id);
       return res.status(400).json({ error: "GitHub not connected" });
     }
 
-    const response = await axios.get("https://api.github.com/user/repos", {
-      headers: { Authorization: `Bearer ${req.user.accessToken}` },
-    });
+    let allRepos = [];
+    let page = 1;
+    let per_page = 100;
 
-    res.json(response.data);
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      return res.status(401).json({ error: "GitHub token expired. Please reconnect." });
+    while (true) {
+      const response = await axios.get(`https://api.github.com/user/repos?page=${page}&per_page=${per_page}`, {
+        headers: { Authorization: `Bearer ${req.user.accessToken}` },
+      });
+
+      if (response.data.length === 0) break; // Stop if no more repos
+      allRepos = [...allRepos, ...response.data];
+      page++;
     }
-    res.status(500).json({ error: "Failed to fetch repositories"});
+
+    res.json(allRepos);
+  } catch (error) {
+    console.error("GitHub API Error:", error.response?.data || error.message);
+    res.status(500).json({ error: "Failed to fetch repositories" });
   }
 });
 
