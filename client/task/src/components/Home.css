@@ -100,7 +100,7 @@
     width: 50%;
     text-align: center;
     position: relative;
-    animation: moveUpSlightly 0.4s ease-out;
+    animation: slideDown 0.5s ease-out;
   }
 
   @keyframes slideDown {
@@ -125,7 +125,7 @@
 
 @keyframes moveUpSlightly {
   from {
-      transform: translateY(100px); /* Starts a bit lower */
+      transform: translateY(30px); /* Starts a bit lower */
       opacity: 0;
   }
   to {
