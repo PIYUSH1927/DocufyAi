@@ -4,15 +4,15 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 const authRoutes = require("./routes/authRoutes");
-const githubRoutes = require("./routes/githubRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 require("./config/passport");
 require("dotenv").config();
 
+
+
 const app = express();
 app.use(express.json());
-
 
 
 app.use(
@@ -34,7 +34,6 @@ app.use(
 );
 
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.options("*", cors());
 
@@ -46,7 +45,6 @@ mongoose
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/github", githubRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

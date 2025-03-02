@@ -29,9 +29,9 @@ const Home = () => {
 
         const response = await axios.get(
           `https://sooru-ai.onrender.com/api/user/${userId}`, 
-          
-            { headers: { Authorization: token } }
-          
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
         setUser(response.data);
         setLoading(false);
@@ -65,7 +65,10 @@ const Home = () => {
   }, [navigate]);
 
   const handleGitHubConnect = () => {
-    window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
+    const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    const redirectUri = encodeURIComponent("https://sooru-ai.onrender.com/api/auth/github/callback");
+    
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo&redirect_uri=${redirectUri}`;
   };
   
 
