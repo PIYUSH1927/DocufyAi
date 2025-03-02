@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Home.css";
-import { FaGithub, FaPlus } from "react-icons/fa";
+import { FaGithub, FaPlus, FaSearch } from "react-icons/fa";
 
 const Home = () => {
   const [user, setUser] = useState(null);
   const [repos, setRepos] = useState([]);
+  const [search, setSearch] = useState(""); 
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
