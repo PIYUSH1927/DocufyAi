@@ -188,7 +188,7 @@ const authenticate = async (req, res, next) => {
 };
 
 // ✅ Route to Fetch User Repositories from GitHub
-router.get("/github/repos", authenticate, async (req, res) => {
+router.get("/repos", authenticate, async (req, res) => {
   try {
     if (!req.user.accessToken) {
       return res.status(400).json({ error: "GitHub not connected" });

@@ -44,6 +44,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/github", authRoutes);
 app.use("/api/user", userRoutes);
 
 const PORT = 5000;
