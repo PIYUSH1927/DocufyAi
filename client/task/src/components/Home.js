@@ -87,12 +87,12 @@ const Home = () => {
   <h2 style={{position:"relative", top:"8px"}}>Dashboard</h2>
   <div className="buttons" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
     {!user?.githubId && (
-      <button className="github-btn" onClick={handleGitHubLogin} style={{ width: "auto", height: "auto" }}>
-        <FaGithub className="github-icon" /> Connect to GitHub
+      <button className="githubb-btn github-btn" onClick={handleGitHubLogin} style={{ width: "auto", height: "auto" }}>
+        <FaGithub className="githubb-icon" /> Connect to GitHub
       </button>
     )}
     {user?.githubId && (
-      <button className="github-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" }}>
+      <button className="githubb-btn github-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" ,background:"green"}}>
         <FaPlus className="icon" style={{color:"white"}} /> Create New Project
       </button>
     )}
