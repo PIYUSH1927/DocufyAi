@@ -5,8 +5,18 @@ import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem("token");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAuthenticated(!!localStorage.getItem("token"));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const handleNavigation = (path) => {
     navigate(path);
