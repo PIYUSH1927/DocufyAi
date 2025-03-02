@@ -14,12 +14,17 @@ const Home = () => {
 
   useEffect(() => {
     if (!sessionStorage.getItem("refreshed")) {
-        sessionStorage.setItem("refreshed", "true");
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
+      sessionStorage.setItem("refreshed", "true");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     }
-}, []);
+  }, []);
+
+  
+  useEffect(() => {
+    sessionStorage.removeItem("refreshed"); 
+  }, []);
 
 
 
