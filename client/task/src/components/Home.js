@@ -17,6 +17,17 @@ const Home = () => {
   };
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const newToken = urlParams.get("token");
+  
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+      window.history.replaceState({}, document.title, "/home"); // Remove token from URL
+    }
+  }, []);
+  
+
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
