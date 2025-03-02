@@ -111,11 +111,11 @@
     .import-input-container {
       flex-direction: column;
       align-items: stretch;
-      gap: 5px;
+      gap: 1px;
     }
   
     .import-text-input {
-      height: 40px;
+      height: 20px;
       font-size: 14px;
     }
   
