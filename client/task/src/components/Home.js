@@ -14,10 +14,9 @@ const Home = () => {
 
   useEffect(() => {
     setTimeout(() => {
-        window.location.href = window.location.href;
+        window.location.replace(window.location.href);
     }, 500);
 }, []);
-
 
 
   const handleGitHubLogin = () => {
