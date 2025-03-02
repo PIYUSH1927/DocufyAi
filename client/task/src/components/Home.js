@@ -22,7 +22,7 @@ const Home = () => {
   
     if (newToken) {
       localStorage.setItem("token", newToken);
-      window.history.replaceState({}, document.title, "/home"); // Remove token from URL
+      window.history.replaceState({}, document.title, "/home"); 
     }
   }, []);
   
@@ -47,45 +47,37 @@ const Home = () => {
         );
         setUser(response.data);
         setLoading(false);
+
+        if (response.data.githubId) {
+          fetchRepositories();
+        }
       } catch (error) {
         console.error("Error fetching profile:", error);
         setLoading(false);
       }
     };
 
+ 
 
-    fetchProfile();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!user?.githubId) return; 
-  
     const fetchRepositories = async () => {
       try {
         const token = localStorage.getItem("token");
-        let allRepos = [];
-        let page = 1;
-        let per_page = 100;
-  
-        while (true) {
-          const response = await axios.get(
-            `https://sooru-ai.onrender.com/api/github/repos?page=${page}&per_page=${per_page}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-  
-          if (response.data.length === 0) break; 
-          allRepos = [...allRepos, ...response.data];
-          page++;
-        }
-  
-        setRepos(allRepos);
+        
+        const response = await axios.get(
+          "https://sooru-ai.onrender.com/api/github/repos",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setRepos(response.data);
       } catch (error) {
         console.error("Error fetching repos:", error);
+ 
       }
     };
-  
-    fetchRepositories();
-  }, [user?.githubId]);
+
+    fetchProfile();
+  }, [navigate]);
 
   const handleGitHubConnect = () => {
     const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
