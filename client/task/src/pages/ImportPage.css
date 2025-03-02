@@ -60,19 +60,19 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: 10px 20px;
+    padding: 10px 10px;
   }
   
   
   /* Large Text Area */
   .import-text-input {
-    flex: 1;
     padding: 12px;
     border: none;
     border-radius: 6px;
     background: #334155;
     color: white;
     height: 45px;
+    width: 600px;
     font-size: 16px;
     resize: none;
   }
