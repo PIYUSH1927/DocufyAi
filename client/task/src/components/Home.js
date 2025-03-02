@@ -13,12 +13,9 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hasRefreshed = localStorage.getItem("hasRefreshed");
-
-    if (!hasRefreshed) {
-        localStorage.setItem("hasRefreshed", "true");
+    setTimeout(() => {
         window.location.reload();
-    }
+    }, 500);
 }, []);
 
   const handleGitHubLogin = () => {
