@@ -21,6 +21,7 @@ const Home = () => {
     const newToken = urlParams.get("token");
   
     if (newToken) {
+      console.log("New Token Received:", newToken);
       localStorage.setItem("token", newToken);
       window.history.replaceState({}, document.title, "/home"); // Remove token from URL
     }
@@ -61,10 +62,12 @@ const Home = () => {
 
     const fetchRepositories = async () => {
       try {
+        const token = localStorage.getItem("token");
+        console.log("Fetching Repositories with Token:", token);
         const response = await axios.get(
           "https://sooru-ai.onrender.com/api/github/repos",
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         setRepos(response.data);
