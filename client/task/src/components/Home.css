@@ -79,7 +79,6 @@
     margin-top: 5px;
   }
   
-  /* Popup */
   .popup-overlay {
     position: fixed;
     top: 0;
@@ -90,53 +89,69 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.3s ease-in-out;
-    max-height: 80vh;
   }
   
   .popup-box {
     background: #1e293b;
     padding: 20px;
     border-radius: 12px;
-    width: 50%;
-    text-align: center;
+    width: 500px;
+    text-align: left;
     position: relative;
-    animation: slideDown 0.5s ease-out;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow: hidden;
   }
-
-  @keyframes slideDown {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes moveUpSlightly {
-  from {
-      transform: translateY(30px); /* Starts a bit lower */
-      opacity: 0;
-  }
-  to {
-      transform: translateY(0); /* Moves up slightly */
-      opacity: 1;
-  }
-}
   
-  .popup-box h2 {
-    margin-bottom: 20px;
+  .popup-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+  }
+  
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .github-user {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: white;
+  }
+  
+  .github-icon {
+    margin-right: 8px;
+  }
+  
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #334155;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  
+  .search-icon {
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+  }
+  
+  .repo-list-container {
+    overflow-y: auto;
+    max-height: 300px;
   }
   
   .repo-list {
@@ -145,15 +160,32 @@
   }
   
   .repo-item {
-    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
     padding: 10px;
-    margin: 8px 0;
+    margin-bottom: 8px;
     border-radius: 6px;
-    cursor: pointer;
   }
   
-  .repo-item:hover {
-    background: rgba(255, 255, 255, 0.3);
+  .import-btn {
+    background: black;
+    color: white;
+    padding: 6px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .import-btn:hover {
+    background: white;
+    color: black;
+  }
+  
+  .no-repos {
+    color: red;
+    text-align: center;
   }
   
   .close-btn {
@@ -166,6 +198,9 @@
     font-size: 1.5rem;
     cursor: pointer;
   }
+  
+
+  
   
   @media (max-width: 500px) {
 

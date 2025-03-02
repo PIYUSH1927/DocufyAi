@@ -84,6 +84,10 @@ const Home = () => {
     }
   };
 
+  const filteredRepos = repos.filter(repo =>
+    repo.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="home-container" >
       {/* Dashboard Header */}
@@ -112,19 +116,41 @@ const Home = () => {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <h2 style={{color:"white"}}>Select a Repository</h2>
-            <h2 className="close-btn" onClick={() => setShowPopup(false)}>✖</h2>
-            <ul className="repo-list">
-              {repos.length > 0 ? (
-                repos.map((repo) => (
-                  <li key={repo.id} className="repo-item">
-                    {repo.name}
-                  </li>
-                ))
-              ) : (
-                <p style={{color:"red"}} >No repositories found.</p>
-              )}
-            </ul>
+            <h2 className="popup-title">Import Git Repository</h2>
+            <button className="close-btn" onClick={() => setShowPopup(false)}>✖</button>
+            
+            {/* GitHub Username & Search Box */}
+            <div className="popup-header">
+              <div className="github-user">
+                <FaGithub className="github-icon" />
+                {user?.username || "GitHub User"}
+              </div>
+              <div className="search-box">
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Repository List */}
+            <div className="repo-list-container">
+              <ul className="repo-list">
+                {filteredRepos.length > 0 ? (
+                  filteredRepos.map((repo) => (
+                    <li key={repo.id} className="repo-item">
+                      <span>{repo.name}</span>
+                      <button className="import-btn">Import</button>
+                    </li>
+                  ))
+                ) : (
+                  <p className="no-repos">No repositories found.</p>
+                )}
+              </ul>
+            </div>
           </div>
         </div>
       )}
