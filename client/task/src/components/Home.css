@@ -89,6 +89,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
   }
   
   .popup-box {
@@ -99,6 +100,7 @@
     min-height: 75vh;
     text-align: left;
     position: relative;
+    top: 40px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
