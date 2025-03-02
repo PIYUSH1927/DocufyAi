@@ -100,7 +100,7 @@
     min-height: 75vh;
     text-align: left;
     position: relative;
-    top: 40px;
+    top: 25px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
