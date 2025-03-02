@@ -26,6 +26,9 @@ const Home = () => {
     }
   }, []);
   
+  useEffect(() =>{
+    window.location.reload();
+  })
 
   useEffect(() => {
     const fetchProfile = async () => {
