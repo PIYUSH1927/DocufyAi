@@ -36,8 +36,12 @@ passport.use(
             accessToken, // Store GitHub token
           });
         
-          await user.save();
+          
+        } else {
+          user.accessToken = accessToken;
         }
+
+        await user.save();
         
         return done(null, user);
       } catch (error) {
