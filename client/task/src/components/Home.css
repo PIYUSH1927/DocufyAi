@@ -96,7 +96,7 @@
     padding: 20px;
     border-radius: 12px;
     width: 750px;  /* Increased width */
-    min-height: 85vh;
+    min-height: 75vh;
     text-align: left;
     position: relative;
     display: flex;
@@ -135,20 +135,20 @@
     background: #334155;
     padding: 0px 5px;
     border-radius: 6px;
-    width: 220px; 
-    height: 30px;
+    width: 250px; 
+    height: 40px;
     margin-left: 8px;  
   }
 
   @media (max-width: 700px) {
     .search-box {
-        width: 180px;  /* Smaller on smaller screens */
+        width: 200px;  /* Smaller on smaller screens */
     }
 }
 
 @media (max-width: 500px) {
     .search-box {
-        width: 140px;  /* Even smaller on very small screens */
+        width: 180px;  /* Even smaller on very small screens */
     }
 }
 
