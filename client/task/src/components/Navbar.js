@@ -5,6 +5,7 @@ import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
 
