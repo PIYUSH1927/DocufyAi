@@ -64,7 +64,7 @@ const ImportPage = () => {
   };
 
   return (
-    <div className="import-page">
+    <div className="import-page" style={{position:"relative", top:"50px"}}>
       <div className="header">{repoName} - Documentation</div>
       <div className="chat-container">
         {messages.map((msg, index) => (
