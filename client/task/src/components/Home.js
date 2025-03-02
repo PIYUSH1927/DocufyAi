@@ -13,10 +13,12 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => {
+    if (!sessionStorage.getItem("refreshed")) {
+        sessionStorage.setItem("refreshed", "true");
         window.location.reload();
-    }, 500);
+    }
 }, []);
+
 
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
