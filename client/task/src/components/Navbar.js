@@ -15,6 +15,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    sessionStorage.removeItem("hasRefreshed");
     handleNavigation("/login");
   };
 

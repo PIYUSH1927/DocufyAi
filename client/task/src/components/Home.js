@@ -13,8 +13,10 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!sessionStorage.getItem("refreshed")) {
-      sessionStorage.setItem("refreshed", "true");
+    const hasRefreshed = sessionStorage.getItem("hasRefreshed");
+
+    if (!hasRefreshed) {
+      sessionStorage.setItem("hasRefreshed", "true"); // Mark as refreshed
       setTimeout(() => {
         window.location.reload();
       }, 500);
