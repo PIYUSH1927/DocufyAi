@@ -5,9 +5,7 @@ import "./ImportPage.css";
 
 const ImportPage = () => {
   const { repoName } = useParams(); // Get repository name from URL
-  const [messages, setMessages] = useState([
-    { type: "system", text: `Generating documentation for ${repoName}...` },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
@@ -65,17 +63,20 @@ const ImportPage = () => {
 
   return (
     <div className="import-page-container">
-      <div className="import-header">{repoName} - Documentation</div>
       <div className="import-chat-container">
+        {/* Repo Name as Heading Inside Chat */}
+        <div className="import-repo-name">{repoName} - Documentation</div>
+
         {messages.map((msg, index) => (
           <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.text}
           </div>
         ))}
       </div>
+
+      {/* Input Box + Buttons (Like ChatGPT) */}
       <div className="import-input-container">
-        <input
-          type="text"
+        <textarea
           className="import-text-input"
           placeholder="Ask AI to refine documentation..."
           value={userInput}
@@ -85,7 +86,7 @@ const ImportPage = () => {
           Generate
         </button>
         <button className="import-download-btn" onClick={handleDownloadPDF}>
-          Download as PDF
+          ⬇ PDF
         </button>
       </div>
     </div>

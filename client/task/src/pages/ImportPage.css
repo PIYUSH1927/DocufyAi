@@ -7,13 +7,7 @@
     padding: 20px;
   }
   
-  .import-header {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  
+  /* Chat Box */
   .import-chat-container {
     flex: 1;
     overflow-y: auto;
@@ -21,9 +15,21 @@
     border: 1px solid #334155;
     border-radius: 8px;
     background: #1e293b;
-    height: 60vh;
+    height: 65vh;
   }
   
+  /* Repo Name Inside Chat Box */
+  .import-repo-name {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    background: #3b82f6;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  
+  /* Messages */
   .import-chat-message {
     padding: 10px;
     margin: 5px 0;
@@ -43,47 +49,71 @@
     text-align: left;
   }
   
+  /* Input Box and Buttons */
   .import-input-container {
     display: flex;
+    align-items: center;
     padding: 10px;
     background: #1e293b;
     border-radius: 8px;
   }
   
+  /* Large Text Area */
   .import-text-input {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: none;
     border-radius: 6px;
     background: #334155;
     color: white;
+    height: 50px;
+    font-size: 16px;
+    resize: none;
   }
   
+  /* Buttons */
   .import-generate-btn {
-    padding: 10px 15px;
+    padding: 10px;
     margin-left: 10px;
     border: none;
     border-radius: 6px;
     background: #3b82f6;
     color: white;
     cursor: pointer;
+    font-size: 14px;
   }
   
   .import-download-btn {
-    padding: 10px 15px;
+    padding: 10px;
     margin-left: 10px;
     border: none;
     border-radius: 6px;
     background: #22c55e;
     color: white;
     cursor: pointer;
+    font-size: 14px;
   }
   
+  /* Button Hover Effects */
   .import-generate-btn:hover {
     background: #2563eb;
   }
   
   .import-download-btn:hover {
     background: #16a34a;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .import-text-input {
+      font-size: 14px;
+      height: 40px;
+    }
+  
+    .import-generate-btn,
+    .import-download-btn {
+      font-size: 12px;
+      padding: 8px;
+    }
   }
   
