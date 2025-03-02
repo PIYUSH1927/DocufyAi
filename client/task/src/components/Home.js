@@ -69,7 +69,7 @@ const Home = () => {
 
       while (true) {
       const response = await axios.get(
-        `https://api.github.com/user/repos?page=${page}&per_page=${per_page}`,
+        `https://sooru-ai.onrender.com/api/github/repos?page=${page}&per_page=${per_page}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
