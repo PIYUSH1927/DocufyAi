@@ -51,6 +51,7 @@
   /* Input Box and Buttons */
   .import-input-container {
     display: flex;
+    width: 95%;
     align-items: center;
     gap: 8px;
     padding: 12px;
