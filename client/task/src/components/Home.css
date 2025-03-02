@@ -23,11 +23,11 @@
   }
   
   .dashboard-header h2 {
-    font-size: 5vh;
+    font-size: 4.5vh;
     color: maroon;
     font-weight: bolder;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); 
-    text-decoration: underline;
+  
   }
   
   .buttons {
@@ -95,12 +95,12 @@
     background: #1e293b;
     padding: 20px;
     border-radius: 12px;
-    width: 700px;
+    width: 750px;  /* Increased width */
+    min-height: 85vh;
     text-align: left;
     position: relative;
     display: flex;
     flex-direction: column;
-    max-height: 100vh;
     overflow: hidden;
   }
   
@@ -135,7 +135,23 @@
     background: #334155;
     padding: 0px 5px;
     border-radius: 6px;
+    width: 220px; 
+    height: 30px;
+    margin-left: 8px;  
   }
+
+  @media (max-width: 700px) {
+    .search-box {
+        width: 180px;  /* Smaller on smaller screens */
+    }
+}
+
+@media (max-width: 500px) {
+    .search-box {
+        width: 140px;  /* Even smaller on very small screens */
+    }
+}
+
   
   .search-icon {
     color: white;
@@ -151,7 +167,7 @@
   
   .repo-list-container {
     overflow-y: auto;
-    max-height: 300px;
+    max-height: 65vh;
   }
   
   .repo-list {
