@@ -191,6 +191,7 @@ const authenticate = async (req, res, next) => {
 router.get("/repos", authenticate, async (req, res) => {
   try {
     if (!req.user.accessToken) {
+      console.error("GitHub access token missing for user:", req.user.id);
       return res.status(400).json({ error: "GitHub not connected" });
     }
 
@@ -201,7 +202,7 @@ router.get("/repos", authenticate, async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error("GitHub API Error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Failed to fetch repositories" });
+    res.status(500).json({ error: "Failed to fetch repositories", details: error.response?.data || error.message });
   }
 });
 
