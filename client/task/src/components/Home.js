@@ -118,7 +118,7 @@ const Home = () => {
         <div className="popup-overlay">
           <div className="popup-box">
             <h2 className="popup-title">Import Git Repository</h2>
-            <h2 onClick={() => setShowPopup(false)}>✖</h2>
+            <h2 className="close-btn" onClick={() => setShowPopup(false)}>✖</h2>
             
             {/* GitHub Username & Search Box */}
             <div className="popup-header">
