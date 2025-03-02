@@ -13,6 +13,7 @@
   .import-chat-container {
     flex: 1;
     overflow-y: auto;
+    margin: auto;
     padding: 10px;
     border: 1px solid #334155;
     border-radius: 8px;
