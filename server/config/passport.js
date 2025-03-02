@@ -1,7 +1,7 @@
 const passport = require("passport");
 const axios = require("axios"); // ✅ Ensure axios is imported
 const GitHubStrategy = require("passport-github2").Strategy;
-const User = require("../models/User"); // User model
+const User = require("../models/User");
 require("dotenv").config();
 
 passport.use(
@@ -14,26 +14,28 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let email = profile.emails?.[0]?.value || null;
+        let email = null;
 
-        // ✅ If email is missing, fetch it manually from GitHub API
-        if (!email) {
+        // ✅ Manually fetch emails if GitHub doesn't return them
+        try {
           const emailRes = await axios.get("https://api.github.com/user/emails", {
-            headers: { Authorization: `token ${accessToken}` },
+            headers: { Authorization: `Bearer ${accessToken}` },
           });
 
-          const primaryEmail = emailRes.data.find((e) => e.primary && e.verified)?.email;
-          if (primaryEmail) {
-            email = primaryEmail;
-          } else {
-            return done(new Error("GitHub email not available"), null);
-          }
+          email = emailRes.data.find((e) => e.primary && e.verified)?.email;
+        } catch (error) {
+          console.error("Failed to fetch email manually:", error);
+        }
+
+        if (!email) {
+          console.error("GitHub email not available.");
+          return done(new Error("GitHub email not available"), null);
         }
 
         let user = await User.findOne({ githubId: profile.id });
 
         if (!user) {
-          // ✅ Check if user with the same email exists
+          // ✅ Check if a user with the same email exists
           const existingUser = await User.findOne({ email });
 
           if (existingUser) {
@@ -44,7 +46,7 @@ passport.use(
             return done(null, existingUser);
           }
 
-          // ✅ Create new user if no matching email is found
+          // ✅ Create a new user if no matching email is found
           user = new User({
             githubId: profile.id,
             username: profile.username,
