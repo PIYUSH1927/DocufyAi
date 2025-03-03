@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Home } from "lucide-react";
+import { Home , Copy, Download} from "lucide-react";
 import "./ImportPage.css";
 
 const ImportPage = () => {
@@ -10,6 +10,8 @@ const ImportPage = () => {
   const { repoName } = useParams(); 
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
+  const [copyStatus, setCopyStatus] = useState(null);
+  const [downloadStatus, setDownloadStatus] = useState(null); 
 
   useEffect(() => {
     fetchInitialDocumentation();
@@ -54,15 +56,24 @@ const ImportPage = () => {
       ]);
     }
 
-    setUserInput(""); // Clear input field after submission
+    setUserInput(""); 
   };
 
   const handleDownloadPDF = () => {
+    setDownloadStatus("Downloading...");
+    setTimeout(() => setDownloadStatus(null), 2000); // Remove after 2 seconds
     window.open(
       `https://sooru-ai.onrender.com/api/github/download-pdf?repo=${repoName}`,
       "_blank"
     );
   };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopyStatus("Copied!");
+    setTimeout(() => setCopyStatus(null), 2000);
+  };
+
 
   return (
     <div className="import-page-container" >
@@ -72,8 +83,24 @@ const ImportPage = () => {
         <Home style={{position:"fixed", left:"17px", paddingRight:"5px", cursor:"pointer"}} onClick={() => navigate("/home")} />
           <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
           </div>
-        {messages.map((msg, index) => (
+          {messages.map((msg, index) => (
           <div key={index} className={`import-chat-message ${msg.type}`}>
+            {msg.type === "bot" && (
+              <div className="bot-message-icons">
+                <Copy
+                  size={16}
+                  className="icon"
+                  onClick={() => handleCopy(msg.text)}
+                  title={copyStatus || "Copy text"}
+                />
+                <Download
+                  size={16}
+                  className="icon"
+                  onClick={handleDownloadPDF}
+                  title={downloadStatus || "Download as PDF"}
+                />
+              </div>
+            )}
             {msg.text}
           </div>
         ))}
@@ -89,9 +116,6 @@ const ImportPage = () => {
         />
         <button className="import-generate-btn" onClick={handleGenerate}>
           Generate
-        </button>
-        <button className="import-download-btn" onClick={handleDownloadPDF}>
-          Download PDF
         </button>
       </div>
     </div>

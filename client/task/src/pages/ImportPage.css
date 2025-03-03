@@ -12,11 +12,12 @@
   .import-chat-container {
     flex: 1;
     overflow-y: auto;
-    padding: 5px;
+    padding: 5px 170px;
     border: 1px solid #334155;
     border-radius: 8px;
     background: #1e293b;
-    max-height: 87.8vh;
+    max-height: 88vh;
+    
   }
 
   .import-repo-name {
@@ -27,24 +28,34 @@
   }
   
   .import-chat-message {
-    padding: 10px;
+    position: relative; 
+    padding: 15px;
     margin: 5px 0;
     border-radius: 6px;
     max-width: 96%;
     margin: auto;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    display: inline-block;
+    white-space: pre-wrap;
   
   }
   
   .import-chat-message.user {
-    background: #3b82f6;
+    background: #475569;
     align-self: flex-end;
-    text-align: right;
+    min-width: 80%;
+    float: right;
   }
   
   .import-chat-message.bot {
-    background: #475569;
+    
+    background: rgba(238, 238, 238, 0.9);
+    min-width: 80%;
     align-self: flex-start;
-    text-align: left;
+    color: black;
+    float: left;
+    
   }
   
   /* Input Box and Buttons */
@@ -59,7 +70,6 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.177);
     border-radius: 8px;
-    width: 100%;
     position: fixed;
     bottom: 0;
     padding: 10px 10px;
@@ -74,7 +84,7 @@
     border-radius: 6px;
     background: #334155;
     color: white;
-    height: 45px;
+    height: 60px;
     width: 1000vw;
     font-size: 16px;
     resize: none;
@@ -93,14 +103,31 @@
     bottom: 8px;
   }
 
+  .bot-message-icons {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .icon {
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+  }
+  
+  .icon:hover {
+    color: #333;
+  }
+
+  
+
 .import-generate-btn {
-  background: #3b82f6;
+  background: #22c55e;
   color: white;
 }
-.import-download-btn {
-    background: #22c55e;
-    color: white;
-  }
+
   
   .import-generate-btn:hover {
     background: #2563eb;
@@ -123,7 +150,8 @@
       margin: auto;
      
      border: 2px solid grey;
-     padding: 5px;
+     padding: 1px 5px;
+     margin-bottom: 6px;
     }
   
     .import-text-input {
@@ -132,6 +160,9 @@
       text-align: center;
       font-size: 14px;
       padding: 10px;
+      margin-bottom: 4px;
+      margin-top: 4px;
+    
     }
   
     .import-generate-btn,
@@ -139,9 +170,24 @@
       width: 100%;
       text-align: center;
       margin-top: 5px;
+      text-wrap: wrap;
+      bottom: 3px;
+      
     }
 
     .import-repo-name {
       font-size: 1rem;
     }
+
+    .import-chat-container {
+
+      max-height: 85vh;
+    }
+
+    .import-chat-container {
+
+      padding: 5px 5px;
+
+    }
+  
   }
