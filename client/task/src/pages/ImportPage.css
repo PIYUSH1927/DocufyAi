@@ -172,11 +172,9 @@
       flex-direction: column;
       align-items: stretch;
       gap: 0px;
-      width: 95%;
-      
+      width: 97%;
       text-align: center;
       margin: auto;
-     
      border: 2px solid grey;
      padding: 1px 5px;
      margin-bottom: 6px;
