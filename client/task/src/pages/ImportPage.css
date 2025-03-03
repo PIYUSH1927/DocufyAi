@@ -19,8 +19,7 @@
     background: #1e293b;
     min-height: 65vh;
   }
-  
-  /* Repo Name Inside Chat Box */
+
   .import-repo-name {
     font-size: 18px;
     font-weight: bold;
@@ -28,7 +27,6 @@
     margin-bottom: 10px;
   }
   
-  /* Messages */
   .import-chat-message {
     padding: 10px;
     margin: 5px 0;
