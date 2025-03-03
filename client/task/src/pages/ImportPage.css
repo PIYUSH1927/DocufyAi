@@ -167,7 +167,7 @@
   
 
   
-  @media (max-width: 600px) {
+  @media (max-width: 900px) {
     .import-input-container {
       flex-direction: column;
       align-items: stretch;
@@ -180,6 +180,8 @@
      border: 2px solid grey;
      padding: 1px 5px;
      margin-bottom: 6px;
+     overflow-y: hidden;
+   
     }
   
     .import-text-input {
@@ -214,7 +216,8 @@
 
     .import-chat-container {
 
-      padding: 5px 5px;
+      padding: 15px 5px;
+     
 
     }
   
