@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { Home } from "lucide-react";
 import "./ImportPage.css";
 
 const ImportPage = () => {
-  const { repoName } = useParams(); // Get repository name from URL
+  const navigate = useNavigate();
+  const { repoName } = useParams(); 
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
 
@@ -64,9 +67,12 @@ const ImportPage = () => {
   return (
     <div className="import-page-container" >
       <div className="import-chat-container">
-        {/* Repo Name as Heading Inside Chat */}
-        <div className="import-repo-name">{repoName} - Documentation</div>
-
+      
+        <div className="import-repo-name"> 
+        <Home style={{position:"fixed", left:"17px", paddingRight:"5px", cursor:"pointer"}} onClick={() => navigate("/home")} />
+          <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
+          </div>
+        <br />
         {messages.map((msg, index) => (
           <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.text}

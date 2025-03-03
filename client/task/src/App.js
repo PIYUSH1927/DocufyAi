@@ -30,6 +30,7 @@ const AuthRoute = ({ element }) => {
 const App = () => {
 
   const navigate = useNavigate();
+  const hideNavbarRoutes = ["/import"];
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -43,7 +44,7 @@ const App = () => {
 
   return (
     <>
-      <Navbar />
+       {!hideNavbarRoutes.some((route) => window.location.pathname.startsWith(route)) && <Navbar />}
       <Routes>
         <Route path="/register" element={<AuthRoute element={<Register />} />} />
         <Route path="/login" element={<AuthRoute element={<Login />} />} />
