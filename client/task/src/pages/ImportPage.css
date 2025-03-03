@@ -165,6 +165,14 @@
     background: #16a34a;
   }
   
+  .timestamp {
+    font-size: 10px;
+    color: #888;
+    margin-right: 10px;
+    align-self: center;
+    
+  }
+  
 
   
   @media (max-width: 900px) {
@@ -213,7 +221,7 @@
     .import-chat-container {
 
       padding: 5px;
-      padding-bottom: 30px;
+      padding-bottom: 50px;
      
 
     }

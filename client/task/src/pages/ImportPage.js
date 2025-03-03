@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Home , Copy, Download} from "lucide-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import "./ImportPage.css";
 
 const ImportPage = () => {
@@ -18,11 +20,30 @@ const ImportPage = () => {
     fetchInitialDocumentation();
   }, []);
 
+  const formatDate = (timestamp) => {
+    const dateObj = new Date(timestamp);
+    const options = { day: "2-digit", month: "short", year: "numeric" };
+    const formattedDate = dateObj.toLocaleDateString("en-GB", options); 
+  
+    const formattedTime = dateObj.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }); 
+  
+    return `${formattedDate}, ${formattedTime}`;
+  };
+
+  
   const fetchInitialDocumentation = async () => {
+
+    const timestamp = new Date().toISOString();
     try {
       const response = await axios.get(
         `https://sooru-ai.onrender.com/api/github/docs?repo=${repoName}`
       );
+
+      
       setMessages((prev) => [
         ...prev,
         { type: "bot", text: response.data.documentation },
@@ -30,7 +51,9 @@ const ImportPage = () => {
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { type: "bot", text: "Failed to generate documentation." },
+        { type: "bot", 
+          text: "Failed to generate documentation.",
+          timestamp },
       ]);
     }
   };
@@ -38,7 +61,9 @@ const ImportPage = () => {
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
 
-    setMessages((prev) => [...prev, { type: "user", text: userInput }]);
+    const timestamp = new Date().toISOString();
+
+    setMessages((prev) => [...prev, { type: "user", text: userInput , timestamp}]);
 
     try {
       const response = await axios.post(
@@ -48,12 +73,12 @@ const ImportPage = () => {
 
       setMessages((prev) => [
         ...prev,
-        { type: "bot", text: response.data.response },
+        { type: "bot", text: response.data.response, timestamp: new Date().toISOString() },
       ]);
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { type: "bot", text: "Error generating response." },
+        { type: "bot", text: "Error generating response.",  timestamp },
       ]);
     }
 
@@ -61,15 +86,51 @@ const ImportPage = () => {
   };
 
   const handleDownloadPDF = (index) => {
-    setDownloadStatus((prev) => ({ ...prev, [index]: "Downloading..." }));
-    setTimeout(() => {
-      setDownloadStatus((prev) => ({ ...prev, [index]: "Download as PDF" }));
-    }, 2000);
-    window.open(
-      `https://sooru-ai.onrender.com/api/github/download-pdf?repo=${repoName}`,
-      "_blank"
-    );
-  };  
+    if (!messages || !messages[index]) {
+      console.error("Message at index not found:", index);
+      return;
+    }
+  
+    const { text } = messages[index];
+  
+    if (!text || typeof text !== "string") {
+      console.error("Invalid text format for PDF:", text);
+      return;
+    }
+  
+    const doc = new jsPDF({
+      orientation: "p",
+      unit: "mm",
+      format: "a4",
+      lineHeightFactor: 1.2,
+    });
+  
+    const margin = 15;
+    const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+    const pageHeight = doc.internal.pageSize.getHeight() - margin * 2;
+    let yPosition = margin;
+  
+    doc.setFont("Arial", "normal"); 
+    doc.setFontSize(10); 
+    doc.setTextColor(0, 0, 0);
+  
+    const lines = doc.splitTextToSize(text, pageWidth);
+  
+    lines.forEach((line) => {
+      if (yPosition + 5 > pageHeight + margin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+      doc.text(line, margin, yPosition);
+      yPosition += 5; 
+    });
+  
+    const fileName = `${repoName}_documentation.pdf`;
+    doc.save(fileName);
+  };
+  
+  
+
   const handleCopy = (text, index) => {
     navigator.clipboard.writeText(text);
     setCopyStatus((prev) => ({ ...prev, [index]: "Copied!" }));
@@ -91,6 +152,7 @@ const ImportPage = () => {
           <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.type === "bot" && (
               <div className="bot-message-icons">
+                 <span className="timestamp" >{formatDate(msg.timestamp)}</span>
                   <div className="tooltip">
                 <Copy
                   size={16}
