@@ -17,6 +17,7 @@
     border-radius: 8px;
     background: #1e293b;
     max-height: 88vh;
+    padding-bottom: 25px;
     
   }
 
@@ -221,7 +222,7 @@
     .import-chat-container {
 
       padding: 5px;
-      padding-bottom: 50px;
+      padding-bottom: 65px;
      
 
     }

@@ -124,7 +124,7 @@ const Home = () => {
     <div className="home-container" >
       {/* Dashboard Header */}
       <div className="dashboard-header">
-  <h2 style={{position:"relative", top:"8px"}}>Dashboard</h2>
+  <h2 style={{position:"relative", top:"12px"}}>Dashboard</h2>
   <div className="buttons" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
     {!user?.githubId && (
       <button className="githubb-btn github-btn" onClick={handleGitHubLogin} style={{ width: "auto", height: "auto" }}>
@@ -132,7 +132,7 @@ const Home = () => {
       </button>
     )}
     {user?.githubId && (
-      <button className="githubb-btn github-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" ,background:"green"}}>
+      <button className="githubb-btn github-btn" onClick={handleCreateDocument} style={{ width: "auto", height: "auto" ,background:"#016601"}}>
         <FaPlus className="icon" style={{color:"white"}} /> Create New Project
       </button>
     )}
