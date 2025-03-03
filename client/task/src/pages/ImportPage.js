@@ -10,8 +10,9 @@ const ImportPage = () => {
   const { repoName } = useParams(); 
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
-  const [copyStatus, setCopyStatus] = useState(null);
-  const [downloadStatus, setDownloadStatus] = useState(null); 
+  const [copyStatus, setCopyStatus] = useState({});
+  const [downloadStatus, setDownloadStatus] = useState({});
+  
 
   useEffect(() => {
     fetchInitialDocumentation();
@@ -59,46 +60,58 @@ const ImportPage = () => {
     setUserInput(""); 
   };
 
-  const handleDownloadPDF = () => {
-    setDownloadStatus("Downloading...");
-    setTimeout(() => setDownloadStatus(null), 2000); // Remove after 2 seconds
+  const handleDownloadPDF = (index) => {
+    setDownloadStatus((prev) => ({ ...prev, [index]: "Downloading..." }));
+    setTimeout(() => {
+      setDownloadStatus((prev) => ({ ...prev, [index]: "Download as PDF" }));
+    }, 2000);
     window.open(
       `https://sooru-ai.onrender.com/api/github/download-pdf?repo=${repoName}`,
       "_blank"
     );
-  };
-
-  const handleCopy = (text) => {
+  };  
+  const handleCopy = (text, index) => {
     navigator.clipboard.writeText(text);
-    setCopyStatus("Copied!");
-    setTimeout(() => setCopyStatus(null), 2000);
+    setCopyStatus((prev) => ({ ...prev, [index]: "Copied!" }));
+    setTimeout(() => {
+      setCopyStatus((prev) => ({ ...prev, [index]: "Copy text" }));
+    }, 2000);
   };
-
+  
 
   return (
     <div className="import-page-container" >
       <div className="import-chat-container">
       
         <div className="import-repo-name" style={{paddingBottom:"8px"}}> 
-        <Home style={{position:"fixed", left:"17px", paddingRight:"5px", cursor:"pointer"}} onClick={() => navigate("/home")} />
+        <Home style={{position:"fixed", left:"17px", paddingRight:"5px", zIndex:"100", cursor:"pointer"}} onClick={() => navigate("/home")} />
           <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
           </div>
           {messages.map((msg, index) => (
           <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.type === "bot" && (
               <div className="bot-message-icons">
+                  <div className="tooltip">
                 <Copy
                   size={16}
                   className="icon"
-                  onClick={() => handleCopy(msg.text)}
-                  title={copyStatus || "Copy text"}
+                  onClick={() => handleCopy(msg.text, index)}
+                  title={copyStatus?.[index] || "Copy text"}                
+                  style={{zIndex:"100"}}
                 />
+                <span className="tooltip-text">{copyStatus[index] || "Copy text"}</span>
+                 </div>
+
+                 <div className="tooltip">
                 <Download
                   size={16}
                   className="icon"
-                  onClick={handleDownloadPDF}
-                  title={downloadStatus || "Download as PDF"}
+                  onClick={() => handleDownloadPDF(index)}
+                  title={downloadStatus?.[index] || "Download as PDF"}
+                  style={{zIndex:"100"}}
                 />
+                 <span className="tooltip-text">{downloadStatus[index] || "Download as PDF"}</span>
+                </div>
               </div>
             )}
             {msg.text}
