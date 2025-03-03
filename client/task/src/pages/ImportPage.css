@@ -172,7 +172,7 @@
       flex-direction: column;
       align-items: stretch;
       gap: 0px;
-      width: 97%;
+      width: 96%;
       text-align: center;
       margin: auto;
      border: 2px solid grey;
@@ -212,7 +212,8 @@
 
     .import-chat-container {
 
-      padding: 15px 5px;
+      padding: 5px;
+      padding-bottom: 30px;
      
 
     }
