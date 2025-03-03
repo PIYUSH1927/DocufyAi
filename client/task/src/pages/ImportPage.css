@@ -180,8 +180,6 @@
      border: 2px solid grey;
      padding: 1px 5px;
      margin-bottom: 6px;
-     overflow-y: hidden;
-   
     }
   
     .import-text-input {
@@ -211,7 +209,7 @@
 
     .import-chat-container {
 
-      max-height: 82vh;
+      max-height: 86.4vh;
     }
 
     .import-chat-container {
