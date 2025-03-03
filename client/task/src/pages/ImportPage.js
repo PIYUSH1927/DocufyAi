@@ -68,11 +68,10 @@ const ImportPage = () => {
     <div className="import-page-container" >
       <div className="import-chat-container">
       
-        <div className="import-repo-name"> 
+        <div className="import-repo-name" style={{paddingBottom:"8px"}}> 
         <Home style={{position:"fixed", left:"17px", paddingRight:"5px", cursor:"pointer"}} onClick={() => navigate("/home")} />
           <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
           </div>
-        <br />
         {messages.map((msg, index) => (
           <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.text}
