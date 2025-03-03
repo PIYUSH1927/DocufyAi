@@ -136,3 +136,19 @@
 .small-upgrade-button:hover {
     background: #218838;
 }
+
+@media screen and (max-width: 480px) {
+
+    .update-button {
+        background: #007bff;
+        color: white;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        width: 100%;
+        max-width: 180px;
+        margin: auto;
+    }
+}

@@ -75,8 +75,8 @@ const Profile = () => {
   };
 
   return (
-    <div className="bod">
-      <div className="profile-container">
+    <div className="bod" style={{paddingBottom:"20px"}} >
+      <div className="profile-container" >
         <h2
           className="profile-title"
           style={{ paddingBottom: "8px", color: "rgb(0, 164, 235)" }}
