@@ -14,11 +14,36 @@ const ImportPage = () => {
   const [userInput, setUserInput] = useState("");
   const [copyStatus, setCopyStatus] = useState({});
   const [downloadStatus, setDownloadStatus] = useState({});
+  const [currentPlan, setCurrentPlan] = useState("");
   
 
   useEffect(() => {
     fetchInitialDocumentation();
+    fetchUserProfile();
   }, []);
+
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    let userId = null;
+    try {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      userId = decoded.id;
+    } catch (error) {
+      console.error("Invalid token:", error);
+      return;
+    }
+
+    if (userId) {
+      try {
+        const response = await axios.get(`https://sooru-ai.onrender.com/api/user/${userId}`);
+        setCurrentPlan(response.data.currentPlan);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    }
+  };
 
   const formatDate = (timestamp) => {
     const dateObj = new Date(timestamp);
@@ -86,6 +111,11 @@ const ImportPage = () => {
   };
 
   const handleDownloadPDF = (index) => {
+    if (currentPlan === "Free Plan (₹0/month)") {
+      alert("Upgrade to Pro plan to download as a PDF.");
+      return;
+    }
+
     if (!messages || !messages[index]) {
       console.error("Message at index not found:", index);
       return;
@@ -184,7 +214,6 @@ const ImportPage = () => {
         ))}
       </div>
 
-      {/* Input Box + Buttons (Like ChatGPT) */}
       <div className="import-input-container">
         <textarea
           className="import-text-input"

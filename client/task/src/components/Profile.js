@@ -87,6 +87,7 @@ const Profile = () => {
           </h2>
           <button
             className="small-upgrade-button"
+            style={{background:"Peru"}}
             onClick={() => {
               if (profile.currentPlan === "Enterprise Plan (₹1,999/month)") {
                 setIsModalOpen(true);
@@ -175,7 +176,7 @@ const Profile = () => {
           </div>
 
           <button style={{marginTop:"12px"}} type="submit" className="update-button">
-            💾 Save Changes
+            Save Changes
           </button>
         </form>
       </div>
