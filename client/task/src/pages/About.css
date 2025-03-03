@@ -28,17 +28,20 @@
 .about-hero p {
     font-size: 1.1rem;
     color: #f0f8ff;
-    max-width: 700px;
     margin: 10px auto;
 }
 
 .about-docufy {
-    max-width: 750px;
-    background: rgba(255, 255, 255, 0.1);
+    max-width: 80%;
     padding: 20px;
     border-radius: 12px;
     margin: auto;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(139deg, #101826, #1b2940);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .about-docufy h2 {
@@ -53,15 +56,16 @@
 }
 
 .about-timeline {
-    max-width: 750px;
     margin: auto;
     display: flex;
-    flex-direction: column;
     gap: 30px;
+    align-items: center;
+    justify-content: center;
 }
 
 .timeline-item {
     display: flex;
+    max-width: 415px;
     align-items: center;
     gap: 15px;
     background: rgba(255, 255, 255, 0.1);
@@ -162,19 +166,49 @@
 
 @media screen and (max-width: 450px) {
     .about-hero h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         background: linear-gradient(90deg, #38bdf8, #06b6d4);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
+
    
 }
 
+@media screen and (max-width: 1280px) {
+
+    .about-timeline {
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .timeline-item {
+        display: flex;
+        max-width: 700px;
+        align-items: center;
+        gap: 15px;
+    
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 3px solid #38bdf8;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .about-docufy {
+        max-width:100%;
+    }
+}
 .about-timeline {
-    max-width: 750px;
+   
     margin: auto;
     display: flex;
-    flex-direction: column;
     gap: 30px;
 }
 
@@ -182,12 +216,15 @@
     display: flex;
     align-items: flex-start;
     gap: 20px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
     border-left: 5px solid #38bdf8;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease-in-out;
+
+    transition: transform 0.3s ease-in-out;
+    border: 1px solid #334155;
 }
 
 .timeline-item:hover {
@@ -218,3 +255,6 @@
     color: #e2e8f0;
     line-height: 1.5;
 }
+
+
+

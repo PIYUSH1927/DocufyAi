@@ -24,30 +24,36 @@ const About = () => {
         </p>
       </section>
       <br />
-      <br />
   
-      <section className="about-docufy" style={{textAlign:"justify"}}>
-        <motion.h2 whileHover={{ scale: 1.05 }} style={{textAlign:"center"}}>What is Docufy.Ai?</motion.h2>
+
+      <section className="about-docufy" style={{ margin: "auto", textAlign: "justify", padding: "20px", borderRadius: "8px" }}>
+        <motion.h2 whileHover={{ scale: 1.05 }} style={{ textAlign: "center", fontSize: "2rem", fontWeight: "bold" }}>What is Docufy.Ai?</motion.h2>
         <p>
-          <strong>Docufy.Ai</strong> is an AI powered documentation generator that automates the process of creating technical docs.
-          It integrates with GitHub repositories to analyze your codebase and generates structured, interactive, and real-time documentation.
+          <strong>Docufy.Ai</strong> is an advanced AI-powered documentation generator designed to streamline the process of creating and maintaining technical documentation. 
+          It seamlessly integrates with GitHub repositories, analyzing your codebase to generate structured, interactive, and real-time documentation.
         </p>
         <p>
-          No more outdated docs or time-consuming documentation updates — Docufy.Ai keeps your docs up-to-date automatically.
+          Keeping documentation up to date can be a challenge, but with <strong>Docufy.Ai</strong>, you no longer have to worry about outdated or inconsistent docs. 
+          Our intelligent system ensures that every update to your codebase is reflected in your documentation automatically.
+        </p>
+        <p>
+          With features like <strong>automated API reference generation, real-time synchronization, version tracking, and GitHub integration</strong>, 
+          Docufy.Ai is the perfect solution for development teams managing large or frequently evolving projects. Say goodbye to time-consuming manual documentation updates and experience the ease of AI-powered automation. 
+          <strong>Stay focused on coding while Docufy.Ai takes care of your documentation!</strong>
         </p>
       </section>
       <br />
-
+      <br />
      
       <section className="about-timeline">
         <motion.div className="timeline-item" whileHover={{ scale: 1.05 }}>
           <div className="year">2024</div>
           <div className="content">
             <h2 style={{color:"maroon", textShadow:"2px 2px 5px rgba(0, 0, 0, 0.5)", fontWeight:"bolder"}}>The Idea was Born</h2>
-            <p >
-              We realized that developers waste too much time writing and maintaining documentation.
-              The vision of AI-powered, auto-updating documentation was created.
-            </p>
+            <p style={{textAlign:"justify"}} >
+            
+      Developers spend hours writing and updating documentation, often leading to outdated and inconsistent information. <strong>Docufy.Ai</strong> was created to automate this process using AI, that continuously updates documentation, ensuring accuracy, consistency, and efficiency without manual effort.
+    </p>
           </div>
         </motion.div>
 
@@ -55,9 +61,8 @@ const About = () => {
           <div className="year">2025</div>
           <div className="content">
             <h2 style={{color:"maroon", textShadow:"2px 2px 5px rgba(0, 0, 0, 0.5)", fontWeight:"bolder"}}>Docufy.Ai Launched</h2>
-            <p>
-              After months of hard work, Docufy.Ai launched with GitHub integration, API documentation, and
-              real-time AI-powered summaries.
+            <p style={{textAlign:"justify"}} >
+            After extensive development and testing, <strong>Docufy.Ai</strong> launched with core features including GitHub integration, real-time API documentation, and AI-powered summaries. By analyzing code changes, it keeps documentation always up-to-date, letting developers focus on coding while AI handles the rest.
             </p>
           </div>
         </motion.div>
@@ -66,8 +71,8 @@ const About = () => {
           <div className="year">Future</div>
           <div className="content">
             <h2 style={{color:"maroon", textShadow:"2px 2px 5px rgba(0, 0, 0, 0.5)", fontWeight:"bolder"}}>Expanding to More Languages</h2>
-            <p>
-              Our goal is to support Python, Java, Go, Rust, and more, making Docufy.Ai the universal standard for AI-powered code documentation.
+            <p style={{textAlign:"justify"}} >
+            <strong>Docufy.Ai</strong> will soon support GitLab, Bitbucket, and other version control platforms, streamlining documentation across workflows. Upcoming features include interactive API explorers and customizable templates, eliminating manual effort efficiently.
             </p>
           </div>
         </motion.div>
