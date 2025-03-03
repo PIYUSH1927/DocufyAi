@@ -8,6 +8,8 @@ import {
   FaMapMarkerAlt,
   FaKey,
   FaCrown,
+  FaTimes, 
+  FaTag
 } from "react-icons/fa";
 
 const Profile = () => {
@@ -20,6 +22,8 @@ const Profile = () => {
     phone: "",
     currentPlan: "",
   });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const token = localStorage.getItem("token");
   let userId = null;
@@ -77,12 +81,24 @@ const Profile = () => {
   return (
     <div className="bod" style={{paddingBottom:"20px"}} >
       <div className="profile-container" >
-        <h2
-          className="profile-title"
-          style={{ paddingBottom: "8px", color: "rgb(0, 164, 235)" }}
-        >
-          My Profile
-        </h2>
+      <div className="profile-header">
+          <h2 className="profile-title" style={{ color: "rgb(0, 164, 235)" , margin:"auto",position:"relative",left:"40px"}}>
+            My Profile
+          </h2>
+          <button
+            className="small-upgrade-button"
+            onClick={() => {
+              if (profile.currentPlan === "Enterprise Plan (₹1,999/month)") {
+                setIsModalOpen(true);
+              } else {
+                alert("Upgrade to the Enterprise Plan to access support.");
+              }
+            }}
+          >
+            
+           <b><FaCrown className="icon" /><span style={{position:"relative", bottom:"4px"}}>Support</span></b> 
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="profile-form">
           <div className="form-group">
@@ -144,7 +160,7 @@ const Profile = () => {
           <div className="form-group">
             <label>Current Plan:</label>
             <div className="input-group plan-group">
-              <FaCrown className="icon" />
+              <FaTag className="icon" />
               <span className="plan-text">{profile.currentPlan}</span>
               {profile.currentPlan !== "Enterprise Plan (₹1,999/month)" && (
                 <button
@@ -163,9 +179,26 @@ const Profile = () => {
           </button>
         </form>
       </div>
-      <br />
+
+      {isModalOpen && (
+  <div className="contact-modal">
+    <div className="contact-modal-content">
+      <FaTimes className="close-modal" onClick={() => setIsModalOpen(false)} />
+      <h2>Contact Support </h2>
+      <form className="contact-form" name="contactForm" action="https://formspree.io/f/xpwqvkvn" method="POST">
+        <input type="email" name="email" value={profile.email} readOnly className="hidden-email-input" />
+        <textarea name="message" placeholder="Write your message here" required className="contact-textarea"></textarea>
+
+        <button type="submit" className="contact-submit-btn">Submit</button>
+      </form>
     </div>
+  </div>
+)}
+
+     
+     </div>
   );
 };
+
 
 export default Profile;
