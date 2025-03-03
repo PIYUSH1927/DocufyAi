@@ -10,6 +10,7 @@ import Landing from "./pages/Landing";
 import About from "./pages/About";  
 import Pricing from "./pages/Pricing"; 
 import ImportPage from "./pages/ImportPage";
+import './App.css'
 
 const ProtectedRoute = ({ element }) => {
   const token = localStorage.getItem("token") || new URLSearchParams(window.location.search).get("token");
@@ -43,7 +44,7 @@ const App = () => {
   }, [navigate]);
 
   return (
-    <>
+    <div className="mainclass">
        {!hideNavbarRoutes.some((route) => window.location.pathname.startsWith(route)) && <Navbar />}
       <Routes>
         <Route path="/register" element={<AuthRoute element={<Register />} />} />
@@ -59,7 +60,7 @@ const App = () => {
 
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
-    </>
+    </div>
   );
 };
 
