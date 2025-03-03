@@ -14,7 +14,7 @@
 }
 
 .about-hero {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto 30px;
 }
 
@@ -32,12 +32,12 @@
 }
 
 .about-docufy {
-    max-width: 80%;
+    max-width: 70%;
     padding: 20px;
     border-radius: 12px;
     margin: auto;
     background: linear-gradient(139deg, #101826, #1b2940);
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 4px 12px rgba(116, 113, 113, 0.3);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -236,8 +236,6 @@
     font-size: 1.8rem;
     font-weight: bold;
     color: #38bdf8;
-    width: 80px;
-    text-align: center;
 }
 
 .content {
