@@ -19,8 +19,10 @@ const About = () => {
         <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
           The Story Behind <span>Docufy.Ai</span>
         </motion.h1>
-        <p>
+        <p >
+          <b>
           Every great product starts with a problem. Ours was simple – developers hate writing documentation.
+          </b>
         </p>
       </section>
       <br />
