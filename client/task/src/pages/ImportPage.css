@@ -228,3 +228,10 @@
     }
   
   }
+
+  @media (max-width: 768px) {
+    .sync-text {
+      display: none; /* Hide text on small screens */
+    }
+  }
+  
