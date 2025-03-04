@@ -89,7 +89,7 @@ const Profile = () => {
             className="small-upgrade-button"
             style={{background:"Peru"}}
             onClick={() => {
-              if (profile.currentPlan === "Enterprise Plan (₹1,999/month)") {
+              if (profile.currentPlan === "Enterprise Plan (₹1,499/month)") {
                 setIsModalOpen(true);
               } else {
                 alert("Upgrade to the Enterprise Plan to access support.");

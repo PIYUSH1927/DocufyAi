@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   password: String,
   phone: String,
   currentPlan: String,
+  planExpiry: { type: Date, default: null },
 
   githubId: { type: String, unique: true, sparse: true }, 
   username: { type: String },
