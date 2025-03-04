@@ -28,18 +28,17 @@ const About = () => {
       <br />
   
 
-      <section className="about-docufy" style={{ margin: "auto", textAlign: "center", padding: "20px 8px", borderRadius: "8px" , paddingBottom:"30px"}}>
+      <section className="about-docufy" style={{ margin: "auto", textAlign: "center", padding: "20px  1px", borderRadius: "8px" , paddingBottom:"30px"}}>
         <motion.h2 whileHover={{ scale: 1.05 }} style={{ textAlign: "center", fontSize: "2rem", fontWeight: "bold" }}>What is Docufy.Ai?</motion.h2>
         <div className="nnn">
         <p>
-          <strong>Docufy.Ai</strong> is an advanced AI-powered documentation generator designed to streamline the process of creating and maintaining technical documentation. 
-          It seamlessly integrates with GitHub repositories, analyzing your codebase to generate structured, & real-time documentation.
+          <strong>Docufy.Ai</strong> is an AI-powered code documentation generator designed to streamline the process of creating and maintaining technical documentation. 
+          It seamlessly integrates with GitHub, analyzing your codebase to generate structured & real-time documentation.
         </p>
-        <p>
+        <p style={{paddingBottom:"15px"}}>
           Keeping documentation up to date can be a challenge, but with <strong>Docufy.Ai</strong>, you no longer have to worry about outdated or inconsistent docs. 
-          Our intelligent system ensures that every update to your codebase is reflected in your documentation automatically.  With features like <strong>automated API reference generation, real-time synchronization, version tracking, and GitHub integration</strong>, 
+          Our intelligent system ensures that every update to your codebase is reflected in your documentation automatically.  With features like <strong>automated API reference generation, real-time sync, version tracking, and GitHub integration</strong>, 
           Docufy.Ai is the perfect solution for development teams managing large or frequently evolving projects. Say goodbye to time-consuming manual documentation updates and experience the ease of AI-powered automation. 
-          <strong>Stay focused on coding while Docufy.Ai takes care of your documentation!</strong>
         </p>
         </div>
     
