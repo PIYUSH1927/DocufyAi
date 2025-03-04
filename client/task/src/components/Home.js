@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Home.css";
-import { FaGithub, FaPlus, FaSearch } from "react-icons/fa";
+import { FaGithub, FaPlus, FaSearch, FaCloudUploadAlt } from "react-icons/fa";
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -10,6 +10,10 @@ const Home = () => {
   const [search, setSearch] = useState(""); 
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
+  const [sortOption, setSortOption] = useState("Sort by activity ⬇");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -124,7 +128,7 @@ const Home = () => {
     <div className="home-container" >
       {/* Dashboard Header */}
       <div className="dashboard-header">
-  <h2 style={{position:"relative", top:"12px"}}>Dashboard</h2>
+  <h2 style={{position:"relative", top:"13px"}}>Dashboard</h2>
   <div className="buttons" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
     {!user?.githubId && (
       <button className="githubb-btn github-btn" onClick={handleGitHubLogin} style={{ width: "auto", height: "auto" }}>
@@ -140,8 +144,32 @@ const Home = () => {
 </div>
 
 
-      {/* Welcome Message */}
       <div className="home-content">
+      {/* Search Bar and Controls */}
+      <div className="unique-header-controls">
+      <div className="unique-search-container">
+      <FaSearch />
+        <input
+          type="text"
+          className="unique-search-box"
+          placeholder="Search Repositories and Projects..."
+        />
+      </div>
+        <button className="unique-add-btn">
+          Search
+        </button>
+      
+        </div>
+      
+
+
+      <div className="unique-main-content">
+        <FaCloudUploadAlt className="unique-upload-icon" />
+        <h3>Create your first project</h3>
+        <p>Connect your GitHub repository and generate AI-powered documentation effortlessly.</p>
+      </div>
+
+
         
       </div>
 
