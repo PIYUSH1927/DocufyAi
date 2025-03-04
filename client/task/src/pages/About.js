@@ -30,6 +30,7 @@ const About = () => {
 
       <section className="about-docufy" style={{ margin: "auto", textAlign: "center", padding: "20px 8px", borderRadius: "8px" , paddingBottom:"30px"}}>
         <motion.h2 whileHover={{ scale: 1.05 }} style={{ textAlign: "center", fontSize: "2rem", fontWeight: "bold" }}>What is Docufy.Ai?</motion.h2>
+        <div className="nnn">
         <p>
           <strong>Docufy.Ai</strong> is an advanced AI-powered documentation generator designed to streamline the process of creating and maintaining technical documentation. 
           It seamlessly integrates with GitHub repositories, analyzing your codebase to generate structured, & real-time documentation.
@@ -40,6 +41,7 @@ const About = () => {
           Docufy.Ai is the perfect solution for development teams managing large or frequently evolving projects. Say goodbye to time-consuming manual documentation updates and experience the ease of AI-powered automation. 
           <strong>Stay focused on coding while Docufy.Ai takes care of your documentation!</strong>
         </p>
+        </div>
     
       </section>
       <br />

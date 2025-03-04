@@ -148,7 +148,8 @@ const Home = () => {
       {/* Search Bar and Controls */}
       <div className="unique-header-controls">
       <div className="unique-search-container">
-      <FaSearch />
+      
+      <FaSearch style={{color:"black"}} />
         <input
           type="text"
           className="unique-search-box"
