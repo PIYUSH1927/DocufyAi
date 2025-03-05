@@ -209,8 +209,13 @@ app.get("/get-razorpay-key", (req, res) => {
 
 
 app.post("/api/github/clone", async (req, res) => {
-  const { repoUrl, repoName } = req.body;
-  if (!repoUrl || !repoName) return res.status(400).json({ error: "Missing repo details" });
+  const {repoName } = req.body;
+  if (!repoName) return res.status(400).json({ error: "Missing repo details" });
+
+
+  if (!req.user || !req.user.githubToken) {
+    return res.status(401).json({ error: "Unauthorized: Missing authentication" });
+  }
 
   const token = req.user.githubToken;
   repoUrl = `https://${token}@github.com/${req.user.username}/${repoName}.git`;
