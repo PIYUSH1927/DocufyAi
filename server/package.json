@@ -14,11 +14,14 @@
     "body": "^5.1.0",
     "body-parser": "^1.20.3",
     "cashfree-sdk": "^0.1.1",
+    "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
+    "esprima": "^4.0.1",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.11.0",
     "multer": "^1.4.5-lts.1",
@@ -27,6 +30,10 @@
     "parser": "^0.1.4",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
-    "razorpay": "^2.9.6"
+    "path": "^0.12.7",
+    "python-shell": "^5.0.0",
+    "razorpay": "^2.9.6",
+    "rimraf": "^6.0.1",
+    "simple-git": "^3.27.0"
   }
 }

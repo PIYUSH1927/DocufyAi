@@ -31,10 +31,24 @@ const Home = () => {
   useEffect(() => {
     sessionStorage.removeItem("refreshed"); 
   }, []);
+  
 
-  const handleImport = (repoName) => {
-    navigate(`/import/${repoName}`);
+  const handleImport = async (repo) => {
+    try {
+      const token = localStorage.getItem("token");
+      const repoUrl = repo.clone_url; 
+  
+      const response = await axios.post(
+        "https://sooru-ai.onrender.com/api/github/clone",
+        { repoUrl, repoName: repo.name },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      navigate(`/import/${repo.name}`, { state: { analysis: response.data.analysis } });
+    } catch (error) {
+      console.error("Error importing repository:", error);
+    }
   };
+  
 
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
@@ -204,7 +218,7 @@ const Home = () => {
                   filteredRepos.map((repo) => (
                     <li key={repo.id} className="repo-item">
                       <span>{repo.name}</span>
-                      <button className="import-btn" onClick={() => handleImport(repo.name)}>Import</button>
+                      <button className="import-btn" onClick={() => handleImport(repo)}>Import</button>
                     </li>
                   ))
                 ) : (

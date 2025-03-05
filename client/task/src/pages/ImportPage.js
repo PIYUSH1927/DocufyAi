@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Home , Copy, Download, RefreshCw } from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -17,9 +17,17 @@ const ImportPage = () => {
   const [currentPlan, setCurrentPlan] = useState("");
   
 
+
+  const analysis = location.state?.analysis || "No analysis available.";
+  const location = useLocation(); // Add this at the top of your component
+
+
   useEffect(() => {
-    fetchInitialDocumentation();
     fetchUserProfile();
+    //fetchInitialDocumentation();
+    if (analysis) {
+      setMessages([{ type: "bot", text: analysis }]);
+    }
   }, []);
 
   const fetchUserProfile = async () => {

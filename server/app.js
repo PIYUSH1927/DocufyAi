@@ -8,7 +8,19 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const crypto = require("crypto");
 const User = require("./models/User");
+const { exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const simpleGit = require("simple-git");
+const esprima = require("esprima"); 
+const router = express.Router();
+const rimraf = require("rimraf");
+const os = require("os");
 
+setInterval(() => {
+  console.log("Cleaning up old repos...");
+  rimraf.sync("/tmp/repos");
+}, 24 * 60 * 60 * 1000);
 
 require("./config/passport");
 require("dotenv").config();
@@ -42,6 +54,23 @@ app.use(
 app.use(passport.initialize());
 
 app.options("*", cors());
+
+const TEMP_REPO_DIR = path.join(os.tmpdir(), "repos");
+if (!fs.existsSync(TEMP_REPO_DIR)) {
+  fs.mkdirSync(TEMP_REPO_DIR);
+}
+
+const CLONE_TIMEOUT = 5 * 60 * 1000; // 5-minute timeout
+
+const cloneRepo = (repoUrl, repoPath) => {
+  return new Promise((resolve, reject) => {
+    const process = exec(`git clone --depth=1 ${repoUrl} ${repoPath}`, { timeout: CLONE_TIMEOUT }, (error) => {
+      if (error) reject(error);
+      else resolve();
+    });
+  });
+};
+
 
 const PaymentSchema = new mongoose.Schema({
   paymentId: String,
@@ -172,6 +201,64 @@ setInterval(resetExpiredPlans, 24 * 60 * 60 * 1000);
 app.get("/get-razorpay-key", (req, res) => {
   res.json({ key: process.env.RAZORPAY_KEY_ID });
 });
+
+
+app.post("/github/clone", async (req, res) => {
+  const { repoUrl, repoName } = req.body;
+  if (!repoUrl || !repoName) return res.status(400).json({ error: "Missing repo details" });
+
+  const repoPath = path.join(TEMP_REPO_DIR, repoName);
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const repoUrlWithAuth = repoUrl.replace("https://", `https://${token}@`);
+
+  try {
+    // Clone the repo
+    await cloneRepo(repoUrlWithAuth, repoPath);
+
+    // Analyze repo (New Function)
+    const analysis = await analyzeRepo(repoPath);
+
+    // Send analysis result to frontend
+    res.json({ success: true, repo: repoName, analysis });
+
+    // Delete repo after 5 minutes
+    setTimeout(() => rimraf.sync(repoPath), 5 * 60 * 1000);
+  } catch (error) {
+    console.error("Error cloning repo:", error);
+
+    if (error.killed) {
+      return res.status(500).json({ error: "Repository cloning timed out (too large)" });
+    }
+
+    if (error.message.includes("fatal: repository not found")) {
+      return res.status(400).json({ error: "Private repository - authentication failed" });
+    }
+
+    res.status(500).json({ error: "Failed to process repository" });
+  }
+});
+
+const analyzeRepo = (repoPath) => {
+  let fileStructure = [];
+
+  const readFiles = (dir, relativePath = "") => {
+    const files = fs.readdirSync(dir);
+    files.forEach((file) => {
+      const filePath = path.join(dir, file);
+      const relFilePath = path.join(relativePath, file);
+      const stats = fs.statSync(filePath);
+
+      if (stats.isDirectory()) {
+        readFiles(filePath, relFilePath);
+      } else {
+        fileStructure.push(relFilePath);
+      }
+    });
+  };
+
+  readFiles(repoPath);
+  return { totalFiles: fileStructure.length, fileList: fileStructure };
+};
 
 app.use("/api/auth", authRoutes);
 app.use("/api/github", authRoutes);
