@@ -52,6 +52,7 @@ app.use(
 );
 
 app.use(passport.initialize());
+app.use(passport.session());
 
 app.options("*", cors());
 
@@ -209,32 +210,33 @@ app.get("/get-razorpay-key", (req, res) => {
 
 
 app.post("/api/github/clone", async (req, res) => {
-  const {repoName } = req.body;
+  const { repoName } = req.body;
   if (!repoName) return res.status(400).json({ error: "Missing repo details" });
 
-
-  if (!req.user || !req.user.githubToken) {
-    return res.status(401).json({ error: "Unauthorized: Missing authentication" });
-  }
-
-  const token = req.user.githubToken;
-  repoUrl = `https://${token}@github.com/${req.user.username}/${repoName}.git`;
-
-  const repoPath = path.join(TEMP_REPO_DIR, repoName);
+  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
   try {
+    const user = await User.findById(req.user._id);
+    if (!user || !user.accessToken) {
+      return res.status(403).json({ error: "GitHub access token missing" });
+    }
+
+    const token = user.accessToken;
+    const repoUrl = `https://${token}@github.com/${user.username}/${repoName}.git`;
+    const repoPath = path.join(TEMP_REPO_DIR, repoName);
+
     await cloneRepo(repoUrl, repoPath);
     const analysis = analyzeRepo(repoPath);
-    
+
     res.json({ success: true, repo: repoName, analysis });
 
-    // Auto-delete after 5 minutes
     setTimeout(() => rimraf(repoPath, (err) => err && console.error("Error deleting repo:", err)), 5 * 60 * 1000);
   } catch (error) {
     console.error("Error cloning repo:", error);
     res.status(500).json({ error: "Failed to process repository" });
   }
 });
+
 
 const analyzeRepo = (repoPath) => {
   let fileStructure = [];

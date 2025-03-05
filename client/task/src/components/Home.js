@@ -36,13 +36,17 @@ const Home = () => {
   const handleImport = async (repo) => {
     try {
       const token = localStorage.getItem("token");
-      const repoUrl = repo.clone_url; 
+      if (!token) {
+        console.error("Authentication token is missing.");
+        return;
+      }
   
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/clone",
-        { repoUrl, repoName: repo.name },
+        { repoName: repo.name }, // Only send the repo name
         { headers: { Authorization: `Bearer ${token}` } }
       );
+  
       navigate(`/import/${repo.name}`, { state: { analysis: response.data.analysis } });
     } catch (error) {
       console.error("Error importing repository:", error);
