@@ -209,11 +209,11 @@ app.get("/get-razorpay-key", (req, res) => {
 
 
 app.post("/api/github/clone", async (req, res) => {
-  const { repoName } = req.body;
+  const { repoUrl, repoName } = req.body;
   if (!repoUrl || !repoName) return res.status(400).json({ error: "Missing repo details" });
 
   const token = req.user.githubToken;
-  const repoUrl = `https://${token}@github.com/${req.user.username}/${repoName}.git`;
+  repoUrl = `https://${token}@github.com/${req.user.username}/${repoName}.git`;
 
   const repoPath = path.join(TEMP_REPO_DIR, repoName);
 
