@@ -64,9 +64,14 @@ const CLONE_TIMEOUT = 5 * 60 * 1000; // 5-minute timeout
 
 const cloneRepo = (repoUrl, repoPath) => {
   return new Promise((resolve, reject) => {
-    const process = exec(`git clone --depth=1 ${repoUrl} ${repoPath}`, { timeout: CLONE_TIMEOUT }, (error) => {
-      if (error) reject(error);
-      else resolve();
+    exec(`git clone --depth=1 ${repoUrl} ${repoPath}`, { timeout: CLONE_TIMEOUT }, (error, stdout, stderr) => {
+      if (error) {
+        console.error("Git Clone Error:", error.message);
+        console.error("Git Clone Stderr:", stderr);
+        return reject(new Error("Failed to clone repository"));
+      }
+      console.log("Git Clone Output:", stdout);
+      resolve();
     });
   });
 };
@@ -209,34 +214,29 @@ app.post("/api/github/clone", async (req, res) => {
 
   const repoPath = path.join(TEMP_REPO_DIR, repoName);
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
-  const repoUrlWithAuth = repoUrl.replace("https://", `https://${token}@`);
+
+  if (!token) return res.status(401).json({ error: "Authentication token missing" });
+
+  let repoUrlWithAuth;
 
   try {
-    // Clone the repo
+    const urlObj = new URL(repoUrl);
+    repoUrlWithAuth = `${urlObj.protocol}//${token}@${urlObj.hostname}${urlObj.pathname}`;
+  } catch (error) {
+    return res.status(400).json({ error: "Invalid repository URL" });
+  }
+  try {
     await cloneRepo(repoUrlWithAuth, repoPath);
-
-    // Analyze repo (New Function)
-    const analysis = await analyzeRepo(repoPath);
-
-    // Send analysis result to frontend
+    const analysis = analyzeRepo(repoPath);
     res.json({ success: true, repo: repoName, analysis });
 
-    // Delete repo after 5 minutes
-    setTimeout(() => rimraf.sync(repoPath), 5 * 60 * 1000);
+    setTimeout(() => rimraf(repoPath, (err) => err && console.error("Error deleting repo:", err)), 5 * 60 * 1000);
   } catch (error) {
     console.error("Error cloning repo:", error);
-
-    if (error.killed) {
-      return res.status(500).json({ error: "Repository cloning timed out (too large)" });
-    }
-
-    if (error.message.includes("fatal: repository not found")) {
-      return res.status(400).json({ error: "Private repository - authentication failed" });
-    }
-
     res.status(500).json({ error: "Failed to process repository" });
   }
 });
+
 
 const analyzeRepo = (repoPath) => {
   let fileStructure = [];
