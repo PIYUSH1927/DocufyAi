@@ -66,19 +66,28 @@ const CLONE_TIMEOUT = 5 * 60 * 1000; // 5-minute timeout
 
 const cloneRepo = (repoUrl, repoPath, githubToken) => {
   return new Promise((resolve, reject) => {
-    exec(`GIT_ASKPASS=echo git clone --depth=1 ${repoUrl} ${repoPath}`, { env: { GIT_ASKPASS: 'echo', GIT_TERMINAL_PROMPT: '0' } }, (error, stdout, stderr) => {
-      if (error) {
-        console.error("Git Clone Error:", error.message);
-        console.error("Git Clone Stderr:", stderr);
-        return reject(new Error("Failed to clone repository"));
+    // Check if repo directory exists and delete it before cloning
+    if (fs.existsSync(repoPath)) {
+      rimraf.sync(repoPath); // Delete the existing repo folder
+      console.log(`Deleted existing repo: ${repoPath}`);
+    }
+
+    // Run Git Clone Command
+    exec(
+      `GIT_ASKPASS=echo git clone --depth=1 ${repoUrl} ${repoPath}`,
+      { env: { GIT_ASKPASS: "echo", GIT_TERMINAL_PROMPT: "0" } },
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("Git Clone Error:", error.message);
+          console.error("Git Clone Stderr:", stderr);
+          return reject(new Error("Failed to clone repository"));
+        }
+        console.log("Git Clone Output:", stdout);
+        resolve();
       }
-      console.log("Git Clone Output:", stdout);
-      resolve();
-    });
+    );
   });
 };
-
-
 
 const PaymentSchema = new mongoose.Schema({
   paymentId: String,

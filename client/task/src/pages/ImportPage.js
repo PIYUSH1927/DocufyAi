@@ -19,15 +19,33 @@ const ImportPage = () => {
 
 
   const location = useLocation();
-const analysis = location.state?.analysis || JSON.parse(localStorage.getItem("repoAnalysis")) || "No analysis available.";
+  const rawAnalysis = location.state?.analysis || JSON.parse(localStorage.getItem("repoAnalysis")) || "No analysis available.";
+
+  // Convert analysis JSON to a formatted string
+  const formatAnalysis = (analysis) => {
+    if (typeof analysis === "string") return analysis; // Already a string, return as is
+    if (!analysis || typeof analysis !== "object") return "Invalid analysis data.";
+  
+    const { totalFiles, fileList } = analysis;
+    let message = `📂 **Repository Analysis**\n\n`;
+    message += `📌 **Total Files:** ${totalFiles}\n\n📜 **File List:**\n`;
+    message += fileList.map(file => `- ${file}`).join("\n");
+  
+    return message;
+  };
+  
+  const formattedAnalysis = formatAnalysis(rawAnalysis);
 
 
 
   useEffect(() => {
     fetchUserProfile();
-    //fetchInitialDocumentation();
-    if (analysis) {
-      setMessages([{ type: "bot", text: analysis }]);
+  
+    if (rawAnalysis) {
+      const formattedAnalysis = formatAnalysis(rawAnalysis);
+      setMessages([{ type: "bot", text: formattedAnalysis }]);
+    } else {
+      setMessages([{ type: "bot", text: "No analysis available. Try syncing again." }]);
     }
   }, []);
 
