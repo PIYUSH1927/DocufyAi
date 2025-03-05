@@ -73,7 +73,7 @@ const About = () => {
           <h1 className="year" style={{margin:"auto", marginBottom:"5px"}}>Future</h1>
             <h2 style={{color:"maroon", textShadow:"2px 2px 5px rgba(0, 0, 0, 0.5)", fontWeight:"bolder"}}>Expanding to More Languages</h2>
             <p style={{textAlign:"center"}} >
-            <strong>Docufy.Ai</strong> will soon support GitLab, Bitbucket, and other version control platforms, streamlining documentation across workflows. It will also extend support to Python, Java, and various other programming languages, ensuring seamless documentation across diverse tech stacks.
+            <strong>Docufy.Ai</strong> will soon support GitLab, Bitbucket, and other version control platforms, streamlining documentation across workflows. Upcoming features include interactive API explorers and customizable templates, eliminating manual effort efficiently.
             </p>
           </div>
         </motion.div>
