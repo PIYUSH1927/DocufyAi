@@ -18,8 +18,13 @@ const ImportPage = () => {
   
 
 
-  const analysis = location.state?.analysis || "No analysis available.";
-  const location = useLocation(); // Add this at the top of your component
+  const location = useLocation();
+const analysis = location.state?.analysis || JSON.parse(localStorage.getItem("repoAnalysis")) || "No analysis available.";
+
+if (!analysis || analysis === "No analysis available.") {
+  return <div>Loading analysis...</div>;
+}
+
 
 
   useEffect(() => {

@@ -116,8 +116,10 @@ const Home = () => {
         githubToken: accessToken,
         username: user.username
       });
+
+      localStorage.setItem("repoAnalysis", JSON.stringify(response.data.analysis));
   
-      navigate(`/import/${repo.name}`, { state: { analysis: response.data.analysis } });
+      navigate(`/import/${repo.name}`);
     } catch (error) {
       console.error("Error importing repository:", error);
     }
