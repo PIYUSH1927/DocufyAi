@@ -210,19 +210,14 @@ app.get("/get-razorpay-key", (req, res) => {
 
 
 app.post("/api/github/clone", async (req, res) => {
-  const { repoName } = req.body;
-  if (!repoName) return res.status(400).json({ error: "Missing repo details" });
+  const { repoName, githubToken, username } = req.body;
 
-  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+  if (!repoName || !githubToken || !username) {
+    return res.status(400).json({ error: "Missing required details" });
+  }
 
   try {
-    const user = await User.findById(req.user._id);
-    if (!user || !user.accessToken) {
-      return res.status(403).json({ error: "GitHub access token missing" });
-    }
-
-    const token = user.accessToken;
-    const repoUrl = `https://${token}@github.com/${user.username}/${repoName}.git`;
+    const repoUrl = `https://${githubToken}@github.com/${username}/${repoName}.git`;
     const repoPath = path.join(TEMP_REPO_DIR, repoName);
 
     await cloneRepo(repoUrl, repoPath);
@@ -236,7 +231,6 @@ app.post("/api/github/clone", async (req, res) => {
     res.status(500).json({ error: "Failed to process repository" });
   }
 });
-
 
 const analyzeRepo = (repoPath) => {
   let fileStructure = [];

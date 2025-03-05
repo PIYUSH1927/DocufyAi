@@ -12,6 +12,7 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [sortOption, setSortOption] = useState("Sort by activity ⬇");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
 
 
   const navigate = useNavigate();
@@ -33,26 +34,6 @@ const Home = () => {
   }, []);
   
 
-  const handleImport = async (repo) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Authentication token is missing.");
-        return;
-      }
-  
-      const response = await axios.post(
-        "https://sooru-ai.onrender.com/api/github/clone",
-        { repoName: repo.name }, // Only send the repo name
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-  
-      navigate(`/import/${repo.name}`, { state: { analysis: response.data.analysis } });
-    } catch (error) {
-      console.error("Error importing repository:", error);
-    }
-  };
-  
 
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
@@ -88,6 +69,7 @@ const Home = () => {
           }
         );
         setUser(response.data);
+        setAccessToken(response.data.accessToken); 
         setLoading(false);
 
         if (response.data.githubId) {
@@ -120,6 +102,27 @@ const Home = () => {
 
     fetchProfile();
   }, [navigate]);
+
+
+  const handleImport = async (repo) => {
+    try {
+      if (!accessToken || !user?.username) {
+        console.error("GitHub access token or username is missing.");
+        return;
+      }
+  
+      const response = await axios.post("https://sooru-ai.onrender.com/api/github/clone", {
+        repoName: repo.name,
+        githubToken: accessToken,
+        username: user.username
+      });
+  
+      navigate(`/import/${repo.name}`, { state: { analysis: response.data.analysis } });
+    } catch (error) {
+      console.error("Error importing repository:", error);
+    }
+  };
+
 
   const handleGitHubConnect = () => {
     const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
