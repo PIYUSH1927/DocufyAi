@@ -14,7 +14,8 @@ const path = require("path");
 const simpleGit = require("simple-git");
 const esprima = require("esprima"); 
 const router = express.Router();
-const rimraf = require("rimraf");
+const rimraf = require("rimraf").rimraf;  
+
 const os = require("os");
 
 setInterval(() => {
@@ -63,9 +64,9 @@ if (!fs.existsSync(TEMP_REPO_DIR)) {
 
 const CLONE_TIMEOUT = 5 * 60 * 1000; // 5-minute timeout
 
-const cloneRepo = (repoUrl, repoPath) => {
+const cloneRepo = (repoUrl, repoPath, githubToken) => {
   return new Promise((resolve, reject) => {
-    exec(`git clone --depth=1 ${repoUrl} ${repoPath}`, { timeout: CLONE_TIMEOUT }, (error, stdout, stderr) => {
+    exec(`GIT_ASKPASS=echo git clone --depth=1 ${repoUrl} ${repoPath}`, { env: { GIT_ASKPASS: 'echo', GIT_TERMINAL_PROMPT: '0' } }, (error, stdout, stderr) => {
       if (error) {
         console.error("Git Clone Error:", error.message);
         console.error("Git Clone Stderr:", stderr);
@@ -76,6 +77,7 @@ const cloneRepo = (repoUrl, repoPath) => {
     });
   });
 };
+
 
 
 const PaymentSchema = new mongoose.Schema({
