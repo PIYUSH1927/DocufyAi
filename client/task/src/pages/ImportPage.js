@@ -205,7 +205,7 @@ const ImportPage = () => {
         <Home style={{position:"fixed", left:"17px", paddingRight:"5px", zIndex:"100", cursor:"pointer"}} onClick={() => navigate("/home")} />
           <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
           <a href="" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit", fontSize: "0.9rem", position: "fixed", right: "17px", top:"20px", zIndex:"100px" }}>
-          <RefreshCw size={16} style={{ marginRight: "5px" }} /> <span className="sync-text">Sync Latest</span>
+          <RefreshCw size={16} style={{ marginRight: "15px" }} /> <span className="sync-text">Sync Latest</span>
         </a>
           </div>
           {messages.map((msg, index) => (
