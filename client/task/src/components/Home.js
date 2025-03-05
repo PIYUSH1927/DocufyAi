@@ -13,6 +13,7 @@ const Home = () => {
   const [sortOption, setSortOption] = useState("Sort by activity ⬇");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
+  const [isImporting, setIsImporting] = useState(false); 
 
 
   const navigate = useNavigate();
@@ -106,8 +107,11 @@ const Home = () => {
 
   const handleImport = async (repo) => {
     try {
+      setIsImporting(true);
       if (!accessToken || !user?.username) {
         console.error("GitHub access token or username is missing.");
+        alert("GitHub access token or username is missing.");
+        setIsImporting(false);
         return;
       }
   
@@ -122,6 +126,8 @@ const Home = () => {
       navigate(`/import/${repo.name}`);
     } catch (error) {
       console.error("Error importing repository:", error);
+      alert("Error importing repository:", error);
+      setIsImporting(false);
     }
   };
 
@@ -149,6 +155,11 @@ const Home = () => {
   
   return (
     <div className="home-container" >
+       {isImporting && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+        </div>
+      )}
       {/* Dashboard Header */}
       <div className="dashboard-header">
   <h2 style={{position:"relative", top:"13px"}}>Dashboard</h2>
