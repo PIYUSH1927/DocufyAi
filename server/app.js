@@ -209,34 +209,27 @@ app.get("/get-razorpay-key", (req, res) => {
 
 
 app.post("/api/github/clone", async (req, res) => {
-  const { repoUrl, repoName } = req.body;
+  const { repoName } = req.body;
   if (!repoUrl || !repoName) return res.status(400).json({ error: "Missing repo details" });
 
+  const token = req.user.githubToken;
+  const repoUrl = `https://${token}@github.com/${req.user.username}/${repoName}.git`;
+
   const repoPath = path.join(TEMP_REPO_DIR, repoName);
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token
-
-  if (!token) return res.status(401).json({ error: "Authentication token missing" });
-
-  let repoUrlWithAuth;
 
   try {
-    const urlObj = new URL(repoUrl);
-    repoUrlWithAuth = `${urlObj.protocol}//${token}@${urlObj.hostname}${urlObj.pathname}`;
-  } catch (error) {
-    return res.status(400).json({ error: "Invalid repository URL" });
-  }
-  try {
-    await cloneRepo(repoUrlWithAuth, repoPath);
+    await cloneRepo(repoUrl, repoPath);
     const analysis = analyzeRepo(repoPath);
+    
     res.json({ success: true, repo: repoName, analysis });
 
+    // Auto-delete after 5 minutes
     setTimeout(() => rimraf(repoPath, (err) => err && console.error("Error deleting repo:", err)), 5 * 60 * 1000);
   } catch (error) {
     console.error("Error cloning repo:", error);
     res.status(500).json({ error: "Failed to process repository" });
   }
 });
-
 
 const analyzeRepo = (repoPath) => {
   let fileStructure = [];
