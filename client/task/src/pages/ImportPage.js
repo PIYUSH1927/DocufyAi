@@ -204,8 +204,8 @@ const ImportPage = () => {
         <div className="import-repo-name" style={{paddingBottom:"8px"}}> 
         <Home style={{position:"fixed", left:"17px", paddingRight:"5px", zIndex:"100", cursor:"pointer"}} onClick={() => navigate("/home")} />
           <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
-          <a href="" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit", fontSize: "0.9rem", position: "fixed", right: "25px", top:"20px", zIndex:"100px" }}>
-          <RefreshCw size={16} style={{ marginRight: "15px" }} /> <span className="sync-text">Sync Latest</span>
+          <a href="" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit", fontSize: "0.9rem", position: "fixed", right: "28px", top:"20px", zIndex:"100px" }}>
+          <RefreshCw size={16} style={{ marginRight: "10px" }} /> <span className="sync-text">Sync Latest</span>
         </a>
           </div>
           {messages.map((msg, index) => (
