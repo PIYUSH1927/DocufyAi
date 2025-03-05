@@ -203,7 +203,7 @@ app.get("/get-razorpay-key", (req, res) => {
 });
 
 
-app.post("/github/clone", async (req, res) => {
+app.post("/api/github/clone", async (req, res) => {
   const { repoUrl, repoName } = req.body;
   if (!repoUrl || !repoName) return res.status(400).json({ error: "Missing repo details" });
 
