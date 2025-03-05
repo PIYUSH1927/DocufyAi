@@ -245,6 +245,13 @@ app.post("/api/github/clone", async (req, res) => {
 
 const analyzeRepo = (repoPath) => {
   let fileStructure = [];
+  const supportedExtensions = [
+    "js", "jsx", "ts", "tsx", "html", "css", "scss", "json", "md", "yaml", "yml",
+    "xml", "toml", "env", "sh", "bat", "ps1", "ini", "conf", "txt", "log",
+    "py", "java", "kt", "kts", "go", "rs", "rb", "swift", "php", "cpp", "h", "hpp", "c",
+    "cs", "r", "dart", "lua", "pl", "sql", "jsx", "tsx", "vue", "dockerfile", "makefile"
+  ];
+
 
   const readFiles = (dir, relativePath = "") => {
     const files = fs.readdirSync(dir);
@@ -255,7 +262,7 @@ const analyzeRepo = (repoPath) => {
 
       if (stats.isDirectory()) {
         readFiles(filePath, relFilePath);
-      } else {
+       } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
         fileStructure.push(relFilePath);
       }
     });
