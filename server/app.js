@@ -106,7 +106,6 @@ const cloneRepo = async (repoUrl, repoPath) => {
             console.error("Git Clone Stderr:", stderr);
             return reject(new Error("Failed to clone repository"));
           }
-          console.log("Git Clone Output:", stdout);
           resolve();
         }
       );
@@ -274,8 +273,7 @@ app.post("/api/github/clone", async (req, res) => {
     }, 5 * 60 * 1000);
     
   } catch (error) {
-    console.error("❌ Unexpected error:", error);
-    return res.status(200).json({ success: false, message: "Repository import failed. Please check permissions." });
+    return res.status(200).json({ success: false, message: "Repository import failed. Only repositories owned or created by you can be imported." });
   }
 });
 
