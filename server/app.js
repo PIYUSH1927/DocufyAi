@@ -274,16 +274,8 @@ app.post("/api/github/clone", async (req, res) => {
     }, 5 * 60 * 1000);
     
   } catch (error) {
-    if (error.message.includes("Repository not found") || error.message.includes("403")) {
-      console.warn(`⚠️ Cannot import: ${repoName} (collaborator issue)`);
-      return res.status(200).json({ 
-        success: false, 
-        message: "You are a collaborator, but this repository cannot be imported." 
-      });
-    }
-
-    console.error("❌ Error cloning repo:", error);
-    return res.status(500).json({ error: "Failed to process repository" });
+    console.error("❌ Unexpected error:", error);
+    return res.status(200).json({ success: false, message: "Repository import failed. Please check permissions." });
   }
 });
 
