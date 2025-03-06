@@ -140,6 +140,12 @@ const Home = () => {
         username: user.username
       });
 
+      if (!response.data.success) {
+        alert(response.data.message);
+        setIsImporting(false);
+        return;
+      }
+
       localStorage.setItem("repoAnalysis", JSON.stringify(response.data.analysis));
 
       await axios.put(
@@ -150,8 +156,9 @@ const Home = () => {
   
       navigate(`/import/${repo.name}`);
     } catch (error) {
-      console.error("Error importing repository:", error);
+      console.warn("⚠️ Non-critical error:", error.message)
       alert("Error: Only repositories owned or created by you can be imported.", error);
+    } finally {
       setIsImporting(false);
     }
   };
