@@ -104,7 +104,6 @@ const Register = () => {
   
           if (registerResponse.status === 201) {
             setSuccessMessage("User registered successfully!");
-            alert("User registered successfully!");
             setShowOtpPopup(false);
             setFormData({ firstName: "", lastName: "", email: "", password: "", phone: "" });
             navigate("/login");

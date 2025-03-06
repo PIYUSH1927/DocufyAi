@@ -114,6 +114,21 @@ const Home = () => {
         setIsImporting(false);
         return;
       }
+
+      const planLimits = {
+        "Free Plan (₹0/month)": 1,
+        "Pro Plan (₹499/month)": 10,
+        "Enterprise Plan (₹1,499/month)": Infinity, 
+      };
+
+      const userPlan = user?.currentPlan || "Free Plan (₹0/month)";
+      const allowedImports = planLimits[userPlan];
+  
+      if (user.Imports >= allowedImports) {
+        alert(`Upgrade your plan to allow importing more repositories.`);
+        setIsImporting(false);
+        return;
+      }
   
       const response = await axios.post("https://sooru-ai.onrender.com/api/github/clone", {
         repoName: repo.name,
@@ -122,6 +137,12 @@ const Home = () => {
       });
 
       localStorage.setItem("repoAnalysis", JSON.stringify(response.data.analysis));
+
+      await axios.put(
+        `https://sooru-ai.onrender.com/api/user/${user._id}`,
+        { Imports: user.Imports + 1 },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
   
       navigate(`/import/${repo.name}`);
     } catch (error) {
