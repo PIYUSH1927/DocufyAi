@@ -23,6 +23,8 @@ passport.use(
             // Update existing user to link GitHub account
             existingUser.githubId = profile.id;
             existingUser.accessToken = accessToken;
+            existingUser.username = profile.username || existingUser.username;  
+  existingUser.avatar = profile.photos?.[0]?.value || existingUser.avatar;
             await existingUser.save();
             return done(null, existingUser);
           }
