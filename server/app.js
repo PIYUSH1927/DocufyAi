@@ -74,20 +74,18 @@ if (!fs.existsSync(TEMP_REPO_DIR)) {
 const deleteRepo = async (repoPath) => {
   try {
     if (fs.existsSync(repoPath)) {
-      await rimraf(repoPath);   // ✅ Use the async version
-      console.log(`Deleted existing repo: ${repoPath}`);
+      await rimraf(repoPath);   
     }
   } catch (err) {
     console.error("Error deleting repo:", err);
   }
 };
 
-// ✅ Periodic cleanup (every 24 hours)
 setInterval(async () => {
   console.log("Cleaning up old repos...");
   try {
-    await rimraf(TEMP_REPO_DIR); // ✅ Correct usage
-    fs.mkdirSync(TEMP_REPO_DIR, { recursive: true }); // ✅ Prevents errors if already exists
+    await rimraf(TEMP_REPO_DIR); 
+    fs.mkdirSync(TEMP_REPO_DIR, { recursive: true }); 
     console.log("Old repos cleaned successfully.");
   } catch (error) {
     console.error("Error during cleanup:", error);
@@ -96,7 +94,7 @@ setInterval(async () => {
 
 const cloneRepo = async (repoUrl, repoPath) => {
   try {
-    await deleteRepo(repoPath); // ✅ Ensure no old repo exists
+    await deleteRepo(repoPath); 
 
     return new Promise((resolve, reject) => {
       exec(
@@ -261,7 +259,16 @@ app.post("/api/github/clone", async (req, res) => {
     const repoUrl = `https://${githubToken}@github.com/${username}/${repoName}.git`;
     const repoPath = path.join(TEMP_REPO_DIR, repoName);
 
-    await cloneRepo(repoUrl, repoPath);
+    const cloneResult = await cloneRepo(repoUrl, repoPath);
+    
+    if (!cloneResult.success) {
+      console.warn(`⚠️ Cannot clone ${repoName}: ${cloneResult.error}`);
+      return res.status(200).json({
+        success: false,
+        message: "You don't have permission to import this repository.",
+      });
+    }
+    
     const analysis = analyzeRepo(repoPath);
 
     res.json({ success: true, repo: repoName, analysis });
