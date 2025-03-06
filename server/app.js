@@ -14,15 +14,21 @@ const path = require("path");
 const simpleGit = require("simple-git");
 const esprima = require("esprima"); 
 const router = express.Router();
-const { promisify } = require("util");
-const rimraf = require("rimraf"); 
-const rimrafAsync = promisify(rimraf);
+const { rimraf } = require("rimraf");  
+
 
 const os = require("os");
 
-setInterval(async () => {
+setInterval(() => {
   console.log("Cleaning up old repos...");
-  await rimrafAsync("/tmp/repos");
+  rimraf("/tmp/repos", (err) => {
+    if (err) {
+      console.error("Error deleting repos:", err);
+    } else {
+      fs.mkdirSync("/tmp/repos", { recursive: true }); 
+      console.log("Old repos cleaned up and directory recreated.");
+    }
+  });
 }, 24 * 60 * 60 * 1000);
 
 
@@ -68,7 +74,7 @@ if (!fs.existsSync(TEMP_REPO_DIR)) {
 const deleteRepo = async (repoPath) => {
   try {
     if (fs.existsSync(repoPath)) {
-      await rimrafAsync(repoPath);  // ✅ Use the async version
+      await rimraf(repoPath);   // ✅ Use the async version
       console.log(`Deleted existing repo: ${repoPath}`);
     }
   } catch (err) {
@@ -79,8 +85,13 @@ const deleteRepo = async (repoPath) => {
 // ✅ Periodic cleanup (every 24 hours)
 setInterval(async () => {
   console.log("Cleaning up old repos...");
-  await rimrafAsync(TEMP_REPO_DIR);
-  fs.mkdirSync(TEMP_REPO_DIR);
+  try {
+    await rimraf(TEMP_REPO_DIR); // ✅ Correct usage
+    fs.mkdirSync(TEMP_REPO_DIR, { recursive: true }); // ✅ Prevents errors if already exists
+    console.log("Old repos cleaned successfully.");
+  } catch (error) {
+    console.error("Error during cleanup:", error);
+  }
 }, 24 * 60 * 60 * 1000);
 
 const cloneRepo = async (repoUrl, repoPath) => {
