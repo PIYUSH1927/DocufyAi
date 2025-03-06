@@ -125,7 +125,11 @@ const Home = () => {
       const allowedImports = planLimits[userPlan];
   
       if (user.Imports >= allowedImports) {
-        alert(`Upgrade your plan to allow importing more repositories.`);
+        if (userPlan === "Pro Plan (₹499/month)") {
+          alert("You have already imported 10 repositories. Subscribe to the Enterprise Plan to import more.");
+        } else {
+          alert("Upgrade your plan to allow importing more repositories.");
+        }
         setIsImporting(false);
         return;
       }

@@ -14,14 +14,17 @@ const path = require("path");
 const simpleGit = require("simple-git");
 const esprima = require("esprima"); 
 const router = express.Router();
-const rimraf = require("rimraf").rimraf;  
+const { promisify } = require("util");
+const rimraf = require("rimraf"); 
+const rimrafAsync = promisify(rimraf);
 
 const os = require("os");
 
-setInterval(() => {
+setInterval(async () => {
   console.log("Cleaning up old repos...");
-  rimraf.sync("/tmp/repos");
+  await rimrafAsync("/tmp/repos");
 }, 24 * 60 * 60 * 1000);
+
 
 require("./config/passport");
 require("dotenv").config();
@@ -62,31 +65,47 @@ if (!fs.existsSync(TEMP_REPO_DIR)) {
   fs.mkdirSync(TEMP_REPO_DIR);
 }
 
-const CLONE_TIMEOUT = 5 * 60 * 1000; // 5-minute timeout
-
-const cloneRepo = (repoUrl, repoPath, githubToken) => {
-  return new Promise((resolve, reject) => {
-    // Check if repo directory exists and delete it before cloning
+const deleteRepo = async (repoPath) => {
+  try {
     if (fs.existsSync(repoPath)) {
-      rimraf.sync(repoPath); // Delete the existing repo folder
+      await rimrafAsync(repoPath);  // ✅ Use the async version
       console.log(`Deleted existing repo: ${repoPath}`);
     }
+  } catch (err) {
+    console.error("Error deleting repo:", err);
+  }
+};
 
-    // Run Git Clone Command
-    exec(
-      `GIT_ASKPASS=echo git clone --depth=1 ${repoUrl} ${repoPath}`,
-      { env: { GIT_ASKPASS: "echo", GIT_TERMINAL_PROMPT: "0" } },
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error("Git Clone Error:", error.message);
-          console.error("Git Clone Stderr:", stderr);
-          return reject(new Error("Failed to clone repository"));
+// ✅ Periodic cleanup (every 24 hours)
+setInterval(async () => {
+  console.log("Cleaning up old repos...");
+  await rimrafAsync(TEMP_REPO_DIR);
+  fs.mkdirSync(TEMP_REPO_DIR);
+}, 24 * 60 * 60 * 1000);
+
+const cloneRepo = async (repoUrl, repoPath) => {
+  try {
+    await deleteRepo(repoPath); // ✅ Ensure no old repo exists
+
+    return new Promise((resolve, reject) => {
+      exec(
+        `GIT_ASKPASS=echo git clone --depth=1 ${repoUrl} ${repoPath}`,
+        { env: { GIT_ASKPASS: "echo", GIT_TERMINAL_PROMPT: "0" } },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error("Git Clone Error:", error.message);
+            console.error("Git Clone Stderr:", stderr);
+            return reject(new Error("Failed to clone repository"));
+          }
+          console.log("Git Clone Output:", stdout);
+          resolve();
         }
-        console.log("Git Clone Output:", stdout);
-        resolve();
-      }
-    );
-  });
+      );
+    });
+  } catch (error) {
+    console.error("Error in cloneRepo:", error);
+    throw error;
+  }
 };
 
 const PaymentSchema = new mongoose.Schema({
@@ -236,7 +255,15 @@ app.post("/api/github/clone", async (req, res) => {
 
     res.json({ success: true, repo: repoName, analysis });
 
-    setTimeout(() => rimraf(repoPath, (err) => err && console.error("Error deleting repo:", err)), 5 * 60 * 1000);
+    setTimeout(async () => {
+      try {
+        await rimraf(repoPath);
+        console.log(`Deleted repo: ${repoPath}`);
+      } catch (err) {
+        console.error("Error deleting repo:", err);
+      }
+    }, 5 * 60 * 1000);
+    
   } catch (error) {
     console.error("Error cloning repo:", error);
     res.status(500).json({ error: "Failed to process repository" });
