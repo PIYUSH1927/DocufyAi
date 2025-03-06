@@ -258,7 +258,11 @@ app.post("/api/github/clone", async (req, res) => {
     const repoUrl = `https://${githubToken}@github.com/${username}/${repoName}.git`;
     const repoPath = path.join(TEMP_REPO_DIR, repoName);
 
-    await cloneRepo(repoUrl, repoPath);
+    try {
+      await cloneRepo(repoUrl, repoPath);
+    } catch (err) {
+      return res.status(200).json({ success: false }); 
+    }
     const analysis = analyzeRepo(repoPath);
 
     res.json({ success: true, repo: repoName, analysis });
