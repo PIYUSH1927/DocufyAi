@@ -150,8 +150,8 @@ const Home = () => {
   
       navigate(`/import/${repo.name}`);
     } catch (error) {
-      alert("Error: Only repositories owned or created by you can be imported.");
-    } finally {
+      console.error("Error importing repository:", error);
+      alert("Error: Only repositories owned or created by you can be imported.", error);
       setIsImporting(false);
     }
   };
