@@ -259,16 +259,7 @@ app.post("/api/github/clone", async (req, res) => {
     const repoUrl = `https://${githubToken}@github.com/${username}/${repoName}.git`;
     const repoPath = path.join(TEMP_REPO_DIR, repoName);
 
-    const cloneResult = await cloneRepo(repoUrl, repoPath);
-    
-    if (!cloneResult.success) {
-      console.warn(`⚠️ Cannot clone ${repoName}: ${cloneResult.error}`);
-      return res.status(200).json({
-        success: false,
-        message: "You don't have permission to import this repository.",
-      });
-    }
-    
+    await cloneRepo(repoUrl, repoPath);
     const analysis = analyzeRepo(repoPath);
 
     res.json({ success: true, repo: repoName, analysis });
