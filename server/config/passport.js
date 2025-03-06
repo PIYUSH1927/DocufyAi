@@ -35,6 +35,8 @@ passport.use(
             avatar: profile.photos?.[0]?.value,
             accessToken, // Store GitHub token
           });
+
+          await user.save();
         
           
         } else {
