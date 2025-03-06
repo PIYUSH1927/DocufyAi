@@ -99,7 +99,7 @@ router.post("/resetpassword", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phone, currentPlan } = req.body;
+    const { firstName, lastName, email, password, phone, currentPlan, Imports } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -115,6 +115,7 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
       phone,
       currentPlan,
+      Imports
     });
 
     await newUser.save();

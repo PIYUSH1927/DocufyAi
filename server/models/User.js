@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   accessToken: { type: String }, 
 
   currentPlan: { type: String, default: "Free Plan (₹0/month)" },
+  Imports: { type: Number, default: 0 },
 });
 
 

@@ -99,7 +99,8 @@ const Register = () => {
         try {
           const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", {
             ...formData,  
-            currentPlan: "Free Plan (₹0/month)", });
+            currentPlan: "Free Plan (₹0/month)", 
+          Imports:0});
   
           if (registerResponse.status === 201) {
             setSuccessMessage("User registered successfully!");
@@ -167,8 +168,6 @@ const Register = () => {
       </button>
 
       </div>
-
-
 
       {showOtpPopup && (
         <div className="otp-popup">
