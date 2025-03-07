@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Home.css";
-import { FaGithub, FaPlus, FaSearch, FaCloudUploadAlt } from "react-icons/fa";
+import { FaGithub, FaPlus, FaSearch, FaCloudUploadAlt, FaTrash } from "react-icons/fa";
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -192,7 +192,7 @@ const Home = () => {
           <div className="spinner"></div>
         </div>
       )}
-      {/* Dashboard Header */}
+     
       <div className="dashboard-header">
   <h2 style={{position:"relative", top:"13px"}}>Dashboard</h2>
   <div className="buttons" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
@@ -227,6 +227,26 @@ const Home = () => {
         </button>
       
         </div>
+
+        <p className="imported-repos-text" style={{textAlign:"left",marginLeft:"10px", position:"relative", bottom:"25px"}}>
+  Total imported repos: {user?.Imports ?? 0}
+</p>
+        
+<div class="repo-card">
+<div className="delete-container">
+    <FaTrash className="delete-icon" />
+    <span className="delete-tooltip">Delete chat</span>
+  </div>
+    <div class="repo-title pb">docufy-ai-Documentation</div>
+    <span className="delete-tooltip">Delete chat</span>
+    <div class="github-info pb">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" />
+        PIYUSH1927/DOCUFY.AI
+    </div>
+    <div class="repo-update">Feb 6 &nbsp;<span class="repo-branch">10:05 PM</span></div>
+</div>
+
+
       
 
 

@@ -179,7 +179,7 @@ const Pricing = () => {
             description: "Great for individuals for getting started.",
             features: [
               "AI-Generated Docs (Limited)",
-              "GitHub Integration (1 Repo)",
+              "GitHub Sync (1 Repo)",
               "Versioned Documentation",
               "Interactive Chat Assistance",
             ],
