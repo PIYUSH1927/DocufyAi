@@ -46,12 +46,11 @@ router.get("/:userId/all", authenticate, async (req, res) => {
   try {
     const { userId } = req.params;
 
-    if (req.user.id !== userId) {
+    if (req.user.id !== userId) { // Direct string comparison
       return res.status(403).json({ error: "Unauthorized access" });
     }
 
-    // Convert userId to ObjectId
-    const messages = await Message.find({ userId: new mongoose.Types.ObjectId(userId) }).sort("timestamp");
+    const messages = await Message.find({ userId }).sort("timestamp"); // Query as string
 
     res.status(200).json(messages);
   } catch (error) {
@@ -59,5 +58,6 @@ router.get("/:userId/all", authenticate, async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+
 
 module.exports = router;
