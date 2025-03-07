@@ -44,6 +44,26 @@ const ImportPage = () => {
   };
   
   const formattedAnalysis = formatAnalysis(rawAnalysis);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+  
+        const response = await axios.get(`https://sooru-ai.onrender.com/api/messages/${repoName}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+  
+    fetchMessages();
+  }, [repoName]);
+  
  
   useEffect(() => {
     const fetchProfile = async () => {
@@ -149,30 +169,51 @@ const ImportPage = () => {
 
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
-
-    const timestamp = new Date().toISOString();
-
-    setMessages((prev) => [...prev, { type: "user", text: userInput , timestamp}]);
-
+  
+    const newMessage = {
+      type: "user",
+      text: userInput,
+      timestamp: new Date().toISOString(),
+    };
+  
+    setMessages((prev) => [...prev, newMessage]);
+  
     try {
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/generate-docs",
         { repoName, query: userInput }
       );
-
-      setMessages((prev) => [
-        ...prev,
-        { type: "bot", text: response.data.response, timestamp: new Date().toISOString() },
-      ]);
+  
+      const botResponse = {
+        type: "bot",
+        text: response.data.response,
+        timestamp: new Date().toISOString(),
+      };
+  
+      setMessages((prev) => [...prev, botResponse]);
+  
+      // Save messages to the database
+      const token = localStorage.getItem("token");
+      if (token) {
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages/save",
+          { repoName, type: "user", text: userInput },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+  
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages/save",
+          { repoName, type: "bot", text: response.data.response },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
     } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        { type: "bot", text: "Error generating response.",  timestamp },
-      ]);
+      console.error("Error generating response:", error);
     }
-
-    setUserInput(""); 
+  
+    setUserInput("");
   };
+  
 
   const handleDownloadPDF = (index) => {
     if (currentPlan === "Free Plan (₹0/month)") {

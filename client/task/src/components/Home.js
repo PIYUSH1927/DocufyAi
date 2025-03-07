@@ -252,7 +252,7 @@ const Home = () => {
       
 
 
-      <div className="unique-main-content" style={{display:"none"}}>
+      <div className="unique-main-content">
         <FaCloudUploadAlt className="unique-upload-icon" />
         <h3>Create your first project</h3>
         <p>Connect your GitHub repository and generate AI-powered documentation effortlessly.</p>

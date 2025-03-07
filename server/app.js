@@ -15,9 +15,11 @@ const simpleGit = require("simple-git");
 const esprima = require("esprima"); 
 const router = express.Router();
 const { rimraf } = require("rimraf");  
-
+const messageRoutes = require("./routes/messageRoutes");
 
 const os = require("os");
+
+app.use("/api/messages", messageRoutes);
 
 setInterval(() => {
   console.log("Cleaning up old repos...");
