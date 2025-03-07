@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Message = require("../models/Message");
-const { authenticate } = require("./routes/authroutes"); // Use existing auth
+const { authenticate } = require("./authRoutes"); // Use existing auth
 
 // ✅ Save message to database (Requires User Authentication)
 router.post("/", authenticate, async (req, res) => {
