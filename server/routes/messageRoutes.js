@@ -19,22 +19,35 @@ const authenticateUser = (req, res, next) => {
 
 // **Save a new message**
 router.post("/save", authenticateUser, async (req, res) => {
-  try {
-    const { repoName, type, text } = req.body;
-    const newMessage = new Message({
-      userId: req.user.id,
-      repoName,
-      type,
-      text,
-    });
-
-    await newMessage.save();
-    res.status(201).json({ message: "Message saved successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
-  }
-});
+    try {
+      console.log("Incoming request to save message:", req.body);
+  
+      const { repoName, type, text } = req.body;
+  
+      if (!repoName || !type || !text) {
+        console.error("Missing fields:", { repoName, type, text });
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+  
+      console.log("User ID from token:", req.user.id);
+  
+      const newMessage = new Message({
+        userId: req.user.id,
+        repoName,
+        type,
+        text,
+      });
+  
+      await newMessage.save();
+      console.log("Message saved successfully");
+  
+      res.status(201).json({ message: "Message saved successfully" });
+    } catch (error) {
+      console.error("Error saving message:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+  
 
 // **Get messages for a specific repo and user**
 router.get("/:repoName", authenticateUser, async (req, res) => {
