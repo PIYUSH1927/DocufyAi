@@ -228,9 +228,11 @@ const Home = () => {
       
         </div>
 
-        <p className="imported-repos-text" style={{textAlign:"center", position:"relative", bottom:"30px", textDecoration:"underline"}}>
+        <p className="imported-repos-text" style={{textAlign:"center", position:"relative", bottom:"30px"}}>
   Total imported repos: {user?.Imports ?? 0}
 </p>
+
+<hr style={{position:"relative", bottom:"25px", background: "grey", height: "0.5px", border: "none" }} />
         
 <div class="repo-card" style={{margin:"-5px 10px"}}>
 <div className="delete-container">
@@ -250,7 +252,7 @@ const Home = () => {
       
 
 
-      <div className="unique-main-content">
+      <div className="unique-main-content" style={{display:"none"}}>
         <FaCloudUploadAlt className="unique-upload-icon" />
         <h3>Create your first project</h3>
         <p>Connect your GitHub repository and generate AI-powered documentation effortlessly.</p>
