@@ -45,12 +45,9 @@ router.get("/:userId/:repoName", authenticate, async (req, res) => {
 router.get("/:userId/all", async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log("Fetching messages for userId:", userId);
 
-    if (req.user.id !== userId) { // Direct string comparison
-      return res.status(403).json({ error: "Unauthorized access" });
-    }
-
-    const messages = await Message.find({ userId }).sort("timestamp"); // Query as string
+    const messages = await Message.find({ userId }).sort("timestamp");
 
     res.status(200).json(messages);
   } catch (error) {
@@ -58,6 +55,7 @@ router.get("/:userId/all", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+
 
 
 module.exports = router;
