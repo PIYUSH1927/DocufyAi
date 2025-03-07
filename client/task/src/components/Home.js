@@ -228,11 +228,11 @@ const Home = () => {
       
         </div>
 
-        <p className="imported-repos-text" style={{textAlign:"left",marginLeft:"10px", position:"relative", bottom:"25px"}}>
+        <p className="imported-repos-text" style={{textAlign:"center", position:"relative", bottom:"30px", textDecoration:"underline"}}>
   Total imported repos: {user?.Imports ?? 0}
 </p>
         
-<div class="repo-card">
+<div class="repo-card" style={{margin:"-5px 10px"}}>
 <div className="delete-container">
     <FaTrash className="delete-icon" />
     <span className="delete-tooltip">Delete chat</span>

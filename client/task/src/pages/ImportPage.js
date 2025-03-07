@@ -17,6 +17,7 @@ const ImportPage = () => {
   const [currentPlan, setCurrentPlan] = useState("");
   const [user, setUser] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
@@ -63,6 +64,7 @@ const ImportPage = () => {
           }
         );
         setUser(response.data);
+        setAccessToken(response.data.accessToken); 
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
@@ -248,7 +250,7 @@ const ImportPage = () => {
   
       const response = await axios.post("https://sooru-ai.onrender.com/api/github/clone", {
         repoName: repoName,
-        githubToken: token,
+        githubToken: accessToken,
         username: user.username,
       });
   
