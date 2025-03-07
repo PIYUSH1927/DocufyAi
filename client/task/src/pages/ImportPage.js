@@ -26,6 +26,27 @@ const ImportPage = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }, [messages]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+  
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const userId = decoded.id;
+  
+        const response = await axios.get(`https://sooru-ai.onrender.com/api/messages/${userId}/${repoName}`);
+        
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+  
+    fetchMessages();
+  }, [repoName]);
+  
   
   
   const rawAnalysis = location.state?.analysis || JSON.parse(localStorage.getItem("repoAnalysis")) || "No analysis available.";
@@ -45,25 +66,6 @@ const ImportPage = () => {
   
   const formattedAnalysis = formatAnalysis(rawAnalysis);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-  
-        const response = await axios.get(`https://sooru-ai.onrender.com/api/messages/${repoName}`, {
-     
-        });
-  
-        setMessages(response.data);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
-  
-    fetchMessages();
-  }, [repoName]);
-  
  
   useEffect(() => {
     const fetchProfile = async () => {
@@ -170,37 +172,56 @@ const ImportPage = () => {
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
   
-    const newMessage = {
-      type: "user",
-      text: userInput,
-      timestamp: new Date().toISOString(),
-    };
+    const timestamp = new Date().toISOString();
+    const token = localStorage.getItem("token");
   
-    setMessages((prev) => [...prev, newMessage]);
+    if (!token) {
+      alert("User not authenticated!");
+      return;
+    }
+  
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const userId = decoded.id;
+  
+    // Update local state
+    setMessages((prev) => [...prev, { type: "user", text: userInput, timestamp }]);
   
     try {
+      // Save user message to DB
+      await axios.post("https://sooru-ai.onrender.com/api/messages", {
+        userId,
+        repoName,
+        type: "user",
+        text: userInput,
+        timestamp,
+      });
+  
+      // Send request to AI
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/generate-docs",
         { repoName, query: userInput }
       );
   
-      const botResponse = {
+      const botMessage = {
         type: "bot",
         text: response.data.response,
         timestamp: new Date().toISOString(),
       };
   
-      setMessages((prev) => [...prev, botResponse]);
+      setMessages((prev) => [...prev, botMessage]);
   
-      await axios.post("https://sooru-ai.onrender.com/api/messages/save", 
-        { repoName, type: "user", text: userInput }
-      );
+      // Save bot response to DB
+      await axios.post("https://sooru-ai.onrender.com/api/messages", {
+        userId,
+        repoName,
+        type: "bot",
+        text: botMessage.text,
+        timestamp: botMessage.timestamp,
+      });
   
-      await axios.post("https://sooru-ai.onrender.com/api/messages/save", 
-        { repoName, type: "bot", text: response.data.response }
-      );
     } catch (error) {
       console.error("Error generating response:", error);
+      setMessages((prev) => [...prev, { type: "bot", text: "Error generating response.", timestamp }]);
     }
   
     setUserInput("");

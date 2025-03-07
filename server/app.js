@@ -15,7 +15,7 @@ const simpleGit = require("simple-git");
 const esprima = require("esprima"); 
 const router = express.Router();
 const { rimraf } = require("rimraf");  
-const messageRoutes = require("./routes/messageRoutes");
+const messageRoutes = require("./routes/messages");
 
 const os = require("os");
 
@@ -307,7 +307,6 @@ const analyzeRepo = (repoPath) => {
   readFiles(repoPath);
   return { totalFiles: fileStructure.length, fileList: fileStructure };
 };
-
 app.use("/api/messages", messageRoutes);
 
 app.use("/api/auth", authRoutes);
