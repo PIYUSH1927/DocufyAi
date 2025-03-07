@@ -16,6 +16,7 @@ const Home = () => {
   const [isImporting, setIsImporting] = useState(false); 
   const [githubUsername, setGithubUsername] = useState("");
   const [messages, setMessages] = useState([]);
+  const [repoMessages, setRepoMessages] = useState({});
 
 
   const navigate = useNavigate();
@@ -101,6 +102,12 @@ const Home = () => {
         );
 
         setMessages(response.data);
+        const groupedMessages = response.data.reduce((acc, message) => {
+          acc[message.repoName] = message;
+          return acc;
+        }, {});
+    
+        setRepoMessages(groupedMessages);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -231,6 +238,17 @@ const Home = () => {
     repo.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
   
   return (
     <div className="home-container" >
@@ -280,30 +298,38 @@ const Home = () => {
 </p>
 
 <hr style={{position:"relative", bottom:"25px", background: "grey", height: "0.5px", border: "none" }} />
+
+
+<div style={{display:"flex", flexWrap:"wrap", position:"relative", bottom:"15px"}}>
+
+{Object.keys(repoMessages).map((repoName) => (
         
-<div class="repo-card" style={{margin:"-5px 10px"}}>
+<div key={repoName} class="repo-card" style={{margin:"10px 10px"}}>
 <div className="delete-container">
     <FaTrash className="delete-icon" />
     <span className="delete-tooltip">Delete chat</span>
   </div>
-    <div class="repo-title pb">docufy-ai-Documentation</div>
+    <div class="repo-title pb">{repoName}-Documentation</div>
     <span className="delete-tooltip">Delete chat</span>
     <div class="github-info pb">
         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" />
-        PIYUSH1927/DOCUFY.AI
+        {githubUsername}/{repoName}
     </div>
-    <div class="repo-update">Feb 6 2025,&nbsp;<span class="repo-branch">10:05 PM</span></div>
+    <div class="repo-update">{formatDate(repoMessages[repoName].timestamp)}</div>
 </div>
+ ))}
 
-
+</div>
       
 
 
-      <div className="unique-main-content">
-        <FaCloudUploadAlt className="unique-upload-icon" />
-        <h3>Create your first project</h3>
-        <p>Connect your GitHub repository and generate AI-powered documentation effortlessly.</p>
-      </div>
+{Object.keys(repoMessages).length === 0 && (
+  <div className="unique-main-content">
+    <FaCloudUploadAlt className="unique-upload-icon" />
+    <h3>Create your first project</h3>
+    <p>Connect your GitHub repository and generate AI-powered documentation effortlessly.</p>
+  </div>
+)}
 
 
         
