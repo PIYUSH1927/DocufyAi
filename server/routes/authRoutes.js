@@ -242,4 +242,4 @@ const checkBlacklist = (req, res, next) => {
   next();
 };
 
-module.exports = router;
+module.exports = { router, authenticate };
