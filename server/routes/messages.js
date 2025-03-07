@@ -42,7 +42,7 @@ router.get("/:userId/:repoName", authenticate, async (req, res) => {
   }
 });
 
-router.get("/:userId/all", authenticate, async (req, res) => {
+router.get("/:userId/all", async (req, res) => {
   try {
     const { userId } = req.params;
 
