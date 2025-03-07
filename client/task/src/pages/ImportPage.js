@@ -26,28 +26,6 @@ const ImportPage = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }, [messages]);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-  
-        const decoded = JSON.parse(atob(token.split(".")[1]));
-        const userId = decoded.id;
-  
-        const response = await axios.get(`https://sooru-ai.onrender.com/api/messages/${userId}/${repoName}`);
-        
-        setMessages(response.data);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
-  
-    fetchMessages();
-  }, [repoName]);
-  
-  
   
   const rawAnalysis = location.state?.analysis || JSON.parse(localStorage.getItem("repoAnalysis")) || "No analysis available.";
 
@@ -65,6 +43,39 @@ const ImportPage = () => {
   };
   
   const formattedAnalysis = formatAnalysis(rawAnalysis);
+
+  const fetchMessages = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+  
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      const userId = decoded.id;
+  
+      const response = await axios.get(
+        `https://sooru-ai.onrender.com/api/messages/${userId}/${repoName}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      let messagesData = formatAnalysis(response.data);
+
+      if (messagesData.length > 0) {
+        setMessages(messagesData ); // Set messages fetched from DB
+        localStorage.setItem("chatMessages", JSON.stringify(response.data)); // Save to localStorage
+    }
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+  }
+};
+  // Now, use `fetchMessages` in useEffect and other places
+  useEffect(() => {
+    const storedMessages = localStorage.getItem("chatMessages");
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    }
+    fetchMessages(); // Fetch latest from backend
+  }, [repoName]);
+  
 
  
   useEffect(() => {
@@ -169,6 +180,8 @@ const ImportPage = () => {
     }
   };
 
+
+
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
   
@@ -183,20 +196,27 @@ const ImportPage = () => {
     const decoded = JSON.parse(atob(token.split(".")[1]));
     const userId = decoded.id;
   
-    // Update local state
-    setMessages((prev) => [...prev, { type: "user", text: userInput, timestamp }]);
+    const userMessage = {
+      userId,
+      repoName,
+      type: "user",
+      text: userInput,
+      timestamp,
+    };
+  
+    setMessages((prev) => {
+      const updatedMessages = [...prev, userMessage];
+      localStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // Save to localStorage
+      return updatedMessages;
+    });
   
     try {
-      // Save user message to DB
-      await axios.post("https://sooru-ai.onrender.com/api/messages", {
-        userId,
-        repoName,
-        type: "user",
-        text: userInput,
-        timestamp,
-      });
+      await axios.post(
+        "https://sooru-ai.onrender.com/api/messages",
+        userMessage,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
   
-      // Send request to AI
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/generate-docs",
         { repoName, query: userInput }
@@ -208,17 +228,17 @@ const ImportPage = () => {
         timestamp: new Date().toISOString(),
       };
   
-      setMessages((prev) => [...prev, botMessage]);
-  
-      // Save bot response to DB
-      await axios.post("https://sooru-ai.onrender.com/api/messages", {
-        userId,
-        repoName,
-        type: "bot",
-        text: botMessage.text,
-        timestamp: botMessage.timestamp,
+      setMessages((prev) => {
+        const updatedMessages = [...prev, botMessage];
+        localStorage.setItem("chatMessages", JSON.stringify(updatedMessages)); // Save to localStorage
+        return updatedMessages;
       });
   
+      await axios.post(
+        "https://sooru-ai.onrender.com/api/messages",
+        botMessage,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     } catch (error) {
       console.error("Error generating response:", error);
       setMessages((prev) => [...prev, { type: "bot", text: "Error generating response.", timestamp }]);

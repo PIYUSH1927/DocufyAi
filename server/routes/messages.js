@@ -42,4 +42,20 @@ router.get("/:userId/:repoName", authenticate, async (req, res) => {
   }
 });
 
+router.get("/:userId/all", authenticate, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (req.user.id !== userId) {
+      return res.status(403).json({ error: "Unauthorized access" });
+    }
+
+    const messages = await Message.find({ userId }).sort("timestamp");
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error fetching all messages:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

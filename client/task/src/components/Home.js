@@ -14,6 +14,8 @@ const Home = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [isImporting, setIsImporting] = useState(false); 
+  const [githubUsername, setGithubUsername] = useState("");
+  const [messages, setMessages] = useState([]);
 
 
   const navigate = useNavigate();
@@ -71,14 +73,36 @@ const Home = () => {
         );
         setUser(response.data);
         setAccessToken(response.data.accessToken); 
+        setGithubUsername(response.data.username);
         setLoading(false);
 
+        
+        fetchMessages();
         if (response.data.githubId) {
           fetchRepositories();
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
         setLoading(false);
+      }
+    };
+
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const userId = decoded.id;
+
+        const response = await axios.get(
+          `https://sooru-ai.onrender.com/api/messages/${userId}/all`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
       }
     };
 
@@ -103,6 +127,7 @@ const Home = () => {
 
     fetchProfile();
   }, [navigate]);
+  
 
 
   const handleImport = async (repo) => {
@@ -111,6 +136,14 @@ const Home = () => {
       if (!accessToken || !user?.username) {
         console.error("GitHub access token or username is missing.");
         alert("GitHub access token or username is missing.");
+        setIsImporting(false);
+        return;
+      }
+        
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found in localStorage");
+        alert("Authentication token is missing. Please log in again.");
         setIsImporting(false);
         return;
       }
@@ -146,6 +179,20 @@ const Home = () => {
         return;
       }
 
+          const initialMessage = {
+      userId: user._id,
+      repoName: repo.name,
+      type: "bot",
+      text: JSON.stringify(response.data.analysis),
+      timestamp: new Date().toISOString(),
+    };
+
+    // ✅ FIX: Include Authorization header when calling /api/messages
+    await axios.post(
+      "https://sooru-ai.onrender.com/api/messages",
+      initialMessage,
+      { headers: { Authorization: `Bearer ${token}` } } // Include token here
+    );
       localStorage.setItem("repoAnalysis", JSON.stringify(response.data.analysis));
 
       await axios.put(
