@@ -52,7 +52,7 @@ const ImportPage = () => {
         if (!token) return;
   
         const response = await axios.get(`https://sooru-ai.onrender.com/api/messages/${repoName}`, {
-          headers: { Authorization: `Bearer ${token}` },
+     
         });
   
         setMessages(response.data);
@@ -167,56 +167,45 @@ const ImportPage = () => {
     }
   };
 
- const handleGenerate = async () => {
-  if (!userInput.trim()) return;
-
-  const newMessage = {
-    type: "user",
-    text: userInput,
-    timestamp: new Date().toISOString(),
-  };
-
-  setMessages((prev) => [...prev, newMessage]);
-
-  try {
-    const response = await axios.post(
-      "https://sooru-ai.onrender.com/api/github/generate-docs",
-      { repoName, query: userInput }
-    );
-
-    const botResponse = {
-      type: "bot",
-      text: response.data.response,
+  const handleGenerate = async () => {
+    if (!userInput.trim()) return;
+  
+    const newMessage = {
+      type: "user",
+      text: userInput,
       timestamp: new Date().toISOString(),
     };
-
-    setMessages((prev) => [...prev, botResponse]);
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found. Cannot save messages.");
-      return;
+  
+    setMessages((prev) => [...prev, newMessage]);
+  
+    try {
+      const response = await axios.post(
+        "https://sooru-ai.onrender.com/api/github/generate-docs",
+        { repoName, query: userInput }
+      );
+  
+      const botResponse = {
+        type: "bot",
+        text: response.data.response,
+        timestamp: new Date().toISOString(),
+      };
+  
+      setMessages((prev) => [...prev, botResponse]);
+  
+      await axios.post("https://sooru-ai.onrender.com/api/messages/save", 
+        { repoName, type: "user", text: userInput }
+      );
+  
+      await axios.post("https://sooru-ai.onrender.com/api/messages/save", 
+        { repoName, type: "bot", text: response.data.response }
+      );
+    } catch (error) {
+      console.error("Error generating response:", error);
     }
-
-    // ✅ Fix template literal in headers
-    await axios.post(
-      "https://sooru-ai.onrender.com/api/messages/save",
-      { repoName, type: "user", text: userInput },
-      { headers: { Authorization: `Bearer ${token}` } } // Fix backticks here
-    );
-
-    await axios.post(
-      "https://sooru-ai.onrender.com/api/messages/save",
-      { repoName, type: "bot", text: response.data.response },
-      { headers: { Authorization: `Bearer ${token}` } } // Fix backticks here
-    );
-  } catch (error) {
-    console.error("Error generating response:", error);
-  }
-
-  setUserInput("");
-};
-
+  
+    setUserInput("");
+  };
+  
 
   const handleDownloadPDF = (index) => {
     if (currentPlan === "Free Plan (₹0/month)") {
