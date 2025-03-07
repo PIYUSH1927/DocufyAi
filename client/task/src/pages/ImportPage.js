@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -15,10 +15,18 @@ const ImportPage = () => {
   const [copyStatus, setCopyStatus] = useState({});
   const [downloadStatus, setDownloadStatus] = useState({});
   const [currentPlan, setCurrentPlan] = useState("");
-  
-
-
+  const [user, setUser] = useState(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const messagesEndRef = useRef(null);
   const location = useLocation();
+
+  useEffect(() => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, [messages]);
+  
+  
   const rawAnalysis = location.state?.analysis || JSON.parse(localStorage.getItem("repoAnalysis")) || "No analysis available.";
 
   // Convert analysis JSON to a formatted string
@@ -35,7 +43,34 @@ const ImportPage = () => {
   };
   
   const formattedAnalysis = formatAnalysis(rawAnalysis);
-
+ 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+  
+        const decoded = JSON.parse(atob(token.split(".")[1])); 
+        const userId = decoded.id;
+  
+        const response = await axios.get(
+          `https://sooru-ai.onrender.com/api/user/${userId}`, 
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+  
+    fetchProfile();
+  }, [navigate]);
+  
 
 
   useEffect(() => {
@@ -196,43 +231,91 @@ const ImportPage = () => {
     }, 2000);
   };
   
+  const handleSyncLatest = async () => {
+
+    if (isSyncing) return; 
+
+  setIsSyncing(true); 
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !user?.username) {
+        alert("GitHub access token or username is missing.");
+        return;
+      }
+  
+      setMessages((prev) => [...prev, { type: "bot", text: "🔄 Syncing latest changes...", timestamp: new Date().toISOString() }]);
+  
+      const response = await axios.post("https://sooru-ai.onrender.com/api/github/clone", {
+        repoName: repoName,
+        githubToken: token,
+        username: user.username,
+      });
+  
+      if (!response.data.success) {
+        alert("Sync failed: " + response.data.message);
+        return;
+      }
+  
+      const updatedAnalysis = response.data.analysis;
+      localStorage.setItem("repoAnalysis", JSON.stringify(updatedAnalysis));
+  
+      setMessages((prev) => [
+        ...prev,
+        { type: "bot", text: "✅ Successfully synced latest changes!", timestamp: new Date().toISOString() },
+        { type: "bot", text: formatAnalysis(updatedAnalysis), timestamp: new Date().toISOString() },
+      ]);
+  
+    } catch (error) {
+      console.error("Sync error:", error);
+      setMessages((prev) => [
+        ...prev,
+        { type: "bot", text: "❌ Failed to sync latest changes. Please try again later.", timestamp: new Date().toISOString() },
+      ]);
+    }
+    setTimeout(() => {
+      setIsSyncing(false);
+    }, 30000);
+  };
+  
 
   return (
     <div className="import-page-container" >
-      <div className="import-chat-container">
       
-        <div className="import-repo-name" style={{paddingBottom:"8px"}}> 
-        <Home style={{position:"fixed", left:"17px", paddingRight:"5px", zIndex:"100", cursor:"pointer"}} onClick={() => navigate("/home")} />
-          <span style={{padding:"0px 35px"}}>{repoName} - Documentation</span>
-          <a href="" style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit", fontSize: "0.9rem", position: "fixed", right: "28px", top:"20px", zIndex:"100px" }}>
-          <RefreshCw size={16} style={{ marginRight: "8px" }} /> <span className="sync-text">Sync Latest</span>
+      {/* Fixed Header */}
+      <div className="import-repo-header" style={{paddingBottom:"8px", textAlign:"center"}}>
+        <Home className="home-icon"  style={{position:"fixed", left:"17px", top:"6px", paddingRight:"5px", zIndex:"100", cursor:"pointer"}}  onClick={() => navigate("/home")} />
+        <span style={{padding:"0px 35px"}} className="repo-name"><b>{repoName}</b> - Documentation</span>
+        <a href="#" onClick={handleSyncLatest} className="sync-latest"  style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit", fontSize: "0.9rem", position: "fixed", right: "15px", top:"10px", zIndex:"100px", opacity: isSyncing ? "0.2" : "1",cursor: isSyncing ? "not-allowed" : "pointer",pointerEvents: isSyncing ? "none" : "auto"}}>
+          <RefreshCw size={16} className="sync-icon" style={{ marginRight: "4px" }}  />
+          <span className="sync-text">{isSyncing ? "Sync Latest" : "Sync Latest"}</span>
         </a>
-          </div>
-          {messages.map((msg, index) => (
+      </div>
+  
+      {/* Scrollable Chat Container */}
+      <div className="import-chat-container">
+        {messages.map((msg, index) => (
           <div key={index} className={`import-chat-message ${msg.type}`}>
             {msg.type === "bot" && (
-              <div className="bot-message-icons">
-                 <span className="timestamp" >{formatDate(msg.timestamp)}</span>
-                  <div className="tooltip">
-                <Copy
-                  size={16}
-                  className="icon"
-                  onClick={() => handleCopy(msg.text, index)}
-                  title={copyStatus?.[index] || "Copy text"}                
-                  style={{zIndex:"100"}}
-                />
-                <span className="tooltip-text">{copyStatus[index] || "Copy text"}</span>
-                 </div>
-
-                 <div className="tooltip">
-                <Download
-                  size={16}
-                  className="icon"
-                  onClick={() => handleDownloadPDF(index)}
-                  title={downloadStatus?.[index] || "Download as PDF"}
-                  style={{zIndex:"100"}}
-                />
-                 <span className="tooltip-text">{downloadStatus[index] || "Download as PDF"}</span>
+              <div className="bot-message-icons" ref={messagesEndRef}>
+                <span className="timestamp">{formatDate(msg.timestamp)}</span>
+                <div className="tooltip">
+                  <Copy
+                    size={16}
+                    className="icon"
+                    onClick={() => handleCopy(msg.text, index)}
+                    title={copyStatus?.[index] || "Copy text"}
+                  />
+                  <span className="tooltip-text">{copyStatus[index] || "Copy text"}</span>
+                </div>
+                <div className="tooltip">
+                  <Download
+                    size={16}
+                    className="icon"
+                    onClick={() => handleDownloadPDF(index)}
+                    title={downloadStatus?.[index] || "Download as PDF"}
+                  />
+                  <span className="tooltip-text">{downloadStatus[index] || "Download as PDF"}</span>
                 </div>
               </div>
             )}
@@ -240,7 +323,8 @@ const ImportPage = () => {
           </div>
         ))}
       </div>
-
+  
+      {/* Fixed Input Section */}
       <div className="import-input-container">
         <textarea
           className="import-text-input"
@@ -252,8 +336,10 @@ const ImportPage = () => {
           Generate
         </button>
       </div>
+  
     </div>
   );
+  
 };
 
 export default ImportPage;

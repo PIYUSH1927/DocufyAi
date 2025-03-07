@@ -45,14 +45,14 @@
   .import-chat-message.user {
     background: #475569;
     align-self: flex-end;
-    min-width: 80%;
+    min-width: 90%;
     float: right;
   }
   
   .import-chat-message.bot {
     
     background: rgba(238, 238, 238, 0.9);
-    min-width: 80%;
+    min-width: 90%;
     align-self: flex-start;
     color: black;
     float: left;
@@ -234,4 +234,5 @@
       display: none; /* Hide text on small screens */
     }
   }
+  
   
