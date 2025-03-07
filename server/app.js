@@ -19,7 +19,7 @@ const messageRoutes = require("./routes/messageRoutes");
 
 const os = require("os");
 
-app.use("/api/messages", messageRoutes);
+
 
 setInterval(() => {
   console.log("Cleaning up old repos...");
@@ -307,6 +307,8 @@ const analyzeRepo = (repoPath) => {
   readFiles(repoPath);
   return { totalFiles: fileStructure.length, fileList: fileStructure };
 };
+
+app.use("/api/messages", messageRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/github", authRoutes);
