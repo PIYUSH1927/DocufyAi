@@ -376,9 +376,9 @@
       position: relative;
       width: 380px; 
       max-width: 100%; 
-      background-color: #F0F0F0; 
+      background-color: #d2d2d2; 
       border-radius: 10px;
-      padding: 20px;
+      padding: 30px 20px;
       margin-left: 10px;
       box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
       font-family: Arial, sans-serif;

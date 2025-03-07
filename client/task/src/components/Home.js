@@ -243,7 +243,7 @@ const Home = () => {
         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" />
         PIYUSH1927/DOCUFY.AI
     </div>
-    <div class="repo-update">Feb 6 &nbsp;<span class="repo-branch">10:05 PM</span></div>
+    <div class="repo-update">Feb 6 2025,&nbsp;<span class="repo-branch">10:05 PM</span></div>
 </div>
 
 
