@@ -96,7 +96,7 @@ const Home = () => {
         const userId = decoded.id;
 
         const response = await axios.get(
-          `https://sooru-ai.onrender.com/api/messages/${userId}/all`,
+          `https://sooru-ai.onrender.com/api/messages/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
