@@ -50,7 +50,9 @@ router.get("/:userId/all", authenticate, async (req, res) => {
       return res.status(403).json({ error: "Unauthorized access" });
     }
 
-    const messages = await Message.find({ userId }).sort("timestamp");
+    // Convert userId to ObjectId
+    const messages = await Message.find({ userId: new mongoose.Types.ObjectId(userId) }).sort("timestamp");
+
     res.status(200).json(messages);
   } catch (error) {
     console.error("Error fetching all messages:", error);
