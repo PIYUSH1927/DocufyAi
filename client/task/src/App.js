@@ -10,13 +10,14 @@ import Landing from "./pages/Landing";
 import About from "./pages/About";  
 import Pricing from "./pages/Pricing"; 
 import ImportPage from "./pages/ImportPage";
+import ImportPage1 from "./pages/ImportPage1";
 import './App.css'
 
 const ProtectedRoute = ({ element }) => {
   const token = localStorage.getItem("token") || new URLSearchParams(window.location.search).get("token");
 
   if (token) {
-    localStorage.setItem("token", token); // Store it if found in URL
+    localStorage.setItem("token", token); 
     return element;
   }
 
@@ -57,6 +58,7 @@ const App = () => {
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
         <Route path="/import/:repoName" element={<ProtectedRoute element={<ImportPage />} />} />
+        <Route path="/import1/:repoName" element={<ProtectedRoute element={<ImportPage1 />} />} />
 
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>

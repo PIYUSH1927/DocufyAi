@@ -187,7 +187,7 @@ const Home = () => {
         return;
       }
 
-          const initialMessage = {
+      const initialMessage = {
       userId: user._id,
       repoName: repo.name,
       type: "bot",
@@ -331,7 +331,12 @@ const Home = () => {
 
 {Object.keys(repoMessages).map((repoName) => (
         
-<div key={repoName} class="repo-card" style={{margin:"10px 10px"}}>
+<div 
+  key={repoName} 
+  className="repo-card" 
+  style={{ margin: "10px 10px", cursor: "pointer" }} 
+  onClick={() => navigate(`/import1/${repoName}`)}
+>
 <div className="delete-container" onClick={() => handleDeleteChat(repoName)}>
   <FaTrash className="delete-icon" />
   <span className="delete-tooltip">Delete chat</span>

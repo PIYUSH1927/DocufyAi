@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./ImportPage.css";
 
-const ImportPage = () => {
+const ImportPage1 = () => {
   const navigate = useNavigate();
   const { repoName } = useParams(); 
   const [messages, setMessages] = useState([]);
@@ -419,4 +419,4 @@ const ImportPage = () => {
   
 };
 
-export default ImportPage;
+export default ImportPage1;
