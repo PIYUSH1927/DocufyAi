@@ -59,7 +59,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "random_secret_key",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set to true if using HTTPS
+    cookie: { secure: false }, 
   })
 );
 

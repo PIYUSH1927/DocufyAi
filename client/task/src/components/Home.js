@@ -217,6 +217,29 @@ const Home = () => {
     }
   };
 
+  const handleDeleteChat = async (repoName) => {
+    if (!user) return;
+  
+    const confirmDelete = window.confirm(`Are you sure you want to delete chat for ${repoName}?`);
+    if (!confirmDelete) return;
+  
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`https://sooru-ai.onrender.com/api/messages/${user._id}/${repoName}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      setRepoMessages((prevMessages) => {
+        const updatedMessages = { ...prevMessages };
+        delete updatedMessages[repoName];
+        return updatedMessages;
+      });
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      alert("Failed to delete chat. Please try again.");
+    }
+  };
+  
 
   const handleGitHubConnect = () => {
     const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
@@ -300,15 +323,15 @@ const Home = () => {
 <hr style={{position:"relative", bottom:"25px", background: "grey", height: "0.5px", border: "none" }} />
 
 
-<div style={{display:"flex", flexWrap:"wrap", position:"relative", bottom:"15px"}}>
+<div style={{display:"flex", flexWrap:"wrap",justifyContent:"center", position:"relative", bottom:"15px"}}>
 
 {Object.keys(repoMessages).map((repoName) => (
         
 <div key={repoName} class="repo-card" style={{margin:"10px 10px"}}>
-<div className="delete-container">
-    <FaTrash className="delete-icon" />
-    <span className="delete-tooltip">Delete chat</span>
-  </div>
+<div className="delete-container" onClick={() => handleDeleteChat(repoName)}>
+  <FaTrash className="delete-icon" />
+  <span className="delete-tooltip">Delete chat</span>
+</div>
     <div class="repo-title pb">{repoName}-Documentation</div>
     <span className="delete-tooltip">Delete chat</span>
     <div class="github-info pb">

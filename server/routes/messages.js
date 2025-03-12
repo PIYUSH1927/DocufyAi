@@ -56,6 +56,24 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+router.delete("/:userId/:repoName", authenticate, async (req, res) => {
+  try {
+    const { userId, repoName } = req.params;
+
+    if (req.user.id !== userId) {
+      return res.status(403).json({ error: "Unauthorized access" });
+    }
+
+    await Message.deleteMany({ userId, repoName });
+
+    res.status(200).json({ success: true, message: "Messages deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting messages:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+
 
 
 module.exports = router;
