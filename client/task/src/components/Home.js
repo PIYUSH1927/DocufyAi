@@ -17,6 +17,7 @@ const Home = () => {
   const [githubUsername, setGithubUsername] = useState("");
   const [messages, setMessages] = useState([]);
   const [repoMessages, setRepoMessages] = useState({});
+  const [deleteRepo, setDeleteRepo] = useState(null);
 
 
   const navigate = useNavigate();
@@ -220,7 +221,10 @@ const Home = () => {
   const handleDeleteChat = async (repoName) => {
     if (!user) return;
   
-    const confirmDelete = window.confirm(`Are you sure you want to delete chat for ${repoName}?`);
+        const confirmDelete = window.confirm(
+      `Are you sure you want to delete chat for ${repoName}?\n` + "⚠️ Note: Deleting chat won't reduce the number of imported repos.",
+      "color: red;"
+    );
     if (!confirmDelete) return;
   
     try {
@@ -228,7 +232,7 @@ const Home = () => {
       await axios.delete(`https://sooru-ai.onrender.com/api/messages/${user._id}/${repoName}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       setRepoMessages((prevMessages) => {
         const updatedMessages = { ...prevMessages };
         delete updatedMessages[repoName];
@@ -399,6 +403,7 @@ const Home = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
