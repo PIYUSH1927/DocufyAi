@@ -327,7 +327,7 @@ const Home = () => {
 <hr style={{position:"relative", bottom:"25px", background: "grey", height: "0.5px", border: "none" }} />
 
 
-<div style={{display:"flex", flexWrap:"wrap",justifyContent:"center", position:"relative", bottom:"15px"}}>
+<div style={{display:"flex", flexWrap:"wrap", position:"relative", bottom:"15px"}}>
 
 {Object.keys(repoMessages).map((repoName) => (
         
@@ -337,7 +337,7 @@ const Home = () => {
   style={{ margin: "10px 10px", cursor: "pointer" }} 
   onClick={() => navigate(`/import1/${repoName}`)}
 >
-<div className="delete-container" onClick={() => handleDeleteChat(repoName)}>
+<div className="delete-container" onClick={(e) => { e.stopPropagation();handleDeleteChat(repoName)}}>
   <FaTrash className="delete-icon" />
   <span className="delete-tooltip">Delete chat</span>
 </div>
