@@ -129,11 +129,12 @@
     padding: 4px;
     border-radius: 4px;
     position: absolute;
-    top: -25px;
+    bottom: -25px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 12px;
     white-space: nowrap;
+    z-index: 100;
   }
   
   .tooltip:hover .tooltip-text {
