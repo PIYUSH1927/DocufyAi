@@ -201,7 +201,6 @@ const Home = () => {
       initialMessage,
       { headers: { Authorization: `Bearer ${token}` } } // Include token here
     );
-      localStorage.setItem("repoAnalysis", JSON.stringify(response.data.analysis));
 
       await axios.put(
         `https://sooru-ai.onrender.com/api/user/${user._id}`,
@@ -335,7 +334,7 @@ const Home = () => {
   key={repoName} 
   className="repo-card" 
   style={{ margin: "10px 10px", cursor: "pointer" }} 
-  onClick={() => navigate(`/import1/${repoName}`)}
+  onClick={() => navigate(`/import/${repoName}`)}
 >
 <div className="delete-container" onClick={(e) => { e.stopPropagation();handleDeleteChat(repoName)}}>
   <FaTrash className="delete-icon" />
