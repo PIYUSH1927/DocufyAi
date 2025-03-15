@@ -298,15 +298,18 @@ const analyzeRepo = (repoPath) => {
 
       if (stats.isDirectory()) {
         readFiles(filePath, relFilePath);
-       } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
-        fileStructure.push(relFilePath);
+      } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
+        const content = fs.readFileSync(filePath, "utf-8"); // Read the file content
+        fileStructure.push({ file: relFilePath, content });
       }
     });
   };
 
   readFiles(repoPath);
-  return { totalFiles: fileStructure.length, fileList: fileStructure };
+  return { totalFiles: fileStructure.length, files: fileStructure };
 };
+
+
 app.use("/api/messages", messageRoutes);
 
 app.use("/api/auth", authRoutes);
