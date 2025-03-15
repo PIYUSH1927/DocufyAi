@@ -27,7 +27,7 @@ const ImportPage = () => {
     }, 100);
   }, [messages]);
 
-  const rawAnalysis = location.state?.analysis || "No documentation available.";
+  const rawAnalysis = location.state?.analysis || "Loading...";
 
 
   const formatAnalysis = (analysis) => {
