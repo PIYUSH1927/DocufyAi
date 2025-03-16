@@ -224,28 +224,49 @@ const Home = () => {
         return;
       }
 
-      const initialMessage = {
-        userId: user._id,
-        repoName: repo.name,
-        type: "bot",
-        text: JSON.stringify(response.data.analysis).slice(0, 10000),
-        timestamp: new Date().toISOString(),
-      };
-      await axios.post(
-        "https://sooru-ai.onrender.com/api/messages",
-        initialMessage,
-        { headers: { Authorization: `Bearer ${token}` } } 
-      );
+      const analysis = response.data.analysis;
 
-      await axios.put(
-        `https://sooru-ai.onrender.com/api/user/${user._id}`,
-        { Imports: user.Imports + 1 },
+      const generateDocResponse = await axios.post(
+        "https://sooru-ai.onrender.com/api/generate-doc",
+        { analysis },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      navigate(`/import/${repo.name}`);
+      if (generateDocResponse.data.success) {
+        const documentation = generateDocResponse.data.documentation;
+        
+        // Step 4: Send the generated documentation as a message
+        const initialMessage = {
+          userId: user._id,
+          repoName: repo.name,
+          type: "bot",
+          text: documentation, // Use the generated documentation here
+          timestamp: new Date().toISOString(),
+        };
+  
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages",
+          initialMessage,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+  
+        // Step 5: Update the user's import count
+        await axios.put(
+          `https://sooru-ai.onrender.com/api/user/${user._id}`,
+          { Imports: user.Imports + 1 },
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          }
+        );
+  
+        navigate(`/import/${repo.name}`);
+      } else {
+        alert("Failed to generate documentation. Please try again.");
+      }
     } catch (error) {
       console.warn("⚠️ Non-critical error:", error.message);
       alert(

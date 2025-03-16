@@ -15,6 +15,7 @@ const simpleGit = require("simple-git");
 const esprima = require("esprima"); 
 const router = express.Router();
 const { rimraf } = require("rimraf");  
+const axios = require("axios")
 const messageRoutes = require("./routes/messages");
 
 const os = require("os");
@@ -83,6 +84,39 @@ const deleteRepo = async (repoPath) => {
     console.error("Error deleting repo:", err);
   }
 };
+
+app.post("/api/generate-doc", async (req, res) => {
+  const { repoContent } = req.body; // The repo content should be sent in the request body
+
+  if (!repoContent) {
+    return res.status(400).json({ error: "No repository content provided." });
+  }
+
+  try {
+    // Call the GPT-4 API to generate documentation
+    const response = await axios.post(
+      "https://api.openai.com/v1/completions", 
+      {
+        model: "gpt-4",  // Assuming you have access to GPT-4
+        prompt: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`,
+        max_tokens: 1500,  // You can adjust this based on the length of documentation required
+        temperature: 0.7,  // You can fine-tune the temperature based on your requirements
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,  // Use your OpenAI API Key
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Send the response back to the frontend with the generated documentation
+    res.json({ documentation: response.data.choices[0].text });
+  } catch (error) {
+    console.error("Error calling GPT API:", error);
+    res.status(500).json({ error: "Failed to generate documentation" });
+  }
+});
 
 setInterval(async () => {
   console.log("Cleaning up old repos...");
