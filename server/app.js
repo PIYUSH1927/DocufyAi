@@ -93,35 +93,50 @@ app.post("/api/generate-doc", async (req, res) => {
   }
 
   try {
-    // Call the GPT-4 API to generate documentation using the correct chat endpoint
+    // Log the incoming request body
+    console.log("Received repo content:", repoContent);
+
+    // Call the GPT-4 API to generate documentation
     const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",  // Correct API endpoint for chat models
+      "https://api.openai.com/v1/completions", 
       {
-        model: "gpt-4",  // Correct model name
-        messages: [
-          {
-            role: "user",  // The user is asking for documentation generation
-            content: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`,
-          },
-        ],
-        max_tokens: 1500,  // Adjust this based on the required response length
-        temperature: 0.7,  // Set creativity based on your needs
+        model: "gpt-4",  // Assuming you have access to GPT-4
+        prompt: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`,
+        max_tokens: 1500,
+        temperature: 0.7,
       },
       {
         headers: {
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,  // Use your API key here
-          "Content-Type": "application/json",  // Correct content type
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
         },
       }
     );
 
+    // Log the response from OpenAI
+    console.log("OpenAI response:", response.data);
+
     // Send the response back to the frontend with the generated documentation
-    res.json({ documentation: response.data.choices[0].message.content });
+    res.json({ documentation: response.data.choices[0].text });
   } catch (error) {
     console.error("Error calling GPT API:", error);
+
+    // Log error details
+    if (error.response) {
+      // Response error from OpenAI API
+      console.error("OpenAI error response:", error.response.data);
+    } else if (error.request) {
+      // No response received
+      console.error("No response received:", error.request);
+    } else {
+      // Other errors
+      console.error("Error message:", error.message);
+    }
+
     res.status(500).json({ error: "Failed to generate documentation" });
   }
 });
+
 
 setInterval(async () => {
   console.log("Cleaning up old repos...");

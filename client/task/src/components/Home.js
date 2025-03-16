@@ -226,7 +226,8 @@ const Home = () => {
 
       const analysis = response.data.analysis;
 
-      const repoContent = JSON.stringify(analysis)
+      const repoContent = JSON.stringify(analysis);
+      console.log("Sending repo content:", repoContent);
 
       
 
