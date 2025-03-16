@@ -45,7 +45,6 @@ router.get("/:userId/:repoName", authenticate, async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log("Fetching messages for userId:", userId);
 
     const messages = await Message.find({ userId }).sort("timestamp");
 
