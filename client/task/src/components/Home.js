@@ -226,11 +226,8 @@ const Home = () => {
 
       const analysis = response.data.analysis;
 
-      const repoContent = JSON.stringify(analysis);
-      console.log("Sending repo content:", repoContent);
-
+      const repoContent = JSON.stringify(analysis)
       
-
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
         { repoContent },
@@ -241,24 +238,15 @@ const Home = () => {
           },
         }
       );
-      
-      if (generateDocResponse.data.success) {
-        // Handle the response
-        const documentation = generateDocResponse.data.documentation;
-      } else {
-        console.error("Failed to generate documentation:", generateDocResponse.data);
-        alert("Failed to generate documentation. Please try again.");
-      }
 
       if (generateDocResponse.data.success) {
         const documentation = generateDocResponse.data.documentation;
         
-        // Step 4: Send the generated documentation as a message
         const initialMessage = {
           userId: user._id,
           repoName: repo.name,
           type: "bot",
-          text: documentation, // Use the generated documentation heref
+          text: documentation, 
           timestamp: new Date().toISOString(),
         };
   
@@ -268,7 +256,6 @@ const Home = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
   
-        // Step 5: Update the user's import count
         await axios.put(
           `https://sooru-ai.onrender.com/api/user/${user._id}`,
           { Imports: user.Imports + 1 },

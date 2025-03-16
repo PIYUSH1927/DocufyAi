@@ -21,8 +21,6 @@ const OpenAI = require("openai");
 
 const os = require("os");
 
-
-
 setInterval(() => {
   console.log("Cleaning up old repos...");
   rimraf("/tmp/repos", (err) => {
@@ -87,7 +85,7 @@ const deleteRepo = async (repoPath) => {
 };
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,  // Load the API key from the environment variable
+  apiKey: process.env.OPENAI_API_KEY,  
 });
 
 app.post("/api/generate-doc", async (req, res) => {
@@ -108,7 +106,6 @@ app.post("/api/generate-doc", async (req, res) => {
       content: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`
     };
 
-    // Using the OpenAI SDK for chat completions
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",  // Use the GPT-4o-mini model
       messages: [systemMessage, userMessage],
@@ -116,16 +113,11 @@ app.post("/api/generate-doc", async (req, res) => {
       temperature: 0.7,
     });
 
-    // Log the response from OpenAI
-    console.log("OpenAI response:", completion);
-
-    // Send the response back to the frontend
     res.json({ documentation: completion.choices[0].message.content });
 
   } catch (error) {
     console.error("Error calling GPT API:", error);
 
-    // Log error details
     if (error.response) {
       console.error("OpenAI error response:", error.response.data);
     } else if (error.request) {
@@ -137,8 +129,6 @@ app.post("/api/generate-doc", async (req, res) => {
     res.status(500).json({ error: "Failed to generate documentation" });
   }
 });
-
-
 
 setInterval(async () => {
   console.log("Cleaning up old repos...");
@@ -356,7 +346,7 @@ const analyzeRepo = (repoPath) => {
       if (stats.isDirectory()) {
         readFiles(filePath, relFilePath);
       } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
-        const content = fs.readFileSync(filePath, "utf-8"); // Read the file content
+        const content = fs.readFileSync(filePath, "utf-8"); 
         fileStructure.push({ file: relFilePath, content });
       }
     });
