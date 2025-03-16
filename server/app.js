@@ -17,7 +17,7 @@ const router = express.Router();
 const { rimraf } = require("rimraf");  
 const axios = require("axios")
 const messageRoutes = require("./routes/messages");
-import OpenAI from "openai";
+const OpenAI = require("openai");
 
 const os = require("os");
 
