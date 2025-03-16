@@ -18,6 +18,7 @@ const ImportPage = () => {
   const [user, setUser] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
+  const [lastSyncedCommit, setLastSyncedCommit] = useState(null);
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
@@ -42,6 +43,47 @@ const ImportPage = () => {
 
     return message;
   };
+
+  const fetchDefaultBranch = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.github.com/repos/${user.username}/${repoName}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+  
+      return response.data.default_branch; // Returns the actual default branch name
+    } catch (error) {
+      console.error("Error fetching default branch:", error);
+      return null;
+    }
+  };
+  
+
+  const fetchLatestCommitHash = async () => {
+    try {
+      const branch = await fetchDefaultBranch(); // Get default branch first
+      if (!branch) {
+        console.error("Could not determine default branch.");
+        return null;
+      }
+  
+      const response = await axios.get(
+        `https://api.github.com/repos/${user.username}/${repoName}/commits/${branch}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+  
+      return response.data.sha; // Returns the latest commit hash
+    } catch (error) {
+      console.error("Error fetching latest commit:", error);
+      return null;
+    }
+  };
+  
+  
 
   const fetchMessages = async () => {
     try {
@@ -275,9 +317,9 @@ const ImportPage = () => {
 
   const handleSyncLatest = async () => {
     if (isSyncing) return;
-
+  
     setIsSyncing(true);
-
+  
     try {
       const token = localStorage.getItem("token");
       if (!token || !user?.username) {
@@ -285,7 +327,21 @@ const ImportPage = () => {
         setIsSyncing(false);
         return;
       }
-
+  
+      const latestCommit = await fetchLatestCommitHash();
+      if (!latestCommit) {
+        alert("Failed to check repository changes. Please try again.");
+        setIsSyncing(false);
+        return;
+      }
+  
+      // If no new commit, prevent unnecessary sync
+      if (latestCommit === lastSyncedCommit) {
+        alert("✅ Already synced. No new changes found.");
+        setIsSyncing(false);
+        return;
+      }
+  
       const syncMessage = {
         userId: user.id,
         repoName,
@@ -293,24 +349,27 @@ const ImportPage = () => {
         text: "🔄 Syncing latest changes...",
         timestamp: new Date().toISOString(),
       };
-
+  
       setMessages((prevMessages) => [...prevMessages, syncMessage]);
-
+  
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/clone",
         {
-          repoName: repoName,
+          repoName,
           githubToken: accessToken,
           username: user.username,
         }
       );
-
+  
       if (!response.data.success) {
-        alert("Sync failed: " + response.data.message);
+        alert("❌ Sync failed: " + response.data.message);
         setIsSyncing(false);
         return;
       }
-
+  
+      // Update last synced commit hash
+      setLastSyncedCommit(latestCommit);
+  
       const updatedAnalysis = response.data.analysis;
       const newMessage = {
         userId: user.id,
@@ -319,9 +378,9 @@ const ImportPage = () => {
         text: JSON.stringify(updatedAnalysis).slice(0, 10000),
         timestamp: new Date().toISOString(),
       };
-
+  
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-
+  
       await axios.post(
         "https://sooru-ai.onrender.com/api/messages",
         newMessage,
@@ -333,11 +392,12 @@ const ImportPage = () => {
       console.error("Sync error:", error);
       alert("❌ Sync failed. Please try again.");
     }
-
+  
     setTimeout(() => {
       setIsSyncing(false);
     }, 10000);
   };
+  
 
   return (
     <div className="import-page-container">

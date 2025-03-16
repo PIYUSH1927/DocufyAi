@@ -18,6 +18,7 @@
     background: #1e293b;
     max-height: 88vh;
     padding-bottom: 25px;
+    overflow-x: hidden;
     
   }
 
