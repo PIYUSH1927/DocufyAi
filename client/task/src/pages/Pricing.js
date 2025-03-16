@@ -37,6 +37,10 @@ const Pricing = () => {
 
   const handlePlanSelection = (plan) => {
 
+    if (plan === "Pro Plan" && currentPlan.includes("Enterprise Plan")) {
+      alert("You're already on the Enterprise Plan, which includes all Pro Plan features!");
+      return;
+    }
     if (plan === "Pro Plan" && Imports >= 10) {
       alert("You have already imported 10 repositories. Upgrade to Enterprise Plan to import more.");
       return; 
@@ -54,8 +58,8 @@ const Pricing = () => {
 
   const handlePayment = async (plan) => {
     const planPrices = {
-      "Pro Plan": 1,
-      "Enterprise Plan": 4,
+      "Pro Plan": 499,
+      "Enterprise Plan": 1499,
     };
 
     const amount = planPrices[plan];
@@ -108,7 +112,7 @@ const Pricing = () => {
             const verifyData = await verifyResponse.json();
             if (verifyResponse.ok && verifyData.success) {
               alert(
-                `Payment Successful! Payment ID: ${response.razorpay_payment_id}`
+                `✅ Payment Successful!`
               );
               updatePlan(plan);
             } else {

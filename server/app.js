@@ -289,8 +289,6 @@ app.post("/verify-payment", async (req, res) => {
         { currentPlan: updatedPlan, planExpiry: expiryDate },
         { new: true }
       );
-
-      console.log("Updated User:", updatedUser);
     }
 
     res.json({ success: true, paymentId: razorpay_payment_id });
