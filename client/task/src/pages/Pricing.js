@@ -9,6 +9,7 @@ const Pricing = () => {
   const isAuthenticated = localStorage.getItem("token");
 
   const [currentPlan, setCurrentPlan] = useState("Free Plan");
+  const [Imports, setCurrentImports] = useState(0);
 
   const token = localStorage.getItem("token");
   let userId = null;
@@ -29,11 +30,18 @@ const Pricing = () => {
       .get(`https://sooru-ai.onrender.com/api/user/${userId}`)
       .then((res) => {
         setCurrentPlan(res.data.currentPlan || "Free Plan");
+        setCurrentImports(res.data.Imports);
       })
       .catch((err) => console.error("Error fetching plan:", err));
   }, [userId]);
 
   const handlePlanSelection = (plan) => {
+
+    if (plan === "Pro Plan" && Imports >= 10) {
+      alert("You have already imported 10 repositories. Upgrade to Enterprise Plan to import more.");
+      return; 
+    }
+  
     if (!isAuthenticated) {
       navigate("/register");
     } else if (plan === "Free Plan" || plan === currentPlan) {
@@ -42,6 +50,7 @@ const Pricing = () => {
       handlePayment(plan);
     }
   };
+  
 
   const handlePayment = async (plan) => {
     const planPrices = {
