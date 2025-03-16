@@ -27,6 +27,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "openai": "^4.87.3",
     "parser": "^0.1.4",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",

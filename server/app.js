@@ -17,6 +17,7 @@ const router = express.Router();
 const { rimraf } = require("rimraf");  
 const axios = require("axios")
 const messageRoutes = require("./routes/messages");
+import OpenAI from "openai";
 
 const os = require("os");
 
@@ -85,63 +86,51 @@ const deleteRepo = async (repoPath) => {
   }
 };
 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,  // Load the API key from the environment variable
+});
+
 app.post("/api/generate-doc", async (req, res) => {
-  const { repoContent } = req.body; // The repo content should be sent in the request body
+  const { repoContent } = req.body;
 
   if (!repoContent) {
     return res.status(400).json({ error: "No repository content provided." });
   }
 
   try {
-    // Log the incoming request body
-    console.log("Received repo content:", repoContent);
-
-    // Create a system message to instruct the assistant
     const systemMessage = {
       role: "system",
       content: "You are an expert in analyzing code and generating detailed documentation."
     };
 
-    // Create a user message that includes the repository content
     const userMessage = {
       role: "user",
       content: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`
     };
 
-    // Call the GPT-3.5 API to generate documentation using the chat completions endpoint
-    const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions", 
-      {
-        model: "gpt-3.5-turbo",  // Use the free GPT-3.5 model
-        messages: [systemMessage, userMessage],  // Send both the system and user messages
-        max_tokens: 1500,  // Adjust the token limit if needed
-        temperature: 0.7,  // Adjust temperature based on your desired output style
-      },
-      {
-        headers: {
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // Using the OpenAI SDK for chat completions
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",  // Use the GPT-4o-mini model
+      messages: [systemMessage, userMessage],
+      max_tokens: 1500,
+      temperature: 0.7,
+    });
 
     // Log the response from OpenAI
-    console.log("OpenAI response:", response.data);
+    console.log("OpenAI response:", completion);
 
-    // Send the response back to the frontend with the generated documentation
-    res.json({ documentation: response.data.choices[0].message.content });
+    // Send the response back to the frontend
+    res.json({ documentation: completion.choices[0].message.content });
+
   } catch (error) {
     console.error("Error calling GPT API:", error);
 
     // Log error details
     if (error.response) {
-      // Response error from OpenAI API
       console.error("OpenAI error response:", error.response.data);
     } else if (error.request) {
-      // No response received
       console.error("No response received:", error.request);
     } else {
-      // Other errors
       console.error("Error message:", error.message);
     }
 
