@@ -98,16 +98,30 @@ app.post("/api/generate-doc", async (req, res) => {
   try {
     const systemMessage = {
       role: "system",
-      content: "You are an expert in analyzing code and generating detailed documentation."
+      content: `You are Docufy.AI, an advanced AI specialized in generating and refining documentation for repositories. Your primary functions:
+      
+      - **Generate Documentation**: Analyze repository content and create structured documentation.
+      - **Modify & Update**: If requested, apply changes to the previously generated documentation.
+      - **API Documentation**: If APIs exist, document endpoints, parameters, and responses.
+      
+      **Rules:**
+      1. If repository content is provided, generate **detailed documentation**.
+      2. If the user requests modifications, update the **previously generated documentation**.
+      3. If the user asks something unrelated, respond:  
+         _"I am Docufy.AI, designed for documentation-related tasks. Please provide relevant requests."_
+      4. If the user asks about AI models or company details, respond:  
+         _"I am Docufy.AI, a documentation automation tool that integrates with GitHub repositories."_`
     };
 
     const userMessage = {
       role: "user",
-      content: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`
+      content: userInput
+        ? `Modify the previously generated documentation as per the following request:\n\n"${userInput}"\n\nEnsure the documentation remains structured and clear.`
+        : `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}`
     };
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",  // Use the GPT-4o-mini model
+      model: "gpt-4o-mini",  
       messages: [systemMessage, userMessage],
       max_tokens: 1500,
       temperature: 0.7,
