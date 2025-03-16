@@ -163,6 +163,21 @@ const ImportPage = () => {
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
 
+    const maxLength = 2000;
+
+    if (userInput.length > maxLength) {
+      const tooLongMessage = {
+        type: "bot",
+        text: "⚠️ Your input is too long. Please shorten it and try again.",
+        timestamp: new Date().toISOString(),
+      };
+  
+      setMessages((prev) => [...prev, tooLongMessage]);
+      setUserInput(""); // Clear the input field
+      return;
+    }
+    
+
     const timestamp = new Date().toISOString();
     const token = localStorage.getItem("token");
 
@@ -301,7 +316,7 @@ const ImportPage = () => {
         userId: user.id,
         repoName,
         type: "bot",
-        text: JSON.stringify(updatedAnalysis),
+        text: JSON.stringify(updatedAnalysis).slice(0, 10000),
         timestamp: new Date().toISOString(),
       };
 

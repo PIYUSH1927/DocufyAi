@@ -228,15 +228,13 @@ const Home = () => {
         userId: user._id,
         repoName: repo.name,
         type: "bot",
-        text: JSON.stringify(response.data.analysis),
+        text: JSON.stringify(response.data.analysis).slice(0, 10000),
         timestamp: new Date().toISOString(),
       };
-
-      // ✅ FIX: Include Authorization header when calling /api/messages
       await axios.post(
         "https://sooru-ai.onrender.com/api/messages",
         initialMessage,
-        { headers: { Authorization: `Bearer ${token}` } } // Include token here
+        { headers: { Authorization: `Bearer ${token}` } } 
       );
 
       await axios.put(
@@ -432,8 +430,9 @@ const Home = () => {
                 {githubUsername}/{repoName}
               </div>
               <div class="repo-update">
-                {formatDate(repoMessages[repoName].timestamp)}
-              </div>
+  {repoMessages[repoName]?.timestamp ? formatDate(repoMessages[repoName].timestamp) : "No timestamp available"}
+</div>
+
             </div>
           ))}
         </div>
