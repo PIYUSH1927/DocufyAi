@@ -226,15 +226,28 @@ const Home = () => {
 
       const analysis = response.data.analysis;
 
+      const repoContent = JSON.stringify(analysis)
+
+      
+
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { analysis },
+        { repoContent },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
         }
       );
+      
+      if (generateDocResponse.data.success) {
+        // Handle the response
+        const documentation = generateDocResponse.data.documentation;
+      } else {
+        console.error("Failed to generate documentation:", generateDocResponse.data);
+        alert("Failed to generate documentation. Please try again.");
+      }
 
       if (generateDocResponse.data.success) {
         const documentation = generateDocResponse.data.documentation;
@@ -244,7 +257,7 @@ const Home = () => {
           userId: user._id,
           repoName: repo.name,
           type: "bot",
-          text: documentation, // Use the generated documentation here
+          text: documentation, // Use the generated documentation heref
           timestamp: new Date().toISOString(),
         };
   

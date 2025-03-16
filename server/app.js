@@ -93,25 +93,30 @@ app.post("/api/generate-doc", async (req, res) => {
   }
 
   try {
-    // Call the GPT-4 API to generate documentation
+    // Call the GPT-4 API to generate documentation using the correct chat endpoint
     const response = await axios.post(
-      "https://api.openai.com/v1/completions", 
+      "https://api.openai.com/v1/chat/completions",  // Correct API endpoint for chat models
       {
-        model: "gpt-4",  // Assuming you have access to GPT-4
-        prompt: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`,
-        max_tokens: 1500,  // You can adjust this based on the length of documentation required
-        temperature: 0.7,  // You can fine-tune the temperature based on your requirements
+        model: "gpt-4",  // Correct model name
+        messages: [
+          {
+            role: "user",  // The user is asking for documentation generation
+            content: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`,
+          },
+        ],
+        max_tokens: 1500,  // Adjust this based on the required response length
+        temperature: 0.7,  // Set creativity based on your needs
       },
       {
         headers: {
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,  // Use your OpenAI API Key
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,  // Use your API key here
+          "Content-Type": "application/json",  // Correct content type
         },
       }
     );
 
     // Send the response back to the frontend with the generated documentation
-    res.json({ documentation: response.data.choices[0].text });
+    res.json({ documentation: response.data.choices[0].message.content });
   } catch (error) {
     console.error("Error calling GPT API:", error);
     res.status(500).json({ error: "Failed to generate documentation" });
