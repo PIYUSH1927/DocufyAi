@@ -45,7 +45,7 @@ const Pricing = () => {
     if (!isAuthenticated) {
       navigate("/register");
     } else if (plan === "Free Plan" || plan === currentPlan) {
-      alert(`${plan} is already active!`);
+      alert(`${plan} is always active!`);
     } else {
       handlePayment(plan);
     }
