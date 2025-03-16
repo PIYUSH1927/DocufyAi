@@ -36,6 +36,34 @@ const Login = () => {
     }
   };
 
+  window.onload = function () {
+    const message = localStorage.getItem("registrationMessage");
+    if (message) {
+      showToast(message); // Function to show the message
+      localStorage.removeItem("registrationMessage"); // Remove after displaying
+    }
+  };
+
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.innerText = message;
+    toast.style.position = "fixed";
+    toast.style.top = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "black";
+    toast.style.color = "white";
+    toast.style.padding = "10px 20px";
+    toast.style.borderRadius = "5px";
+    toast.style.zIndex = "1000";
+  
+    document.body.appendChild(toast);
+  
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+
   const handleGitHubLogin = () => {
     window.location.href = "https://sooru-ai.onrender.com/api/auth/github";
   };
@@ -146,6 +174,7 @@ const handleResetSubmit = async () => {
             </button>
             {otpSent && (
               <>
+              <p>(If otp not received, check your spam folder)</p>
                 <input type="text" name="otp" placeholder="Enter OTP" value={resetData.otp} onChange={handleResetChange} maxLength={4} />
                 <input type="password" name="newPassword" placeholder="New Password" value={resetData.newPassword} onChange={handleResetChange} />
                 <button onClick={handleResetSubmit} disabled={loading} style={{background:"green"}}>Reset Password</button>

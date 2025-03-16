@@ -35,7 +35,6 @@ const Register = () => {
     if (!formData.email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/))
       newErrors.email = "Invalid email format";
     if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    if (!formData.phone.match(/^\d{10}$/)) newErrors.phone = "Phone number must be 10 digits";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -106,7 +105,8 @@ const Register = () => {
             setSuccessMessage("User registered successfully!");
             setShowOtpPopup(false);
             setFormData({ firstName: "", lastName: "", email: "", password: "", phone: "" });
-            navigate("/login");
+            localStorage.setItem("registrationMessage", "Registration successful! Please log in.");
+window.location.href = "/login"; // Redirect to login page
           }
         } catch (registerError) {
           const errorMessage = registerError.response?.data?.message || "Registration failed.";
@@ -174,6 +174,7 @@ const Register = () => {
             <h2 className="close-popup" onClick={() => setShowOtpPopup(false)} style={{cursor:"pointer"}}>×</h2>
             <h3>OTP Verification</h3>
             <p style={{color:"darkgreen"}} className="otp-message">The OTP has been sent to {formData.email}</p>
+            <p>(If not received, check your spam folder)</p>
             <input
               type="text"
               placeholder="Enter OTP"
