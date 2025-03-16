@@ -88,13 +88,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  
 });
 
+let previousDocumentation = "";
+
 app.post("/api/generate-doc", async (req, res) => {
-  const { repoContent } = req.body;
+  const { repoContent, userInput } = req.body;
 
-  if (!repoContent) {
-    return res.status(400).json({ error: "No repository content provided." });
+  if (!repoContent && !userInput) {
+    return res.status(400).json({ error: "No input provided." });
   }
-
   try {
     const systemMessage = {
       role: "system",
@@ -113,21 +114,36 @@ app.post("/api/generate-doc", async (req, res) => {
          _"I am Docufy.AI, a documentation automation tool that integrates with GitHub repositories."_`
     };
 
-    const userMessage = {
-      role: "user",
-      content: userInput
-        ? `Modify the previously generated documentation as per the following request:\n\n"${userInput}"\n\nEnsure the documentation remains structured and clear.`
-        : `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}`
-    };
+    let userMessageContent = "";
+
+    if (userInput) {
+      if (userInput.trim().toLowerCase() === "continue") {
+        if (!previousDocumentation) {
+          return res.status(400).json({ error: "No previous documentation found to continue." });
+        }
+        userMessageContent = `Continue from where you left off:\n\n${previousDocumentation}`;
+      } else {
+        userMessageContent = `Modify the previously generated documentation as per the following request:\n\n"${userInput}"\n\nEnsure the documentation remains structured and clear.`;
+      }
+    } else {
+      userMessageContent = `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}`;
+    }
+
+    const userMessage = { role: "user", content: userMessageContent };
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",  
       messages: [systemMessage, userMessage],
-      max_tokens: 1500,
-      temperature: 0.7,
+      max_tokens: 3500,
+      temperature: 0.6,
     });
 
-    res.json({ documentation: completion.choices[0].message.content });
+    const newResponse = completion.choices[0].message.content;
+    
+    // Store only the latest response for "continue"
+    previousDocumentation = newResponse;  
+
+    res.json({ documentation: newResponse });
 
   } catch (error) {
     console.error("Error calling GPT API:", error);

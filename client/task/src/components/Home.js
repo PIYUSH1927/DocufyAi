@@ -30,7 +30,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setFilteredRepos(repoMessages); 
+    setFilteredRepos(repoMessages);
   }, [repoMessages]);
 
   useEffect(() => {
@@ -66,12 +66,12 @@ const Home = () => {
     const filtered = Object.keys(repoMessages).filter((repoName) =>
       repoName.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
+
     const updatedRepoMessages = {};
     filtered.forEach((repo) => {
       updatedRepoMessages[repo] = repoMessages[repo];
     });
-  
+
     setFilteredRepos(updatedRepoMessages);
   };
 
@@ -91,7 +91,6 @@ const Home = () => {
 
     handleSearch();
   }, [searchTerm, repoMessages]);
-  
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -226,44 +225,46 @@ const Home = () => {
 
       const analysis = response.data.analysis;
 
-      const repoContent = JSON.stringify(analysis)
-      
+      const repoContent = JSON.stringify(analysis);
+
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
         { repoContent },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
         }
       );
 
       if (generateDocResponse.data.success) {
         const documentation = generateDocResponse.data.documentation;
-        
+
         const initialMessage = {
           userId: user._id,
           repoName: repo.name,
           type: "bot",
-          text: documentation, 
+          text: documentation,
           timestamp: new Date().toISOString(),
         };
-  
+
         await axios.post(
           "https://sooru-ai.onrender.com/api/messages",
           initialMessage,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-  
+
         await axios.put(
           `https://sooru-ai.onrender.com/api/user/${user._id}`,
           { Imports: user.Imports + 1 },
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
-  
+
         navigate(`/import/${repo.name}`);
       } else {
         alert("Failed to generate documentation. Please try again.");
@@ -452,9 +453,10 @@ const Home = () => {
                 {githubUsername}/{repoName}
               </div>
               <div class="repo-update">
-  {repoMessages[repoName]?.timestamp ? formatDate(repoMessages[repoName].timestamp) : "No timestamp available"}
-</div>
-
+                {repoMessages[repoName]?.timestamp
+                  ? formatDate(repoMessages[repoName].timestamp)
+                  : "No timestamp available"}
+              </div>
             </div>
           ))}
         </div>
