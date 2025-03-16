@@ -244,8 +244,12 @@ app.post("/create-order", async (req, res) => {
 
 app.post("/verify-payment", async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, userId } =
-      req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, userId, plan } = req.body;
+
+      const order = await Order.findOne({ orderId: razorpay_order_id });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
     const secret = process.env.RAZORPAY_SECRET;
     const expectedSignature = crypto
@@ -275,21 +279,18 @@ app.post("/verify-payment", async (req, res) => {
     await newPayment.save();
 
     if (userId) {
-      const { plan } = req.body;
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + 30);
 
-      let updatedPlan;
-      if (plan === "Enterprise Plan") {
-        updatedPlan = "Enterprise Plan (₹1,499/month)";
-      } else {
-        updatedPlan = "Pro Plan (₹499/month)"; 
-      }
+      const updatedPlan = plan === "Enterprise Plan" ? "Enterprise Plan (₹1,499/month)" : "Pro Plan (₹499/month)";
 
-      await User.findByIdAndUpdate(userId, {
-        currentPlan: updatedPlan,  
-        planExpiry: expiryDate,
-      });
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { currentPlan: updatedPlan, planExpiry: expiryDate },
+        { new: true }
+      );
+
+      console.log("Updated User:", updatedUser);
     }
 
     res.json({ success: true, paymentId: razorpay_payment_id });

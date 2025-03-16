@@ -54,8 +54,8 @@ const Pricing = () => {
 
   const handlePayment = async (plan) => {
     const planPrices = {
-      "Pro Plan": 499,
-      "Enterprise Plan": 1499,
+      "Pro Plan": 1,
+      "Enterprise Plan": 4,
     };
 
     const amount = planPrices[plan];
