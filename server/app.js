@@ -96,14 +96,26 @@ app.post("/api/generate-doc", async (req, res) => {
     // Log the incoming request body
     console.log("Received repo content:", repoContent);
 
-    // Call the GPT-4 API to generate documentation
+    // Create a system message to instruct the assistant
+    const systemMessage = {
+      role: "system",
+      content: "You are an expert in analyzing code and generating detailed documentation."
+    };
+
+    // Create a user message that includes the repository content
+    const userMessage = {
+      role: "user",
+      content: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`
+    };
+
+    // Call the GPT-3.5 API to generate documentation using the chat completions endpoint
     const response = await axios.post(
-      "https://api.openai.com/v1/completions", 
+      "https://api.openai.com/v1/chat/completions", 
       {
-        model: "gpt-4",  // Assuming you have access to GPT-4
-        prompt: `Analyze the following code and generate detailed documentation:\n\n${repoContent}`,
-        max_tokens: 1500,
-        temperature: 0.7,
+        model: "gpt-3.5-turbo",  // Use the free GPT-3.5 model
+        messages: [systemMessage, userMessage],  // Send both the system and user messages
+        max_tokens: 1500,  // Adjust the token limit if needed
+        temperature: 0.7,  // Adjust temperature based on your desired output style
       },
       {
         headers: {
@@ -117,7 +129,7 @@ app.post("/api/generate-doc", async (req, res) => {
     console.log("OpenAI response:", response.data);
 
     // Send the response back to the frontend with the generated documentation
-    res.json({ documentation: response.data.choices[0].text });
+    res.json({ documentation: response.data.choices[0].message.content });
   } catch (error) {
     console.error("Error calling GPT API:", error);
 
@@ -136,6 +148,7 @@ app.post("/api/generate-doc", async (req, res) => {
     res.status(500).json({ error: "Failed to generate documentation" });
   }
 });
+
 
 
 setInterval(async () => {
