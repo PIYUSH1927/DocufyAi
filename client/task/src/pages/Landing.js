@@ -13,7 +13,7 @@ const Landing = () => {
         transition={{ duration: 1 }}
         className="ln-hero"
       >
-        <h1 className="ln-title">Docufy.Ai</h1>
+        <h1 className="ln-title">DocufyAi</h1>
         <p className="ln-subtitle">
           This is a SaaS platform that automates code documentation using AI. Developers connect their repositories, and the system generates structured, easy-to-read documentation. It keeps docs updated as the codebase evolves, making it ideal for teams managing large or rapidly changing projects.
         </p>
@@ -36,17 +36,17 @@ const Landing = () => {
           },
           {
             title: "GitHub Integration",
-            description: "Easily connect your GitHub repository to Docufy.Ai, and it will automatically update your documentation whenever your code changes keeping everything in sync effortlessly.",
+            description: "Easily connect your GitHub repository to DocufyAi, and it will automatically update your documentation whenever your code changes keeping everything in sync effortlessly.",
             icon: <FaGithub size={40} color="#38bdf8" />
           },
           {
             title: "API Reference Docs",
-            description: "Docufy.Ai automatically generates detailed API documentation, including endpoints, request parameters, and responses ensuring clear, well structured references for developers.",
+            description: "DocufyAi automatically generates detailed API documentation, including endpoints, request parameters, and responses ensuring clear, well structured references for developers.",
             icon: <FaCode size={40} color="#38bdf8" />
           },
           {
             title: "Versioned Documentation",
-            description: "Track changes effortlessly as Docufy.Ai maintains versioned documentation, allowing you to compare updates, revert to previous versions, and ensure consistency over time.",
+            description: "Track changes effortlessly as DocufyAi maintains versioned documentation, allowing you to compare updates, revert to previous versions, and ensure consistency over time.",
             icon: <FaHistory size={40} color="#38bdf8" />
           }
         ].map((feature, index) => (

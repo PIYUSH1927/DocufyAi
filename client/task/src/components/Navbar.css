@@ -16,7 +16,7 @@
 }
 
 .nb-logo {
-  height: 40px;
+  height: 50px;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 }
@@ -144,7 +144,7 @@
   }
 
   .nb-logo {
-      height: 28px;
+      height: 40px;
 
   }
 

@@ -89,7 +89,7 @@ const Pricing = () => {
         key,
         amount: amount * 100,
         currency: "INR",
-        name: "Docufy.Ai",
+        name: "DocufyAi",
         description: `${plan} Subscription`,
         order_id: data.orderId,
 
