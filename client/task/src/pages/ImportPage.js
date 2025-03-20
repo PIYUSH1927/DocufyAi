@@ -19,6 +19,7 @@ const ImportPage = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [lastSyncedCommit, setLastSyncedCommit] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
@@ -53,7 +54,7 @@ const ImportPage = () => {
         }
       );
   
-      return response.data.default_branch; // Returns the actual default branch name
+      return response.data.default_branch; 
     } catch (error) {
       console.error("Error fetching default branch:", error);
       return null;
@@ -63,7 +64,7 @@ const ImportPage = () => {
 
   const fetchLatestCommitHash = async () => {
     try {
-      const branch = await fetchDefaultBranch(); // Get default branch first
+      const branch = await fetchDefaultBranch();
       if (!branch) {
         console.error("Could not determine default branch.");
         return null;
@@ -76,7 +77,7 @@ const ImportPage = () => {
         }
       );
   
-      return response.data.sha; // Returns the latest commit hash
+      return response.data.sha;
     } catch (error) {
       console.error("Error fetching latest commit:", error);
       return null;
@@ -204,9 +205,9 @@ const ImportPage = () => {
 
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
-
+  
     const maxLength = 2000;
-
+  
     if (userInput.length > maxLength) {
       const tooLongMessage = {
         type: "bot",
@@ -215,22 +216,24 @@ const ImportPage = () => {
       };
   
       setMessages((prev) => [...prev, tooLongMessage]);
-      setUserInput(""); // Clear the input field
+      setUserInput(""); 
       return;
     }
-    
-
+  
+    setIsGenerating(true);
+  
     const timestamp = new Date().toISOString();
     const token = localStorage.getItem("token");
-
+  
     if (!token) {
       alert("User not authenticated!");
+      setIsGenerating(false); 
       return;
     }
-
+  
     const decoded = JSON.parse(atob(token.split(".")[1]));
     const userId = decoded.id;
-
+  
     const userMessage = {
       userId,
       repoName,
@@ -238,9 +241,10 @@ const ImportPage = () => {
       text: userInput,
       timestamp,
     };
-
+    const inputText = userInput;
+    setUserInput("");
     setMessages((prev) => [...prev, userMessage]); 
-
+  
     try {
       await axios.post(
         "https://sooru-ai.onrender.com/api/messages",
@@ -249,13 +253,66 @@ const ImportPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      const loadingMessage = {
+        type: "bot",
+        text: "🔄 Generating response...",
+        isLoading: true, 
+        timestamp: new Date().toISOString(),
+      };
+      
+      setMessages((prev) => [...prev, loadingMessage]);
+  
+      const generateDocResponse = await axios.post(
+        "https://sooru-ai.onrender.com/api/generate-doc",
+        { userInput: inputText },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setMessages((prev) => prev.filter(msg => !msg.isLoading));
+      
+      if (generateDocResponse.data.documentation) {
+        const botResponse = {
+          userId,
+          repoName,
+          type: "bot",
+          text: generateDocResponse.data.documentation,
+          timestamp: new Date().toISOString(),
+        };
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages",
+          botResponse,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setMessages((prev) => [...prev, botResponse]);
+      } else {
+        const errorMessage = {
+          type: "bot",
+          text: "⚠️ Failed to generate documentation. Please try again.",
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
+  
       fetchMessages();
     } catch (error) {
       console.error("Error generating response:", error);
+      setMessages((prev) => prev.filter(msg => !msg.isLoading));
+      
+      const errorMessage = {
+        type: "bot",
+        text: "⚠️ An error occurred. Please try again.",
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsGenerating(false);
     }
-
-    setUserInput("");
   };
 
   const handleDownloadPDF = (index) => {
@@ -315,11 +372,15 @@ const ImportPage = () => {
     }, 2000);
   };
 
+
+
   const handleSyncLatest = async () => {
     if (isSyncing) return;
-  
+    
     setIsSyncing(true);
-  
+    
+    const syncMessageTimestamp = new Date().toISOString();
+    
     try {
       const token = localStorage.getItem("token");
       if (!token || !user?.username) {
@@ -327,31 +388,30 @@ const ImportPage = () => {
         setIsSyncing(false);
         return;
       }
-  
+    
       const latestCommit = await fetchLatestCommitHash();
       if (!latestCommit) {
         alert("Failed to check repository changes. Please try again.");
         setIsSyncing(false);
         return;
       }
-  
-      // If no new commit, prevent unnecessary sync
+    
       if (latestCommit === lastSyncedCommit) {
         alert("✅ Already synced. No new changes found.");
         setIsSyncing(false);
         return;
       }
-  
+    
       const syncMessage = {
         userId: user.id,
         repoName,
         type: "bot",
         text: "🔄 Syncing latest changes...",
-        timestamp: new Date().toISOString(),
+        timestamp: syncMessageTimestamp,
       };
-  
+    
       setMessages((prevMessages) => [...prevMessages, syncMessage]);
-  
+    
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/clone",
         {
@@ -360,36 +420,80 @@ const ImportPage = () => {
           username: user.username,
         }
       );
-  
+    
       if (!response.data.success) {
+        setMessages(prevMessages => 
+          prevMessages.filter(msg => msg.timestamp !== syncMessageTimestamp)
+        );
         alert("❌ Sync failed: " + response.data.message);
         setIsSyncing(false);
         return;
       }
-  
-      // Update last synced commit hash
+    
       setLastSyncedCommit(latestCommit);
-  
+    
       const updatedAnalysis = response.data.analysis;
-      const newMessage = {
-        userId: user.id,
-        repoName,
-        type: "bot",
-        text: JSON.stringify(updatedAnalysis).slice(0, 10000),
-        timestamp: new Date().toISOString(),
-      };
-  
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-  
-      await axios.post(
-        "https://sooru-ai.onrender.com/api/messages",
-        newMessage,
+      const repoContent = JSON.stringify(updatedAnalysis);
+      
+      const generateDocResponse = await axios.post(
+        "https://sooru-ai.onrender.com/api/generate-doc",
+        { repoContent },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
+
+      setMessages(prevMessages => 
+        prevMessages.filter(msg => msg.timestamp !== syncMessageTimestamp)
+      );
+      
+      if (generateDocResponse.data.documentation) {
+        const newMessage = {
+          userId: user.id,
+          repoName,
+          type: "bot",
+          text: generateDocResponse.data.documentation,
+          timestamp: new Date().toISOString(),
+        };
+  
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+  
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages",
+          newMessage,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      } else {
+        const errorMessage = {
+          userId: user.id,
+          repoName,
+          type: "bot",
+          text: "⚠️ Failed to generate documentation. Please try again later.",
+          timestamp: new Date().toISOString(),
+        };
+  
+        setMessages((prevMessages) => [...prevMessages, errorMessage]);
+  
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages",
+          errorMessage,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      }
     } catch (error) {
       console.error("Sync error:", error);
+      
+      setMessages(prevMessages => 
+        prevMessages.filter(msg => msg.timestamp !== syncMessageTimestamp)
+      );
+      
       alert("❌ Sync failed. Please try again.");
     }
   
@@ -397,7 +501,6 @@ const ImportPage = () => {
       setIsSyncing(false);
     }, 10000);
   };
-  
 
   return (
     <div className="import-page-container">
@@ -458,39 +561,46 @@ const ImportPage = () => {
       </div>
 
       <div className="import-chat-container">
-        {messages.map((msg, index) => (
-          <div key={index} className={`import-chat-message ${msg.type}`}>
-            {msg.type === "bot" && (
-              <div className="bot-message-icons">
-                <span className="timestamp">{formatDate(msg.timestamp)}</span>
-                <div className="tooltip">
-                  <Copy
-                    size={16}
-                    className="icon"
-                    onClick={() => handleCopy(msg.text, index)}
-                    title={copyStatus?.[index] || "Copy text"}
-                  />
-                  <span className="tooltip-text">
-                    {copyStatus[index] || "Copy text"}
-                  </span>
-                </div>
-                <div className="tooltip">
-                  <Download
-                    size={16}
-                    className="icon"
-                    onClick={() => handleDownloadPDF(index)}
-                    title={downloadStatus?.[index] || "Download as PDF"}
-                  />
-                  <span className="tooltip-text">
-                    {downloadStatus[index] || "Download as PDF"}
-                  </span>
-                </div>
-              </div>
-            )}
-            {msg.text}
-            <div ref={messagesEndRef}></div>
-          </div>
-        ))}
+      {messages.map((msg, index) => (
+  <div key={index} className={`import-chat-message ${msg.type}`}>
+    {msg.type === "bot" && !msg.isLoading && (
+      <div className="bot-message-icons">
+        <span className="timestamp">{formatDate(msg.timestamp)}</span>
+        <div className="tooltip">
+          <Copy
+            size={16}
+            className="icon"
+            onClick={() => handleCopy(msg.text, index)}
+            title={copyStatus?.[index] || "Copy text"}
+          />
+          <span className="tooltip-text">
+            {copyStatus[index] || "Copy text"}
+          </span>
+        </div>
+        <div className="tooltip">
+          <Download
+            size={16}
+            className="icon"
+            onClick={() => handleDownloadPDF(index)}
+            title={downloadStatus?.[index] || "Download as PDF"}
+          />
+          <span className="tooltip-text">
+            {downloadStatus[index] || "Download as PDF"}
+          </span>
+        </div>
+      </div>
+    )}
+    {msg.isLoading ? (
+      <div className="loading-message">
+        <span className="spinner"></span>
+        <span>Generating response...</span>
+      </div>
+    ) : (
+      msg.text
+    )}
+    <div ref={messagesEndRef}></div>
+  </div>
+))}
       </div>
 
       <div className="import-input-container">
