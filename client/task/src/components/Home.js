@@ -178,7 +178,7 @@ const Home = () => {
         setIsImporting(false);
         return;
       }
-  
+
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("No token found in localStorage");
@@ -186,16 +186,16 @@ const Home = () => {
         setIsImporting(false);
         return;
       }
-  
+
       const planLimits = {
         "Free Plan (₹0/month)": 1,
         "Pro Plan (₹499/month)": 10,
         "Enterprise Plan (₹1,499/month)": Infinity,
       };
-  
+
       const userPlan = user?.currentPlan || "Free Plan (₹0/month)";
       const allowedImports = planLimits[userPlan];
-  
+
       if (user.Imports >= allowedImports) {
         if (userPlan === "Pro Plan (₹499/month)") {
           alert(
@@ -207,7 +207,7 @@ const Home = () => {
         setIsImporting(false);
         return;
       }
-  
+
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/clone",
         {
@@ -216,159 +216,59 @@ const Home = () => {
           username: user.username,
         }
       );
-  
+
       if (!response.data.success) {
         alert(response.data.message);
         setIsImporting(false);
         return;
       }
-  
+
       const analysis = response.data.analysis;
-      
-      // Determine if we need chunking based on size of analysis
-      const analysisString = JSON.stringify(analysis);
-      const needsChunking = analysisString.length > 100000; // Adjust threshold as needed
-      
-      let documentation = "";
-      
-      if (needsChunking) {
-        // Step 1: Prepare structured chunks
-        const chunks = prepareStructuredChunks(analysis);
-        
-        // Step 2: Process each chunk with appropriate context
-        let previousContext = "";
-        
-        for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
-          const isFirstChunk = i === 0;
-          const isLastChunk = i === chunks.length - 1;
-          
-          // Add context information for this chunk
-          let contextualizedChunk;
-          
-          if (isFirstChunk) {
-            // First chunk should create introduction and overall structure
-            contextualizedChunk = {
-              ...chunk,
-              chunkType: "introduction",
-              totalChunks: chunks.length
-            };
-          } else if (isLastChunk) {
-            // Last chunk should create conclusion
-            contextualizedChunk = {
-              ...chunk,
-              chunkType: "conclusion",
-              previousContext,
-              totalChunks: chunks.length
-            };
-          } else {
-            // Middle chunks should focus on specific details
-            contextualizedChunk = {
-              ...chunk,
-              chunkType: "content",
-              chunkNumber: i,
-              previousContext,
-              totalChunks: chunks.length
-            };
-          }
-          
-          // Process this chunk
-          const chunkContent = JSON.stringify(contextualizedChunk);
-          
-          const chunkResponse = await axios.post(
-            "https://sooru-ai.onrender.com/api/generate-doc",
-            { 
-              repoContent: chunkContent,
-              userInput: isFirstChunk ? null : `Continue documentation from previous section. Previous context: ${previousContext.slice(0, 500)}...` 
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          
-          if (chunkResponse.data.documentation) {
-            const chunkDoc = chunkResponse.data.documentation;
-            documentation += (i > 0 ? "\n\n" : "") + chunkDoc;
-            
-            // Save a summary of this chunk as context for the next chunk
-            previousContext = chunkDoc.slice(0, 1000); // Just take the beginning as context
-          }
-        }
-        
-        // Step 3: Final pass to clean up transitions and make it cohesive
-        const finalResponse = await axios.post(
-          "https://sooru-ai.onrender.com/api/generate-doc",
-          { 
-            userInput: `I have documentation in multiple parts for repository ${repo.name}. 
-                       Please review and edit the full documentation to ensure it's cohesive,
-                       well-structured, and without repetitive sections or awkward transitions:
-                       ${documentation.slice(0, 100000)}` // Length limit for safety
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        
-        if (finalResponse.data.documentation) {
-          documentation = finalResponse.data.documentation;
-        }
-        
-      } else {
-        // Standard processing for normal-sized repositories
-        const repoContent = analysisString;
-        
-        const generateDocResponse = await axios.post(
-          "https://sooru-ai.onrender.com/api/generate-doc",
-          { repoContent },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        
-        if (generateDocResponse.data.documentation) {
-          documentation = generateDocResponse.data.documentation;
-        } else {
-          alert("Failed to generate documentation. Please try again.");
-          setIsImporting(false);
-          return;
-        }
-      }
-      
-      // Proceed with saving the complete documentation
-      const initialMessage = {
-        userId: user._id,
-        repoName: repo.name,
-        type: "bot",
-        text: documentation,
-        timestamp: new Date().toISOString(),
-      };
-  
-      await axios.post(
-        "https://sooru-ai.onrender.com/api/messages",
-        initialMessage,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-  
-      await axios.put(
-        `https://sooru-ai.onrender.com/api/user/${user._id}`,
-        { Imports: user.Imports + 1 },
+
+      const repoContent = JSON.stringify(analysis);
+
+      const generateDocResponse = await axios.post(
+        "https://sooru-ai.onrender.com/api/generate-doc",
+        { repoContent },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
-  
-      navigate(`/import/${repo.name}`);
+
+      if (generateDocResponse.data.success) {
+        const documentation = generateDocResponse.data.documentation;
+
+        const initialMessage = {
+          userId: user._id,
+          repoName: repo.name,
+          type: "bot",
+          text: documentation,
+          timestamp: new Date().toISOString(),
+        };
+
+        await axios.post(
+          "https://sooru-ai.onrender.com/api/messages",
+          initialMessage,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        await axios.put(
+          `https://sooru-ai.onrender.com/api/user/${user._id}`,
+          { Imports: user.Imports + 1 },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        navigate(`/import/${repo.name}`);
+      } else {
+        alert("Failed to generate documentation. Please try again.");
+      }
     } catch (error) {
       console.warn("⚠️ Non-critical error:", error.message);
       alert(
@@ -378,91 +278,6 @@ const Home = () => {
     } finally {
       setIsImporting(false);
     }
-  };
-  
-  // Helper function to break repository analysis into structured chunks
-  const prepareStructuredChunks = (analysis) => {
-    const chunks = [];
-    
-    // Create overview chunk with repository structure
-    const overviewChunk = {
-      overview: true,
-      totalFiles: analysis.totalFiles,
-      fileList: analysis.files.map(file => file.file),
-      fileTypes: getFileTypes(analysis.files),
-    };
-    chunks.push(overviewChunk);
-    
-    // Group files by type/directory for better organization
-    const fileGroups = groupFilesByDirectory(analysis.files);
-    
-    // Create chunks based on file groups
-    Object.keys(fileGroups).forEach(groupName => {
-      const groupFiles = fileGroups[groupName];
-      
-      // If group is too large, split it further
-      if (JSON.stringify(groupFiles).length > 50000) {
-        const subChunks = splitArrayIntoChunks(groupFiles, 5);
-        subChunks.forEach((subChunk, index) => {
-          chunks.push({
-            groupName,
-            partNumber: index + 1,
-            totalParts: subChunks.length,
-            files: subChunk
-          });
-        });
-      } else {
-        chunks.push({
-          groupName,
-          files: groupFiles
-        });
-      }
-    });
-    
-    return chunks;
-  };
-  
-  // Helper to group files by directory
-  const groupFilesByDirectory = (files) => {
-    const groups = {};
-    
-    files.forEach(file => {
-      const parts = file.file.split('/');
-      let groupName = parts.length > 1 ? parts[0] : 'root';
-      
-      if (!groups[groupName]) {
-        groups[groupName] = [];
-      }
-      groups[groupName].push(file);
-    });
-    
-    return groups;
-  };
-  
-  // Helper to get file types from repo
-  const getFileTypes = (files) => {
-    const types = {};
-    
-    files.forEach(file => {
-      const ext = file.file.split('.').pop();
-      if (ext) {
-        types[ext] = (types[ext] || 0) + 1;
-      }
-    });
-    
-    return types;
-  };
-  
-  // Helper to split array into chunks
-  const splitArrayIntoChunks = (array, maxChunks) => {
-    const result = [];
-    const chunkSize = Math.ceil(array.length / maxChunks);
-    
-    for (let i = 0; i < array.length; i += chunkSize) {
-      result.push(array.slice(i, i + chunkSize));
-    }
-    
-    return result;
   };
 
   const handleDeleteChat = async (repoName) => {
