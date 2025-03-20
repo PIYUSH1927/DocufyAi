@@ -88,6 +88,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  
 });
 
+
+
 let previousDocumentation = "";
 
 app.post("/api/generate-doc", async (req, res) => {
@@ -96,55 +98,161 @@ app.post("/api/generate-doc", async (req, res) => {
   if (!repoContent && !userInput) {
     return res.status(400).json({ error: "No input provided." });
   }
+
   try {
     const systemMessage = {
       role: "system",
-      content: `You are DocufyAi, an advanced AI specialized in generating and refining documentation for repositories. Your primary functions:
+      content: `You are DocufyAi, an advanced AI specialized in generating and refining comprehensive technical documentation for repositories. Your primary functions:
       
-      - **Generate Documentation**: Analyze repository content and create structured documentation.
-      - **Modify & Update**: If requested, apply changes to the previously generated documentation.
-      - **API Documentation**: If APIs exist, document endpoints, parameters, and responses.
+      - **Generate Complete Documentation**: Analyze repository content and create structured, detailed documentation.
+      - **Code Architecture Documentation**: Document the overall architecture, data flow, and relationships between components.
+      - **File-by-File Analysis**: For each file, document its purpose, imports, exports, and how it fits into the larger project.
+      - **Function Documentation**: Document each function's purpose, parameters, return values, side effects, and examples of use.
+      - **API Documentation**: If APIs exist, document endpoints, parameters, responses, and authentication requirements.
+      - **Data Flow Analysis**: Explain how data moves through the application, including state management and data transformations.
+      - **User Workflow Documentation**: Document common user workflows and how the code facilitates them.
+      - **Dependencies & Requirements**: Document external dependencies, environment requirements, and setup instructions.
+      
+      **Documentation Structure:**
+      1. Start with a high-level overview of the project.
+      2. Explain the architecture and main components.
+      3. Document the file structure with explanations of key files.
+      4. Provide detailed function documentation grouped by file/module.
+      5. Include API documentation if applicable.
+      6. Explain data flow and state management.
+      7. Include setup, installation, and usage instructions if possible.
       
       **Rules:**
-      1. If repository content is provided, generate **detailed documentation**.
+      1. If repository content is provided, generate **detailed, comprehensive documentation**.
       2. If the user requests modifications, update the **previously generated documentation**.
-      3. If the user asks something unrelated, respond:  
+      3. Focus on explaining code purpose and flow, not just describing what's visibly apparent.
+      4. Use headings, subheadings, code examples, and bullet points for clarity.
+      5. If the user asks something unrelated, respond:  
          _"I am DocufyAi, designed for documentation-related tasks. Please provide relevant requests."_
-      4. If the user asks about AI models or company details, respond:  
+      6. If the user asks about AI models or company details, respond:  
          _"I am DocufyAi, a documentation automation tool that integrates with GitHub repositories."_`
     };
-
-    let userMessageContent = "";
 
     if (userInput) {
       if (userInput.trim().toLowerCase() === "continue") {
         if (!previousDocumentation) {
           return res.status(400).json({ error: "No previous documentation found to continue." });
         }
-        userMessageContent = `Continue from where you left off:\n\n${previousDocumentation}`;
+        const userMessage = { 
+          role: "user", 
+          content: `Continue from where you left off:\n\n${previousDocumentation}` 
+        };
+        
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",  
+          messages: [systemMessage, userMessage],
+          max_tokens: 5000,
+          temperature: 0.6,
+        });
+
+        const newResponse = completion.choices[0].message.content;
+        previousDocumentation = newResponse;
+        return res.json({ documentation: newResponse });
       } else {
-        userMessageContent = `Modify the previously generated documentation as per the following request:\n\n"${userInput}"\n\nEnsure the documentation remains structured and clear.`;
+        const userMessage = { 
+          role: "user", 
+          content: `Modify the previously generated documentation as per the following request:\n\n"${userInput}"\n\nEnsure the documentation remains structured and clear.` 
+        };
+        
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",  
+          messages: [systemMessage, userMessage],
+          max_tokens: 5000,
+          temperature: 0.6,
+        });
+
+        const newResponse = completion.choices[0].message.content;
+        previousDocumentation = newResponse;
+        return res.json({ documentation: newResponse });
       }
-    } else {
-      userMessageContent = `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}`;
     }
+    if (repoContent) {
+      const contentSize = repoContent.length;
+      const isLargeRepo = contentSize > 100000; 
+      
+      if (!isLargeRepo) {
+        const userMessage = { 
+          role: "user", 
+          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}` 
+        };
+        
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",  
+          messages: [systemMessage, userMessage],
+          max_tokens: 5000,
+          temperature: 0.6,
+        });
 
-    const userMessage = { role: "user", content: userMessageContent };
+        const newResponse = completion.choices[0].message.content;
+        previousDocumentation = newResponse;
+        return res.json({ documentation: newResponse });
+      } 
+      
+      else {
+        let parsedContent;
+        try {
+          parsedContent = JSON.parse(repoContent);
+        } catch (error) {
+          return res.status(400).json({ error: "Invalid repository content format." });
+        }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",  
-      messages: [systemMessage, userMessage],
-      max_tokens: 3500,
-      temperature: 0.6,
-    });
+        const chunks = prepareChunks(parsedContent);
+        let fullDocumentation = "";
+        let contextSummary = "";
+        
+        for (let i = 0; i < chunks.length; i++) {
+          const chunk = chunks[i];
+          const isFirstChunk = i === 0;
+          const isLastChunk = i === chunks.length - 1;
+          
+          let chunkPrompt;
+          if (isFirstChunk) {
+            chunkPrompt = `This is a large repository, so I'll analyze it in parts. For this first part, focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${JSON.stringify(chunk)}`;
+          } else if (isLastChunk) {
+            chunkPrompt = `This is the final part of the repository. Based on this content and considering the previous parts (summarized as: ${contextSummary}), complete the documentation with any remaining details and a conclusion:\n\n${JSON.stringify(chunk)}`;
+          } else {
+            chunkPrompt = `This is part ${i+1} of the repository analysis. Using the previous context (${contextSummary}) as a foundation, continue the documentation by analyzing the following content:\n\n${JSON.stringify(chunk)}`;
+          }
+          
+          const chunkMessage = { role: "user", content: chunkPrompt };
+          
+          const chunkCompletion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",  
+            messages: [systemMessage, chunkMessage],
+            max_tokens: 5000,
+            temperature: 0.6,
+          });
+          
+          const chunkResponse = chunkCompletion.choices[0].message.content;
+          fullDocumentation += (i > 0 ? "\n\n" : "") + chunkResponse;
+          
+          contextSummary = chunkResponse.slice(0, 500) + "...";
+        }
 
-    const newResponse = completion.choices[0].message.content;
-    
-    // Store only the latest response for "continue"
-    previousDocumentation = newResponse;  
-
-    res.json({ documentation: newResponse });
-
+        if (chunks.length > 1) {
+          const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, well-structured, and without repetitive sections or awkward transitions:\n\n${fullDocumentation}`;
+          
+          const refinementMessage = { role: "user", content: refinementPrompt };
+          
+          const refinementCompletion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",  
+            messages: [systemMessage, refinementMessage],
+            max_tokens: 5000,
+            temperature: 0.6,
+          });
+          
+          fullDocumentation = refinementCompletion.choices[0].message.content;
+        }
+        
+        previousDocumentation = fullDocumentation;
+        return res.json({ documentation: fullDocumentation });
+      }
+    }
   } catch (error) {
     console.error("Error calling GPT API:", error);
 
@@ -159,6 +267,90 @@ app.post("/api/generate-doc", async (req, res) => {
     res.status(500).json({ error: "Failed to generate documentation" });
   }
 });
+
+function prepareChunks(repoContent) {
+  const chunks = [];
+  const files = repoContent.files || [];
+  const totalFiles = repoContent.totalFiles || files.length;
+  
+  const overview = {
+    totalFiles,
+    fileList: files.map(f => f.file),
+    structure: analyzeStructure(files)
+  };
+  chunks.push(overview);
+  
+  const fileGroups = groupFilesByDirectory(files);
+  
+  Object.keys(fileGroups).forEach(directory => {
+    const dirFiles = fileGroups[directory];
+    
+    if (JSON.stringify(dirFiles).length > 50000) {
+      const subChunks = splitArrayIntoChunks(dirFiles, 3);
+      subChunks.forEach(subChunk => {
+        chunks.push({
+          directory,
+          files: subChunk
+        });
+      });
+    } else {
+      chunks.push({
+        directory,
+        files: dirFiles
+      });
+    }
+  });
+  
+  return chunks;
+}
+
+
+function analyzeStructure(files) {
+  const extensions = {};
+  const directories = {};
+  
+  files.forEach(file => {
+    const ext = file.file.split('.').pop();
+    if (ext) {
+      extensions[ext] = (extensions[ext] || 0) + 1;
+    }
+    
+    const dir = file.file.split('/')[0];
+    if (dir) {
+      directories[dir] = (directories[dir] || 0) + 1;
+    }
+  });
+  
+  return { extensions, directories };
+}
+
+
+function groupFilesByDirectory(files) {
+  const groups = {};
+  
+  files.forEach(file => {
+    const parts = file.file.split('/');
+    const directory = parts.length > 1 ? parts[0] : 'root';
+    
+    if (!groups[directory]) {
+      groups[directory] = [];
+    }
+    groups[directory].push(file);
+  });
+  
+  return groups;
+}
+
+function splitArrayIntoChunks(array, numChunks) {
+  const result = [];
+  const chunkSize = Math.ceil(array.length / numChunks);
+  
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+  
+  return result;
+}
 
 setInterval(async () => {
   console.log("Cleaning up old repos...");
