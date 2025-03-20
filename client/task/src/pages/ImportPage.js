@@ -206,7 +206,7 @@ const ImportPage = () => {
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
   
-    const maxLength = 2000;
+    const maxLength = 5000;
   
     if (userInput.length > maxLength) {
       const tooLongMessage = {
