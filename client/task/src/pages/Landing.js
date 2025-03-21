@@ -1,9 +1,11 @@
 import React from "react";
 import "./Landing1.css";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { FaGithub, FaCode, FaHistory, FaCogs } from "react-icons/fa";
 
 const Landing = () => {
+  const navigate = useNavigate();
   return (
     <div className="ln">
     
@@ -18,13 +20,13 @@ const Landing = () => {
           This is a SaaS platform that automates code documentation using AI. Developers connect their repositories, and the system generates structured, easy-to-read documentation. It keeps docs updated as the codebase evolves, making it ideal for teams managing large or rapidly changing projects.
         </p>
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="ln-btn"
-        >
-          <a href="/register" style={{textDecoration:"none", color:"white"}}>Get Started</a>
-          
-        </motion.button>
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className="ln-btn"
+      onClick={() => navigate("/register")} 
+    >
+      Get Started
+    </motion.button>
       </motion.div>
       
       <div className="ln-features">
