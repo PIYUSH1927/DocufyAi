@@ -3,6 +3,11 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Copy, Download, RefreshCw } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github.css";
+
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./ImportPage.css";
@@ -31,9 +36,8 @@ const ImportPage = () => {
 
   const rawAnalysis = location.state?.analysis || "Loading...";
 
-
   const formatAnalysis = (analysis) => {
-    if (typeof analysis === "string") return analysis; 
+    if (typeof analysis === "string") return analysis;
     if (!analysis || typeof analysis !== "object")
       return "Invalid analysis data.";
 
@@ -53,14 +57,13 @@ const ImportPage = () => {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-  
-      return response.data.default_branch; 
+
+      return response.data.default_branch;
     } catch (error) {
       console.error("Error fetching default branch:", error);
       return null;
     }
   };
-  
 
   const fetchLatestCommitHash = async () => {
     try {
@@ -69,22 +72,20 @@ const ImportPage = () => {
         console.error("Could not determine default branch.");
         return null;
       }
-  
+
       const response = await axios.get(
         `https://api.github.com/repos/${user.username}/${repoName}/commits/${branch}`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-  
+
       return response.data.sha;
     } catch (error) {
       console.error("Error fetching latest commit:", error);
       return null;
     }
   };
-  
-  
 
   const fetchMessages = async () => {
     try {
@@ -103,7 +104,7 @@ const ImportPage = () => {
         (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
       );
 
-      setMessages(sortedMessages); 
+      setMessages(sortedMessages);
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -205,35 +206,35 @@ const ImportPage = () => {
 
   const handleGenerate = async () => {
     if (!userInput.trim()) return;
-  
+
     const maxLength = 5000;
-  
+
     if (userInput.length > maxLength) {
       const tooLongMessage = {
         type: "bot",
         text: "⚠️ Your input is too long. Please shorten it and try again.",
         timestamp: new Date().toISOString(),
       };
-  
+
       setMessages((prev) => [...prev, tooLongMessage]);
-      setUserInput(""); 
+      setUserInput("");
       return;
     }
-  
+
     setIsGenerating(true);
-  
+
     const timestamp = new Date().toISOString();
     const token = localStorage.getItem("token");
-  
+
     if (!token) {
       alert("User not authenticated!");
-      setIsGenerating(false); 
+      setIsGenerating(false);
       return;
     }
-  
+
     const decoded = JSON.parse(atob(token.split(".")[1]));
     const userId = decoded.id;
-  
+
     const userMessage = {
       userId,
       repoName,
@@ -243,8 +244,8 @@ const ImportPage = () => {
     };
     const inputText = userInput;
     setUserInput("");
-    setMessages((prev) => [...prev, userMessage]); 
-  
+    setMessages((prev) => [...prev, userMessage]);
+
     try {
       await axios.post(
         "https://sooru-ai.onrender.com/api/messages",
@@ -256,12 +257,12 @@ const ImportPage = () => {
       const loadingMessage = {
         type: "bot",
         text: "🔄 Generating response...",
-        isLoading: true, 
+        isLoading: true,
         timestamp: new Date().toISOString(),
       };
-      
+
       setMessages((prev) => [...prev, loadingMessage]);
-  
+
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
         { userInput: inputText },
@@ -272,8 +273,8 @@ const ImportPage = () => {
           },
         }
       );
-      setMessages((prev) => prev.filter(msg => !msg.isLoading));
-      
+      setMessages((prev) => prev.filter((msg) => !msg.isLoading));
+
       if (generateDocResponse.data.documentation) {
         const botResponse = {
           userId,
@@ -298,12 +299,12 @@ const ImportPage = () => {
         };
         setMessages((prev) => [...prev, errorMessage]);
       }
-  
+
       fetchMessages();
     } catch (error) {
       console.error("Error generating response:", error);
-      setMessages((prev) => prev.filter(msg => !msg.isLoading));
-      
+      setMessages((prev) => prev.filter((msg) => !msg.isLoading));
+
       const errorMessage = {
         type: "bot",
         text: "⚠️ An error occurred. Please try again.",
@@ -372,15 +373,13 @@ const ImportPage = () => {
     }, 2000);
   };
 
-
-
   const handleSyncLatest = async () => {
     if (isSyncing) return;
-    
+
     setIsSyncing(true);
-    
+
     const syncMessageTimestamp = new Date().toISOString();
-    
+
     try {
       const token = localStorage.getItem("token");
       if (!token || !user?.username) {
@@ -388,20 +387,20 @@ const ImportPage = () => {
         setIsSyncing(false);
         return;
       }
-    
+
       const latestCommit = await fetchLatestCommitHash();
       if (!latestCommit) {
         alert("Failed to check repository changes. Please try again.");
         setIsSyncing(false);
         return;
       }
-    
+
       if (latestCommit === lastSyncedCommit) {
         alert("✅ Already synced. No new changes found.");
         setIsSyncing(false);
         return;
       }
-    
+
       const syncMessage = {
         userId: user.id,
         repoName,
@@ -409,9 +408,9 @@ const ImportPage = () => {
         text: "🔄 Syncing latest changes...",
         timestamp: syncMessageTimestamp,
       };
-    
+
       setMessages((prevMessages) => [...prevMessages, syncMessage]);
-    
+
       const response = await axios.post(
         "https://sooru-ai.onrender.com/api/github/clone",
         {
@@ -420,21 +419,21 @@ const ImportPage = () => {
           username: user.username,
         }
       );
-    
+
       if (!response.data.success) {
-        setMessages(prevMessages => 
-          prevMessages.filter(msg => msg.timestamp !== syncMessageTimestamp)
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.timestamp !== syncMessageTimestamp)
         );
         alert("❌ Sync failed: " + response.data.message);
         setIsSyncing(false);
         return;
       }
-    
+
       setLastSyncedCommit(latestCommit);
-    
+
       const updatedAnalysis = response.data.analysis;
       const repoContent = JSON.stringify(updatedAnalysis);
-      
+
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
         { repoContent },
@@ -446,10 +445,10 @@ const ImportPage = () => {
         }
       );
 
-      setMessages(prevMessages => 
-        prevMessages.filter(msg => msg.timestamp !== syncMessageTimestamp)
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.timestamp !== syncMessageTimestamp)
       );
-      
+
       if (generateDocResponse.data.documentation) {
         const newMessage = {
           userId: user.id,
@@ -458,9 +457,9 @@ const ImportPage = () => {
           text: generateDocResponse.data.documentation,
           timestamp: new Date().toISOString(),
         };
-  
+
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-  
+
         await axios.post(
           "https://sooru-ai.onrender.com/api/messages",
           newMessage,
@@ -476,9 +475,9 @@ const ImportPage = () => {
           text: "⚠️ Failed to generate documentation. Please try again later.",
           timestamp: new Date().toISOString(),
         };
-  
+
         setMessages((prevMessages) => [...prevMessages, errorMessage]);
-  
+
         await axios.post(
           "https://sooru-ai.onrender.com/api/messages",
           errorMessage,
@@ -489,14 +488,14 @@ const ImportPage = () => {
       }
     } catch (error) {
       console.error("Sync error:", error);
-      
-      setMessages(prevMessages => 
-        prevMessages.filter(msg => msg.timestamp !== syncMessageTimestamp)
+
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.timestamp !== syncMessageTimestamp)
       );
-      
+
       alert("❌ Sync failed. Please try again.");
     }
-  
+
     setTimeout(() => {
       setIsSyncing(false);
     }, 10000);
@@ -561,46 +560,54 @@ const ImportPage = () => {
       </div>
 
       <div className="import-chat-container">
-      {messages.map((msg, index) => (
-  <div key={index} className={`import-chat-message ${msg.type}`}>
-    {msg.type === "bot" && !msg.isLoading && (
-      <div className="bot-message-icons">
-        <span className="timestamp">{formatDate(msg.timestamp)}</span>
-        <div className="tooltip">
-          <Copy
-            size={16}
-            className="icon"
-            onClick={() => handleCopy(msg.text, index)}
-            title={copyStatus?.[index] || "Copy text"}
-          />
-          <span className="tooltip-text">
-            {copyStatus[index] || "Copy text"}
-          </span>
-        </div>
-        <div className="tooltip">
-          <Download
-            size={16}
-            className="icon"
-            onClick={() => handleDownloadPDF(index)}
-            title={downloadStatus?.[index] || "Download as PDF"}
-          />
-          <span className="tooltip-text">
-            {downloadStatus[index] || "Download as PDF"}
-          </span>
-        </div>
-      </div>
-    )}
-    {msg.isLoading ? (
-      <div className="loading-message">
-        <span className="spinner"></span>
-        <span>Generating response...</span>
-      </div>
-    ) : (
-      msg.text
-    )}
-    <div ref={messagesEndRef}></div>
-  </div>
-))}
+        {messages.map((msg, index) => (
+          <div key={index} className={`import-chat-message ${msg.type}`}>
+            {msg.type === "bot" && !msg.isLoading && (
+              <div className="bot-message-icons">
+                <span className="timestamp">{formatDate(msg.timestamp)}</span>
+                <div className="tooltip">
+                  <Copy
+                    size={16}
+                    className="icon"
+                    onClick={() => handleCopy(msg.text, index)}
+                    title={copyStatus?.[index] || "Copy text"}
+                  />
+                  <span className="tooltip-text">
+                    {copyStatus[index] || "Copy text"}
+                  </span>
+                </div>
+                <div className="tooltip">
+                  <Download
+                    size={16}
+                    className="icon"
+                    onClick={() => handleDownloadPDF(index)}
+                    title={downloadStatus?.[index] || "Download as PDF"}
+                  />
+                  <span className="tooltip-text">
+                    {downloadStatus[index] || "Download as PDF"}
+                  </span>
+                </div>
+              </div>
+            )}
+            {msg.isLoading ? (
+              <div className="loading-message">
+                <span className="spinner"></span>
+                <span>Generating response...</span>
+              </div>
+            ) : msg.type === "bot" ? (
+              <ReactMarkdown
+                className="formatted-markdown"
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {msg.text}
+              </ReactMarkdown>
+            ) : (
+              <span>{msg.text}</span>
+            )}
+            <div ref={messagesEndRef}></div>
+          </div>
+        ))}
       </div>
 
       <div className="import-input-container">
