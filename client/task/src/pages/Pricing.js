@@ -10,6 +10,7 @@ const Pricing = () => {
 
   const [currentPlan, setCurrentPlan] = useState("Free Plan");
   const [Imports, setCurrentImports] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = localStorage.getItem("token");
   let userId = null;
@@ -36,16 +37,19 @@ const Pricing = () => {
   }, [userId]);
 
   const handlePlanSelection = (plan) => {
-
     if (plan === "Pro Plan" && currentPlan.includes("Enterprise Plan")) {
-      alert("You're already on the Enterprise Plan, which includes all Pro Plan features!");
+      alert(
+        "You're already on the Enterprise Plan, which includes all Pro Plan features!"
+      );
       return;
     }
     if (plan === "Pro Plan" && Imports >= 10) {
-      alert("You have already imported 10 repositories. Upgrade to Enterprise Plan to import more.");
-      return; 
+      alert(
+        "You have already imported 10 repositories. Upgrade to Enterprise Plan to import more."
+      );
+      return;
     }
-  
+
     if (!isAuthenticated) {
       navigate("/register");
     } else if (plan === "Free Plan" || plan === currentPlan) {
@@ -54,7 +58,6 @@ const Pricing = () => {
       handlePayment(plan);
     }
   };
-  
 
   const handlePayment = async (plan) => {
     const planPrices = {
@@ -65,6 +68,8 @@ const Pricing = () => {
     const amount = planPrices[plan];
 
     try {
+      setIsLoading(true);
+
       const keyResponse = await fetch(
         "https://sooru-ai.onrender.com/get-razorpay-key"
       );
@@ -81,6 +86,7 @@ const Pricing = () => {
 
       const data = await response.json();
       if (!data.orderId) {
+        setIsLoading(false);
         alert("Failed to create payment order.");
         return;
       }
@@ -107,13 +113,13 @@ const Pricing = () => {
                   userId,
                   plan,
                 }),
-              });
+              }
+            );
 
             const verifyData = await verifyResponse.json();
+            setIsLoading(false);
             if (verifyResponse.ok && verifyData.success) {
-              alert(
-                `✅ Payment Successful!`
-              );
+              alert(`✅ Payment Successful!`);
               updatePlan(plan);
             } else {
               alert("Payment verification failed.");
@@ -130,11 +136,17 @@ const Pricing = () => {
           contact: "9999999999",
         },
         theme: { color: "#000" },
+        modal: {
+          ondismiss: function () {
+            setIsLoading(false);
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
+      setIsLoading(false);
       console.error("Payment error:", error);
       alert("Payment failed!");
     }
@@ -148,14 +160,14 @@ const Pricing = () => {
         ? "Pro Plan (₹499/month)"
         : "Enterprise Plan (₹1,499/month)";
 
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 30); 
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
 
     try {
       const response = await axios.put(
         `https://sooru-ai.onrender.com/api/user/${userId}`,
         {
-          currentPlan: updatedPlan
+          currentPlan: updatedPlan,
         }
       );
 
@@ -173,6 +185,13 @@ const Pricing = () => {
 
   return (
     <div className="pricing-page" style={{ position: "relative", top: "50px" }}>
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Processing payment...</p>
+        </div>
+      )}
+
       <motion.h1
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
