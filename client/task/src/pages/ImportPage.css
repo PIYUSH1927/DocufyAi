@@ -372,3 +372,12 @@
   background-color: #f6f8fa;
   font-weight: bold;
 }
+
+.sync-latest {
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.sync-latest:active {
+  transform: scale(0.9);
+  opacity: 0.1;
+}

@@ -595,13 +595,14 @@ const ImportPage = () => {
                 <span>Generating response...</span>
               </div>
             ) : msg.type === "bot" ? (
+              <div className="formatted-markdown">
               <ReactMarkdown
-                className="formatted-markdown"
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}
               >
                 {msg.text}
               </ReactMarkdown>
+            </div>
             ) : (
               <span>{msg.text}</span>
             )}
