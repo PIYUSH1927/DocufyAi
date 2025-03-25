@@ -12,6 +12,7 @@
     "axios": "^1.7.9",
     "dompurify": "^3.2.4",
     "framer-motion": "^12.4.7",
+    "html2pdf.js": "^0.10.3",
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.477.0",

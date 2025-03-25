@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github.css";
+import html2pdf from 'html2pdf.js';
 
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -600,7 +601,7 @@ const ImportPage = () => {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}
               >
-                {msg.text}
+               {msg.text.replace(/\\n/g, '\n').replace(/\n\s*\n\s*\n/g, '\n\n').trim()}
               </ReactMarkdown>
             </div>
             ) : (

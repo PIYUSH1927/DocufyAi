@@ -276,7 +276,7 @@
   }
   
 .formatted-markdown {
-  line-height: 1.6;
+  line-height: 1.2;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -284,45 +284,34 @@
 
 .formatted-markdown h1 {
   font-size: 1.8em;
-  margin-top: 0.67em;
-  margin-bottom: 0.67em;
   font-weight: bold;
 }
 
 .formatted-markdown h2 {
   font-size: 1.5em;
-  margin-top: 0.83em;
-  margin-bottom: 0.83em;
   font-weight: bold;
+  margin-bottom: 0px;
 }
 
 .formatted-markdown h3 {
   font-size: 1.17em;
-  margin-top: 1em;
-  margin-bottom: 1em;
   font-weight: bold;
 }
 
 .formatted-markdown h4 {
   font-size: 1em;
-  margin-top: 1.33em;
-  margin-bottom: 1.33em;
   font-weight: bold;
 }
 
 .formatted-markdown ul, .formatted-markdown ol {
   padding-left: 2em;
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: -10px;
+ 
 }
 
 .formatted-markdown li {
-  margin-bottom: 0.5em;
-}
-
-.formatted-markdown p {
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: -5px;
+  margin-bottom: -5px;
 }
 
 .formatted-markdown code {
@@ -344,8 +333,7 @@
   padding-left: 1em;
   border-left: 4px solid #ddd;
   color: #666;
-  margin-left: 0;
-  margin-right: 0;
+  line-height: 0.5;
 }
 
 .formatted-markdown strong {
@@ -381,3 +369,28 @@
   transform: scale(0.9);
   opacity: 0.1;
 }
+
+.formatted-markdown * {
+  margin: 0;
+  padding: 0;
+}
+.formatted-markdown p + p {
+  margin-top: 0;
+}
+
+.formatted-markdown table {
+  margin: 0rem 0;
+  border-spacing: 0;
+}
+
+.formatted-markdown blockquote {
+  margin: 0rem 0;
+}
+
+
+
+
+
+
+
+
