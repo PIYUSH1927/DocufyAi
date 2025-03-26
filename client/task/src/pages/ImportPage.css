@@ -333,7 +333,7 @@
   padding-left: 1em;
   border-left: 4px solid #ddd;
   color: #666;
-  line-height: 0.5;
+  line-height: 1;
 }
 
 .formatted-markdown strong {
@@ -392,5 +392,10 @@
 
 
 
-
+.formatted-markdown table {
+  width: 100%;
+  table-layout: fixed; /* Prevents table from expanding beyond container */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
 
