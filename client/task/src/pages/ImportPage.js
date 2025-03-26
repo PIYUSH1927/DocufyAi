@@ -147,6 +147,11 @@ const ImportPage = () => {
   useEffect(() => {
     fetchUserProfile();
 
+    const savedCommit = loadLastSyncedCommit();
+    if (savedCommit) {
+      setLastSyncedCommit(savedCommit);
+    }
+
     if (rawAnalysis) {
       const formattedAnalysis = formatAnalysis(rawAnalysis);
       setMessages([
@@ -205,6 +210,18 @@ const ImportPage = () => {
 
     return `${formattedDate}, ${formattedTime}`;
   };
+
+  const saveLastSyncedCommit = (commit) => {
+    if (!commit || !repoName) return;
+    localStorage.setItem(`lastSyncedCommit_${repoName}`, commit);
+  };
+  
+  // Add this function to load the last synced commit from localStorage
+  const loadLastSyncedCommit = () => {
+    if (!repoName) return null;
+    return localStorage.getItem(`lastSyncedCommit_${repoName}`);
+  };
+  
 
   const handleGenerate = async () => {
 
@@ -710,6 +727,7 @@ const ImportPage = () => {
       }
 
       setLastSyncedCommit(latestCommit);
+      saveLastSyncedCommit(latestCommit);
 
       const updatedAnalysis = response.data.analysis;
       const repoContent = JSON.stringify(updatedAnalysis);
