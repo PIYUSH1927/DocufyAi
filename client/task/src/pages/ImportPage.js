@@ -207,6 +207,12 @@ const ImportPage = () => {
   };
 
   const handleGenerate = async () => {
+
+    if (currentPlan === "Free Plan (₹0/month)") {
+      alert("Upgrade to Pro plan to use the chat feature.");
+      return;
+    }
+
     if (!userInput.trim()) return;
 
     const maxLength = 5000;
@@ -645,6 +651,11 @@ const ImportPage = () => {
   const handleSyncLatest = async () => {
     if (isSyncing) return;
 
+    if (currentPlan === "Free Plan (₹0/month)") {
+      alert("Upgrade to Pro plan to sync latest changes.");
+      return;
+    }
+
     setIsSyncing(true);
 
     const syncMessageTimestamp = new Date().toISOString();
@@ -805,9 +816,9 @@ const ImportPage = () => {
             right: "15px",
             top: "10px",
             zIndex: "100px",
-            opacity: isSyncing ? "0.5" : "1",
-            cursor: isSyncing ? "not-allowed" : "pointer",
-            pointerEvents: isSyncing ? "none" : "auto",
+    opacity: isSyncing || currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1",
+    cursor: isSyncing || currentPlan === "Free Plan (₹0/month)" ? "not-allowed" : "pointer",
+    pointerEvents: isSyncing ? "none" : "auto",
           }}
         >
           {isSyncing ? (
@@ -890,11 +901,19 @@ const ImportPage = () => {
       <div className="import-input-container">
         <textarea
           className="import-text-input"
-          placeholder="Ask AI to refine documentation..."
+          placeholder={currentPlan === "Free Plan (₹0/month)" ? 
+            "Upgrade to Pro plan to use the chat feature" : 
+            "Ask AI to refine documentation..."}
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
+          style={{
+            opacity: currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1"
+          }}
         />
-        <button className="import-generate-btn" onClick={handleGenerate}>
+        <button className="import-generate-btn" onClick={handleGenerate}  style={{
+      opacity: currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1",
+      cursor: currentPlan === "Free Plan (₹0/month)" ? "not-allowed" : "pointer"
+    }}>
           Generate
         </button>
       </div>

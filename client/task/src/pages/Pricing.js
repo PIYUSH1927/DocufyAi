@@ -210,10 +210,11 @@ const Pricing = () => {
             price: "₹0/month",
             description: "Great for individuals for getting started.",
             features: [
-              "AI-Generated Docs (Limited)",
+              "AI-Generated Docs",
               "GitHub Sync (1 Repo)",
               "Versioned Documentation",
-              "Interactive Chat Assistance",
+              "Copy documentation to clipboard",
+              
             ],
           },
           {
@@ -221,9 +222,10 @@ const Pricing = () => {
             price: "₹499/month",
             description: "Best for developers and small teams.",
             features: [
-              "AI-Generated Docs (Unlimited)",
               "GitHub Sync (Up to 10 Repos)",
-              "Download as PDF",
+              "Download document as PDF",
+              "Interactive Chat Assistance",
+              "Sync latest changes",
               "All Free Plan features included",
             ],
           },
