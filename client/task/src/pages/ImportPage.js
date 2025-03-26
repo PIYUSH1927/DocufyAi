@@ -597,7 +597,7 @@ const ImportPage = () => {
           table-layout: fixed;
           word-wrap: break-word;
           overflow-wrap: break-word;
-          max-width: 700px;
+          max-width: 600px;
         }
         
         .formatted-markdown th, .formatted-markdown td {
