@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github.css";
-import html2pdf from 'html2pdf.js';
+import html2pdf from "html2pdf.js";
 
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -322,52 +322,318 @@ const ImportPage = () => {
       alert("Upgrade to Pro plan to download as a PDF.");
       return;
     }
+    const formattedElement = document.querySelector(
+      `.import-chat-message[data-key="${index}"] .formatted-markdown`
+    );
 
-    if (!messages || !messages[index]) {
-      console.error("Message at index not found:", index);
-      return;
-    }
+    if (formattedElement && html2pdf) {
+      const tempContainer = document.createElement("div");
+      tempContainer.className = "formatted-markdown";
 
-    const { text } = messages[index];
+      tempContainer.innerHTML = formattedElement.innerHTML;
 
-    if (!text || typeof text !== "string") {
-      console.error("Invalid text format for PDF:", text);
-      return;
-    }
+      const styleElement = document.createElement("style");
+      styleElement.textContent = `
+        .formatted-markdown {
+          line-height: 1.4;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
+          color: #000000;
+          background-color: #ffffff;
+          padding: 20px;
+          font-family: Arial, sans-serif;
+        }
+        
+        .formatted-markdown h1 {
+          font-size: 1.8em;
+          font-weight: bold;
+          margin-top: 1.2em;
+          margin-bottom: 0.6em;
+        }
+        
+        .formatted-markdown h2 {
+          font-size: 1.5em;
+          font-weight: bold;
+          margin-top: 1em;
+          margin-bottom: 0.5em;
+        }
+        
+        .formatted-markdown h3 {
+          font-size: 1.17em;
+          font-weight: bold;
+          margin-top: 0.8em;
+          margin-bottom: 0.4em;
+        }
+        
+        .formatted-markdown h4 {
+          font-size: 1em;
+          font-weight: bold;
+          margin-top: 0.6em;
+          margin-bottom: 0.3em;
+        }
+        
+        .formatted-markdown p {
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+        }
+        
+        .formatted-markdown ul, .formatted-markdown ol {
+          padding-left: 2em;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+        }
+        
+        .formatted-markdown li {
+          margin-top: 0.2em;
+          margin-bottom: 0.2em;
+        }
+        
+        .formatted-markdown code {
+          font-family: monospace;
+          background-color: #f6f8fa;
+          padding: 0.2em 0.4em;
+          border-radius: 3px;
+          font-size: 100%;
+        }
+        
+        .formatted-markdown pre {
+          background-color: #f6f8fa;
+          border-radius: 3px;
+          padding: 16px;
+          overflow: auto;
+          margin: 0.8em 0;
+        }
+        
+        .formatted-markdown blockquote {
+          padding-left: 1em;
+          border-left: 4px solid #ddd;
+          color: #666;
+          line-height: 1.4;
+          margin: 0.7em 0;
+        }
+        
+        .formatted-markdown strong {
+          font-weight: bold;
+        }
+        
+        .formatted-markdown em {
+          font-style: italic;
+        }
+        
+        .formatted-markdown table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 1em 0;
+          table-layout: fixed;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+        
+        .formatted-markdown th, .formatted-markdown td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+        
+        .formatted-markdown th {
+          background-color: #f6f8fa;
+          font-weight: bold;
+        }
+      `;
+      tempContainer.appendChild(styleElement);
 
-    const doc = new jsPDF({
-      orientation: "p",
-      unit: "mm",
-      format: "a4",
-      lineHeightFactor: 1.2,
-    });
+      const options = {
+        margin: 10,
+        filename: `${repoName}_documentation.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
 
-    const margin = 15;
-    const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
-    const pageHeight = doc.internal.pageSize.getHeight() - margin * 2;
-    let yPosition = margin;
+      html2pdf().from(tempContainer).set(options).save();
+    } else {
+      const { text } = messages[index];
 
-    doc.setFont("Arial", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-
-    const lines = doc.splitTextToSize(text, pageWidth);
-
-    lines.forEach((line) => {
-      if (yPosition + 5 > pageHeight + margin) {
-        doc.addPage();
-        yPosition = margin;
+      if (!text || typeof text !== "string") {
+        console.error("Invalid text format for PDF:", text);
+        return;
       }
-      doc.text(line, margin, yPosition);
-      yPosition += 5;
-    });
 
-    const fileName = `${repoName}_documentation.pdf`;
-    doc.save(fileName);
+      const doc = new jsPDF({
+        orientation: "p",
+        unit: "mm",
+        format: "a4",
+        lineHeightFactor: 1.2,
+      });
+
+      const margin = 15;
+      const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+      const pageHeight = doc.internal.pageSize.getHeight() - margin * 2;
+      let yPosition = margin;
+
+      doc.setFont("Arial", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+
+      const lines = doc.splitTextToSize(text, pageWidth);
+
+      lines.forEach((line) => {
+        if (yPosition + 5 > pageHeight + margin) {
+          doc.addPage();
+          yPosition = margin;
+        }
+        doc.text(line, margin, yPosition);
+        yPosition += 5;
+      });
+
+      const fileName = `${repoName}_documentation.pdf`;
+      doc.save(fileName);
+    }
   };
 
   const handleCopy = (text, index) => {
-    navigator.clipboard.writeText(text);
+    const formattedElement = document.querySelector(
+      `.import-chat-message[data-key="${index}"] .formatted-markdown`
+    );
+
+    if (formattedElement) {
+      const tempContainer = document.createElement("div");
+
+      tempContainer.innerHTML = formattedElement.innerHTML;
+
+      const styleElement = document.createElement("style");
+      styleElement.textContent = `
+        .formatted-markdown {
+          line-height: 1.4;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
+          font-family: Arial, sans-serif;
+          font-size: 0.9em;
+        }
+        
+        .formatted-markdown h1 {
+          font-size: 1.8em;
+          font-weight: bold;
+          margin-top: 1.2em;
+          margin-bottom: 0.6em;
+        }
+        
+        .formatted-markdown h2 {
+          font-size: 1.5em;
+          font-weight: bold;
+          margin-top: 1em;
+          margin-bottom: 0.5em;
+        }
+        
+        .formatted-markdown h3 {
+          font-size: 1.17em;
+          font-weight: bold;
+          margin-top: 0.8em;
+          margin-bottom: 0.4em;
+        }
+        
+        .formatted-markdown h4 {
+          font-size: 1em;
+          font-weight: bold;
+          margin-top: 0.6em;
+          margin-bottom: 0.3em;
+        }
+        
+        .formatted-markdown p {
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+        }
+        
+        .formatted-markdown ul, .formatted-markdown ol {
+          padding-left: 2em;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+        }
+        
+        .formatted-markdown li {
+          margin-top: 0.2em;
+          margin-bottom: 0.2em;
+        }
+        
+        .formatted-markdown code {
+          font-family: monospace;
+          background-color: #f6f8fa;
+          padding: 0.2em 0.4em;
+          border-radius: 3px;
+          font-size: 100%;
+        }
+        
+        .formatted-markdown pre {
+          background-color: #f6f8fa;
+          border-radius: 3px;
+          padding: 16px;
+          overflow: auto;
+          margin: 0.8em 0;
+        }
+        
+        .formatted-markdown blockquote {
+          padding-left: 1em;
+          border-left: 4px solid #ddd;
+          color: #666;
+          line-height: 1.4;
+          margin: 0.7em 0;
+        }
+        
+        .formatted-markdown strong {
+          font-weight: bold;
+        }
+        
+        .formatted-markdown em {
+          font-style: italic;
+        }
+        
+        .formatted-markdown table {
+          border-collapse: collapse;
+          width: 90%;
+          margin: 1em 0;
+          table-layout: fixed;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          max-width: 700px;
+        }
+        
+        .formatted-markdown th, .formatted-markdown td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+            font-size: 0.9em; /* Smaller font for table cells */
+  white-space: normal; /* Ensure text wraps */
+  word-break: break-word;
+        }
+        
+        .formatted-markdown th {
+          background-color: #f6f8fa;
+          font-weight: bold;
+        }
+      `;
+      tempContainer.className = "formatted-markdown";
+      tempContainer.appendChild(styleElement);
+
+      document.body.appendChild(tempContainer);
+      tempContainer.style.position = "absolute";
+      tempContainer.style.left = "-9999px";
+
+      const range = document.createRange();
+      range.selectNode(tempContainer);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      document.execCommand("copy");
+
+      selection.removeAllRanges();
+      document.body.removeChild(tempContainer);
+    } else {
+      navigator.clipboard.writeText(text);
+    }
+
     setCopyStatus((prev) => ({ ...prev, [index]: "Copied!" }));
     setTimeout(() => {
       setCopyStatus((prev) => ({ ...prev, [index]: "Copy text" }));
@@ -562,7 +828,11 @@ const ImportPage = () => {
 
       <div className="import-chat-container">
         {messages.map((msg, index) => (
-          <div key={index} className={`import-chat-message ${msg.type}`}>
+          <div
+            key={index}
+            className={`import-chat-message ${msg.type}`}
+            data-key={index}
+          >
             {msg.type === "bot" && !msg.isLoading && (
               <div className="bot-message-icons">
                 <span className="timestamp">{formatDate(msg.timestamp)}</span>
@@ -597,13 +867,16 @@ const ImportPage = () => {
               </div>
             ) : msg.type === "bot" ? (
               <div className="formatted-markdown">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
-              >
-               {msg.text.replace(/\\n/g, '\n').replace(/\n\s*\n\s*\n/g, '\n\n').trim()}
-              </ReactMarkdown>
-            </div>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                >
+                  {msg.text
+                    .replace(/\\n/g, "\n")
+                    .replace(/\n\s*\n\s*\n/g, "\n\n")
+                    .trim()}
+                </ReactMarkdown>
+              </div>
             ) : (
               <span>{msg.text}</span>
             )}

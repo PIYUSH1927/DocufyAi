@@ -319,7 +319,7 @@
   background-color: #f6f8fa;
   padding: 0.2em 0.4em;
   border-radius: 3px;
-  font-size: 85%;
+  font-size: 95%;
 }
 
 .formatted-markdown pre {
@@ -386,15 +386,9 @@
 .formatted-markdown blockquote {
   margin: 0rem 0;
 }
-
-
-
-
-
-
 .formatted-markdown table {
   width: 100%;
-  table-layout: fixed; /* Prevents table from expanding beyond container */
+  table-layout: fixed;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
