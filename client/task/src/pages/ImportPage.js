@@ -342,13 +342,14 @@ const ImportPage = () => {
           color: #000000;
           background-color: #ffffff;
           padding: 20px;
+          padding-top:0px;
           font-family: Arial, sans-serif;
         }
         
         .formatted-markdown h1 {
           font-size: 1.8em;
           font-weight: bold;
-          margin-top: 1.2em;
+          margin-top: 0.6em;
           margin-bottom: 0.6em;
         }
         
@@ -603,8 +604,8 @@ const ImportPage = () => {
           border: 1px solid #ddd;
           padding: 8px;
           text-align: left;
-            font-size: 0.9em; /* Smaller font for table cells */
-  white-space: normal; /* Ensure text wraps */
+            font-size: 0.9em;
+  white-space: normal; 
   word-break: break-word;
         }
         
