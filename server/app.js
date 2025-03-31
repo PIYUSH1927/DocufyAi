@@ -48,7 +48,7 @@ app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://docufy-ai.vercel.app"],
+    origin: ["http://localhost:3000", "https://www.docufyai.in"],
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
