@@ -238,7 +238,8 @@ const Home = () => {
         }
       );
 
-      if (generateDocResponse.data.success) {
+      // The backend doesn't return a success field, it directly returns the documentation
+      if (generateDocResponse.data.documentation) {
         const documentation = generateDocResponse.data.documentation;
 
         const initialMessage = {
@@ -267,10 +268,15 @@ const Home = () => {
 
         navigate(`/import/${repo.name}`);
       } else {
+        console.error("Documentation generation failed:", generateDocResponse.data);
         alert("Failed to generate documentation. Please try again.");
       }
     } catch (error) {
+      console.error("Import error:", error);
       console.warn("⚠️ Non-critical error:", error.message);
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+      }
       alert(
         "Error: Only repositories owned or created by you can be imported.",
         error
@@ -443,16 +449,16 @@ const Home = () => {
                 <FaTrash className="delete-icon" />
                 <span className="delete-tooltip">Delete chat</span>
               </div>
-              <div class="repo-title pb">{repoName}-Documentation</div>
+              <div className="repo-title pb">{repoName}-Documentation</div>
               <span className="delete-tooltip">Delete chat</span>
-              <div class="github-info pb">
+              <div className="github-info pb">
                 <img
                   src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
                   alt="GitHub Logo"
                 />
                 {githubUsername}/{repoName}
               </div>
-              <div class="repo-update">
+              <div className="repo-update">
                 {repoMessages[repoName]?.timestamp
                   ? formatDate(repoMessages[repoName].timestamp)
                   : "No timestamp available"}
