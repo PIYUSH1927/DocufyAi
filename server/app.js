@@ -146,7 +146,7 @@ app.post("/api/generate-doc", async (req, res) => {
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",  
           messages: [systemMessage, userMessage],
-          max_tokens: 50000,
+          max_tokens: 16000,
           temperature: 0.6,
         });
 
@@ -162,7 +162,7 @@ app.post("/api/generate-doc", async (req, res) => {
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",  
           messages: [systemMessage, userMessage],
-          max_tokens: 50000,
+          max_tokens: 16000,
           temperature: 0.6,
         });
 
@@ -184,7 +184,7 @@ app.post("/api/generate-doc", async (req, res) => {
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",  
           messages: [systemMessage, userMessage],
-          max_tokens: 50000,
+          max_tokens: 16000,
           temperature: 0.6,
         });
 
@@ -224,7 +224,7 @@ app.post("/api/generate-doc", async (req, res) => {
           const chunkCompletion = await openai.chat.completions.create({
             model: "gpt-4o-mini",  
             messages: [systemMessage, chunkMessage],
-            max_tokens: 50000,
+            max_tokens: 16000,
             temperature: 0.6,
           });
           
@@ -242,7 +242,7 @@ app.post("/api/generate-doc", async (req, res) => {
           const refinementCompletion = await openai.chat.completions.create({
             model: "gpt-4o-mini",  
             messages: [systemMessage, refinementMessage],
-            max_tokens: 50000,
+            max_tokens: 16000,
             temperature: 0.6,
           });
           
@@ -285,7 +285,7 @@ function prepareChunks(repoContent) {
   Object.keys(fileGroups).forEach(directory => {
     const dirFiles = fileGroups[directory];
     
-    if (JSON.stringify(dirFiles).length > 50000) {
+    if (JSON.stringify(dirFiles).length > 16000) {
       const subChunks = splitArrayIntoChunks(dirFiles, 3);
       subChunks.forEach(subChunk => {
         chunks.push({
