@@ -1,5 +1,6 @@
 import React from "react";
 import "./Landing1.css";
+import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaGithub, FaCode, FaHistory, FaCogs } from "react-icons/fa";
@@ -8,6 +9,23 @@ const Landing = () => {
   const navigate = useNavigate();
   return (
     <div className="ln">
+
+<Helmet>
+        <title>DocufyAi - AI-Powered Code Documentation</title>
+        <meta
+          name="description"
+          content="DocufyAi is an AI-driven SaaS platform that automates technical documentation for developers. Connect your GitHub repositories and generate structured, real-time docs effortlessly."
+        />
+        <meta property="og:title" content="DocufyAi - AI-Powered Code Documentation" />
+        <meta
+          property="og:description"
+          content="AI-powered documentation generator that integrates with GitHub, creating structured, always-updated docs for your codebase."
+        />
+        <meta property="og:url" content="https://docufyai.in" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="DocufyAi" />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
     
       <motion.div 
         initial={{ opacity: 0, y: -50 }}
