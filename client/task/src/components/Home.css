@@ -24,10 +24,35 @@
   
   .dashboard-header h2 {
     font-size: 4.5vh;
-    color: rgb(118, 4, 4);
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); 
-  
+    font-weight: 700;
+    background: linear-gradient(90deg, 
+      #d0d0d0, 
+      #f5f5f5, 
+      #d0d0d0, 
+      #a0a0a0, 
+      #d0d0d0);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 
+      0 2px 5px rgba(0, 0, 0, 0.3),
+      0 5px 10px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
+    animation: liquidMetal 5s ease infinite;
   }
+  
+  @keyframes liquidMetal {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
   
   .buttons {
     display: flex;

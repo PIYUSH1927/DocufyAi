@@ -32,15 +32,12 @@
 }
 
 .about-docufy {
-    max-width: 60%;
+    max-width: 88%;
     padding: 20px;
     border-radius: 12px;
     margin: auto;
-    background: #1e293b;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #1e293b;
+
 }
 
 .about-docufy h2 {
@@ -49,9 +46,10 @@
 }
 
 .about-docufy p {
-    font-size: 1rem;
+    font-size: 1.25rem;
     color: #e2e8f0;
     margin-top: 10px;
+    text-align: justify;
 }
 
 .about-timeline {
@@ -210,6 +208,11 @@
 
     .nnn{
         padding: 0px 20px;
+    }
+
+    .about-docufy p {
+        font-size: 1rem;
+        text-align: center;
     }
 }
 .about-timeline {
