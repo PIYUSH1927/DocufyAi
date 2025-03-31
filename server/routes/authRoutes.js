@@ -219,15 +219,15 @@ router.get("/repos", authenticate, async (req, res) => {
 router.get("/github", passport.authenticate("github", { scope: ["user:email", "repo"] }));
 
 router.get("/github/callback",
-  passport.authenticate("github", { failureRedirect: "https://docufy-ai.vercel.app/login" }),
+  passport.authenticate("github", { failureRedirect: "https://www.docufyai.in/login" }),
   (req, res) => {
     if (!req.user) {
-      return res.redirect("https://docufy-ai.vercel.app/login?error=UserNotAuthenticated");
+      return res.redirect("https://www.docufyai.in/login?error=UserNotAuthenticated");
     }
 
     const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-    res.redirect(`https://docufy-ai.vercel.app/home?token=${token}`);
+    res.redirect(`https://www.docufyai.in/home?token=${token}`);
   }
 );
 
