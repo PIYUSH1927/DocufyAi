@@ -173,7 +173,7 @@ app.post("/api/generate-doc", async (req, res) => {
     }
     if (repoContent) {
       const contentSize = repoContent.length;
-      const isLargeRepo = contentSize > 100000; 
+      const isLargeRepo = contentSize > 20000; // Reduced from 100000 to detect large repos earlier
       
       if (!isLargeRepo) {
         const userMessage = { 
@@ -205,48 +205,74 @@ app.post("/api/generate-doc", async (req, res) => {
         let fullDocumentation = "";
         let contextSummary = "";
         
-        for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
+        // Limit the number of chunks to process to avoid context length issues
+        const chunkLimit = Math.min(chunks.length, 50);
+        const processingChunks = chunks.slice(0, chunkLimit);
+        
+        console.log(`Processing ${processingChunks.length} chunks out of ${chunks.length} total chunks`);
+        
+        for (let i = 0; i < processingChunks.length; i++) {
+          const chunk = processingChunks[i];
           const isFirstChunk = i === 0;
-          const isLastChunk = i === chunks.length - 1;
+          const isLastChunk = i === processingChunks.length - 1;
+          
+          // Trim chunk content for safety
+          const chunkContent = JSON.stringify(chunk);
+          // Limit chunk size to avoid context length issues
+          const trimmedChunk = chunkContent.length > 20000 ? 
+            chunkContent.substring(0, 20000) + "..." : 
+            chunkContent;
           
           let chunkPrompt;
           if (isFirstChunk) {
-            chunkPrompt = `This is a large repository, so I'll analyze it in parts. For this first part, focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${JSON.stringify(chunk)}`;
+            chunkPrompt = `This is a large repository, so I'll analyze it in parts. For this first part, focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${trimmedChunk}`;
           } else if (isLastChunk) {
-            chunkPrompt = `This is the final part of the repository. Based on this content and considering the previous parts (summarized as: ${contextSummary}), complete the documentation with any remaining details and a conclusion:\n\n${JSON.stringify(chunk)}`;
+            chunkPrompt = `This is the final part of the repository. Based on this content and considering the previous parts (summarized as: ${contextSummary}), complete the documentation with any remaining details and a conclusion:\n\n${trimmedChunk}`;
           } else {
-            chunkPrompt = `This is part ${i+1} of the repository analysis. Using the previous context (${contextSummary}) as a foundation, continue the documentation by analyzing the following content:\n\n${JSON.stringify(chunk)}`;
+            chunkPrompt = `This is part ${i+1} of the repository analysis. Using the previous context (${contextSummary}) as a foundation, continue the documentation by analyzing the following content:\n\n${trimmedChunk}`;
           }
           
           const chunkMessage = { role: "user", content: chunkPrompt };
           
-          const chunkCompletion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",  
-            messages: [systemMessage, chunkMessage],
-            max_tokens: 16000,
-            temperature: 0.6,
-          });
-          
-          const chunkResponse = chunkCompletion.choices[0].message.content;
-          fullDocumentation += (i > 0 ? "\n\n" : "") + chunkResponse;
-          
-          contextSummary = chunkResponse.slice(0, 500) + "...";
+          try {
+            const chunkCompletion = await openai.chat.completions.create({
+              model: "gpt-4o-mini",  
+              messages: [systemMessage, chunkMessage],
+              max_tokens: 16000,
+              temperature: 0.6,
+            });
+            
+            const chunkResponse = chunkCompletion.choices[0].message.content;
+            fullDocumentation += (i > 0 ? "\n\n" : "") + chunkResponse;
+            
+            // Create a shorter context summary
+            contextSummary = chunkResponse.slice(0, 200) + "...";
+          } catch (error) {
+            console.error(`Error processing chunk ${i}:`, error);
+            // Continue with next chunk on error
+            continue;
+          }
         }
 
-        if (chunks.length > 1) {
-          const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, well-structured, and without repetitive sections or awkward transitions:\n\n${fullDocumentation}`;
-          
-          const refinementMessage = { role: "user", content: refinementPrompt };
-          
-          const refinementCompletion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",  
-            messages: [systemMessage, refinementMessage],
-            max_tokens: 16000,
-            temperature: 0.6,
-          });
-          
-          fullDocumentation = refinementCompletion.choices[0].message.content;
+        // Only do the refinement if we have a reasonable amount of documentation
+        if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
+          try {
+            const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, well-structured, and without repetitive sections or awkward transitions:\n\n${fullDocumentation}`;
+            
+            const refinementMessage = { role: "user", content: refinementPrompt };
+            
+            const refinementCompletion = await openai.chat.completions.create({
+              model: "gpt-4o-mini",  
+              messages: [systemMessage, refinementMessage],
+              max_tokens: 16000,
+              temperature: 0.6,
+            });
+            
+            fullDocumentation = refinementCompletion.choices[0].message.content;
+          } catch (error) {
+            console.error("Error during refinement:", error);
+            // Continue with the unrefined documentation if refinement fails
+          }
         }
         
         previousDocumentation = fullDocumentation;
@@ -273,9 +299,11 @@ function prepareChunks(repoContent) {
   const files = repoContent.files || [];
   const totalFiles = repoContent.totalFiles || files.length;
   
+  // Create a more concise overview
   const overview = {
     totalFiles,
-    fileList: files.map(f => f.file),
+    // Only include first 20 files in the overview to reduce size
+    fileList: files.slice(0, 20).map(f => f.file),
     structure: analyzeStructure(files)
   };
   chunks.push(overview);
@@ -285,8 +313,13 @@ function prepareChunks(repoContent) {
   Object.keys(fileGroups).forEach(directory => {
     const dirFiles = fileGroups[directory];
     
-    if (JSON.stringify(dirFiles).length > 16000) {
-      const subChunks = splitArrayIntoChunks(dirFiles, 3);
+    // Skip large unimportant directories
+    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build") {
+      return;
+    }
+    
+    if (JSON.stringify(dirFiles).length > 8000) { // Reduced from 16000 to 8000 for smaller chunks
+      const subChunks = splitArrayIntoChunks(dirFiles, 5); // Split into more chunks (was 3)
       subChunks.forEach(subChunk => {
         chunks.push({
           directory,
@@ -303,7 +336,6 @@ function prepareChunks(repoContent) {
   
   return chunks;
 }
-
 
 function analyzeStructure(files) {
   const extensions = {};
@@ -323,7 +355,6 @@ function analyzeStructure(files) {
   
   return { extensions, directories };
 }
-
 
 function groupFilesByDirectory(files) {
   const groups = {};
@@ -433,12 +464,11 @@ app.post("/create-order", async (req, res) => {
   }
 });
 
-
 app.post("/verify-payment", async (req, res) => {
   try {
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature, userId, plan } = req.body;
 
-      const order = await Order.findOne({ orderId: razorpay_order_id });
+    const order = await Order.findOne({ orderId: razorpay_order_id });
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
@@ -516,7 +546,6 @@ app.get("/get-razorpay-key", (req, res) => {
   res.json({ key: process.env.RAZORPAY_KEY_ID });
 });
 
-
 app.post("/api/github/clone", async (req, res) => {
   const { repoName, githubToken, username } = req.body;
 
@@ -556,6 +585,8 @@ const analyzeRepo = (repoPath) => {
     "cs", "r", "dart", "lua", "pl", "sql", "jsx", "tsx", "vue", "dockerfile", "makefile"
   ];
 
+  // Maximum file size to include (100KB)
+  const MAX_FILE_SIZE = 100 * 1024;
 
   const readFiles = (dir, relativePath = "") => {
     const files = fs.readdirSync(dir);
@@ -565,10 +596,27 @@ const analyzeRepo = (repoPath) => {
       const stats = fs.statSync(filePath);
 
       if (stats.isDirectory()) {
+        // Skip node_modules and other large directories
+        if (file === "node_modules" || file === ".git" || file === "dist" || file === "build") {
+          return;
+        }
         readFiles(filePath, relFilePath);
       } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
-        const content = fs.readFileSync(filePath, "utf-8"); 
-        fileStructure.push({ file: relFilePath, content });
+        if (stats.size <= MAX_FILE_SIZE) {
+          const content = fs.readFileSync(filePath, "utf-8");
+          fileStructure.push({ file: relFilePath, content });
+        } else {
+          // For large files, only include the first part
+          const content = fs.readFileSync(filePath, { 
+            encoding: 'utf-8', 
+            start: 0, 
+            end: Math.min(stats.size, MAX_FILE_SIZE - 1) 
+          });
+          fileStructure.push({ 
+            file: relFilePath, 
+            content: content + "\n\n[File truncated due to size...]"
+          });
+        }
       }
     });
   };
@@ -576,7 +624,6 @@ const analyzeRepo = (repoPath) => {
   readFiles(repoPath);
   return { totalFiles: fileStructure.length, files: fileStructure };
 };
-
 
 app.use("/api/messages", messageRoutes);
 
