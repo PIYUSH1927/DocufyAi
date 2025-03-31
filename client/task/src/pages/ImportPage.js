@@ -747,6 +747,7 @@ const ImportPage = () => {
         prevMessages.filter((msg) => msg.timestamp !== syncMessageTimestamp)
       );
 
+      // Check for documentation directly instead of success property
       if (generateDocResponse.data.documentation) {
         const newMessage = {
           userId: user.id,
@@ -766,6 +767,7 @@ const ImportPage = () => {
           }
         );
       } else {
+        console.error("Documentation generation failed:", generateDocResponse.data);
         const errorMessage = {
           userId: user.id,
           repoName,
@@ -786,6 +788,7 @@ const ImportPage = () => {
       }
     } catch (error) {
       console.error("Sync error:", error);
+      console.error("Response data:", error.response?.data);
 
       setMessages((prevMessages) =>
         prevMessages.filter((msg) => msg.timestamp !== syncMessageTimestamp)
