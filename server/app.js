@@ -572,7 +572,15 @@ app.post("/api/github/clone", async (req, res) => {
     }, 5 * 60 * 1000);
     
   } catch (error) {
-    return res.status(200).json({ success: false, message: "Repository import failed. Only repositories owned or created by you can be imported." });
+    return res.status(200).json({
+      success: false,
+      message: "Repository import failed. Only repositories owned or created by you can be imported.",
+      errorDetails: [
+        "Only repositories owned or created by you can be imported",
+        "Repository doesn't contain code files (documentation works only for code repositories)",
+        "Repository contains extremely large files or ML models that exceed size limits"
+      ]
+    });
   }
 });
 

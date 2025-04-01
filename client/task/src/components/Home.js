@@ -10,6 +10,14 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
+// Define animation keyframes
+const spinKeyframes = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 const Home = () => {
   const [user, setUser] = useState(null);
   const [repos, setRepos] = useState([]);
@@ -218,7 +226,12 @@ const Home = () => {
       );
 
       if (!response.data.success) {
-        alert(response.data.message);
+        const errorMessage = response.data.errorDetails
+          ? "Repository import failed. Possible reasons:\n\n" + 
+            response.data.errorDetails.map(detail => `• ${detail}`).join('\n')
+          : response.data.message;
+        
+        alert(errorMessage);
         setIsImporting(false);
         return;
       }
@@ -278,8 +291,10 @@ const Home = () => {
         console.error("Error response data:", error.response.data);
       }
       alert(
-        "Error: Only repositories owned or created by you can be imported.",
-        error
+        "Repository import failed. Possible reasons:\n\n" +
+        "• Only repositories owned or created by you can be imported\n" + 
+        "• Repository doesn't contain code files (documentation works only for code repositories)\n" +
+        "• Repository contains extremely large files or ML models that exceed size limits"
       );
     } finally {
       setIsImporting(false);
@@ -351,9 +366,56 @@ const Home = () => {
 
   return (
     <div className="home-container">
+      <style>{spinKeyframes}</style>
+      
       {isImporting && (
-        <div className="loading-overlay">
-          <div className="spinner"></div>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 10000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
+            <div style={{
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #016601',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              animation: 'spin 1s linear infinite',
+              marginBottom: '15px'
+            }}></div>
+            <div style={{color: '#333'}}>
+              <h3 style={{fontSize: '18px', marginBottom: '10px', color: '#016601'}}>Generating Documentation</h3>
+              <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>Please wait while we analyze your repository and generate documentation.</p>
+              <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>This process may take 5-7 minutes to complete.</p>
+              <p style={{
+                fontStyle: 'italic',
+                fontSize: '12px',
+                color: '#666',
+                marginTop: '10px',
+                borderTop: '1px solid #eee',
+                paddingTop: '10px'
+              }}>Tip: For complex repositories, processing time may be longer.</p>
+            </div>
+          </div>
         </div>
       )}
 
