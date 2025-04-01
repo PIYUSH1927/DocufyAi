@@ -21,10 +21,6 @@ const OpenAI = require("openai");
 
 const os = require("os");
 
-// Job queue system for handling multiple doc generation requests
-const docGenerationQueue = [];
-let isProcessingDoc = false;
-
 setInterval(() => {
   console.log("Cleaning up old repos...");
   rimraf("/tmp/repos", (err) => {
@@ -92,30 +88,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  
 });
 
+
+
 let previousDocumentation = "";
 
-// Process the next job in the queue
-const processNextDocJob = async () => {
-  if (isProcessingDoc || docGenerationQueue.length === 0) return;
-  
-  isProcessingDoc = true;
-  const job = docGenerationQueue.shift();
-  
-  try {
-    const result = await generateDocumentation(job.data);
-    job.res.json(result);
-  } catch (error) {
-    console.error("Error processing doc generation job:", error);
-    job.res.status(500).json({ error: "Failed to generate documentation" });
-  } finally {
-    isProcessingDoc = false;
-    // Process next job in the queue
-    processNextDocJob();
-  }
-};
+app.post("/api/generate-doc", async (req, res) => {
+  const { repoContent, userInput } = req.body;
 
-// The main documentation generation function that handles both repo content and user input
-const generateDocumentation = async ({ repoContent, userInput }) => {
+  if (!repoContent && !userInput) {
+    return res.status(400).json({ error: "No input provided." });
+  }
+
   try {
     const systemMessage = {
       role: "system",
@@ -153,7 +136,7 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
     if (userInput) {
       if (userInput.trim().toLowerCase() === "continue") {
         if (!previousDocumentation) {
-          return { error: "No previous documentation found to continue." };
+          return res.status(400).json({ error: "No previous documentation found to continue." });
         }
         const userMessage = { 
           role: "user", 
@@ -169,7 +152,7 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
 
         const newResponse = completion.choices[0].message.content;
         previousDocumentation = newResponse;
-        return { documentation: newResponse };
+        return res.json({ documentation: newResponse });
       } else {
         const userMessage = { 
           role: "user", 
@@ -185,13 +168,12 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
 
         const newResponse = completion.choices[0].message.content;
         previousDocumentation = newResponse;
-        return { documentation: newResponse };
+        return res.json({ documentation: newResponse });
       }
     }
-    
     if (repoContent) {
       const contentSize = repoContent.length;
-      const isLargeRepo = contentSize > 10000; // Further reduced from 20000 to 10000 for earlier detection
+      const isLargeRepo = contentSize > 20000; // Reduced from 100000 to detect large repos earlier
       
       if (!isLargeRepo) {
         const userMessage = { 
@@ -208,7 +190,7 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
 
         const newResponse = completion.choices[0].message.content;
         previousDocumentation = newResponse;
-        return { documentation: newResponse };
+        return res.json({ documentation: newResponse });
       } 
       
       else {
@@ -216,15 +198,15 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
         try {
           parsedContent = JSON.parse(repoContent);
         } catch (error) {
-          return { error: "Invalid repository content format." };
+          return res.status(400).json({ error: "Invalid repository content format." });
         }
 
         const chunks = prepareChunks(parsedContent);
         let fullDocumentation = "";
         let contextSummary = "";
         
-        // Further limit the number of chunks to process 
-        const chunkLimit = Math.min(chunks.length, 30); // Reduced from 50 to 30
+        // Limit the number of chunks to process to avoid context length issues
+        const chunkLimit = Math.min(chunks.length, 50);
         const processingChunks = chunks.slice(0, chunkLimit);
         
         console.log(`Processing ${processingChunks.length} chunks out of ${chunks.length} total chunks`);
@@ -236,9 +218,9 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
           
           // Trim chunk content for safety
           const chunkContent = JSON.stringify(chunk);
-          // Further reduced chunk size
-          const trimmedChunk = chunkContent.length > 15000 ? 
-            chunkContent.substring(0, 15000) + "..." : 
+          // Limit chunk size to avoid context length issues
+          const trimmedChunk = chunkContent.length > 20000 ? 
+            chunkContent.substring(0, 20000) + "..." : 
             chunkContent;
           
           let chunkPrompt;
@@ -263,8 +245,8 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
             const chunkResponse = chunkCompletion.choices[0].message.content;
             fullDocumentation += (i > 0 ? "\n\n" : "") + chunkResponse;
             
-            // Create an even shorter context summary
-            contextSummary = chunkResponse.slice(0, 150) + "..."; // Reduced from 200 to 150
+            // Create a shorter context summary
+            contextSummary = chunkResponse.slice(0, 200) + "...";
           } catch (error) {
             console.error(`Error processing chunk ${i}:`, error);
             // Continue with next chunk on error
@@ -273,7 +255,7 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
         }
 
         // Only do the refinement if we have a reasonable amount of documentation
-        if (processingChunks.length > 1 && fullDocumentation.length < 40000) { // Reduced from 50000 to 40000
+        if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
           try {
             const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, well-structured, and without repetitive sections or awkward transitions:\n\n${fullDocumentation}`;
             
@@ -294,11 +276,9 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
         }
         
         previousDocumentation = fullDocumentation;
-        return { documentation: fullDocumentation };
+        return res.json({ documentation: fullDocumentation });
       }
     }
-    
-    return { error: "No input provided." };
   } catch (error) {
     console.error("Error calling GPT API:", error);
 
@@ -310,27 +290,8 @@ const generateDocumentation = async ({ repoContent, userInput }) => {
       console.error("Error message:", error.message);
     }
 
-    throw error;
+    res.status(500).json({ error: "Failed to generate documentation" });
   }
-};
-
-// Use the queue system in the API endpoint
-app.post("/api/generate-doc", async (req, res) => {
-  const { repoContent, userInput } = req.body;
-
-  if (!repoContent && !userInput) {
-    return res.status(400).json({ error: "No input provided." });
-  }
-
-  // Add job to queue
-  docGenerationQueue.push({
-    id: Date.now().toString(),
-    data: { repoContent, userInput },
-    res: res
-  });
-
-  // Start processing if not already processing
-  processNextDocJob();
 });
 
 function prepareChunks(repoContent) {
@@ -341,8 +302,8 @@ function prepareChunks(repoContent) {
   // Create a more concise overview
   const overview = {
     totalFiles,
-    // Further reduce to only include first 10 files in the overview
-    fileList: files.slice(0, 10).map(f => f.file),
+    // Only include first 20 files in the overview to reduce size
+    fileList: files.slice(0, 20).map(f => f.file),
     structure: analyzeStructure(files)
   };
   chunks.push(overview);
@@ -353,13 +314,12 @@ function prepareChunks(repoContent) {
     const dirFiles = fileGroups[directory];
     
     // Skip large unimportant directories
-    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build" || 
-        directory === "public" || directory === "assets" || directory === "images") {
+    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build") {
       return;
     }
     
-    if (JSON.stringify(dirFiles).length > 4000) { // Further reduced from 8000 to 4000 for even smaller chunks
-      const subChunks = splitArrayIntoChunks(dirFiles, 8); // Split into more chunks (was 5)
+    if (JSON.stringify(dirFiles).length > 8000) { // Reduced from 16000 to 8000 for smaller chunks
+      const subChunks = splitArrayIntoChunks(dirFiles, 5); // Split into more chunks (was 3)
       subChunks.forEach(subChunk => {
         chunks.push({
           directory,
@@ -586,26 +546,21 @@ app.get("/get-razorpay-key", (req, res) => {
   res.json({ key: process.env.RAZORPAY_KEY_ID });
 });
 
-// GitHub clone queue system
-const cloneQueue = [];
-let isProcessingClone = false;
+app.post("/api/github/clone", async (req, res) => {
+  const { repoName, githubToken, username } = req.body;
 
-// Process next clone job
-const processNextCloneJob = async () => {
-  if (isProcessingClone || cloneQueue.length === 0) return;
-  
-  isProcessingClone = true;
-  const job = cloneQueue.shift();
-  
+  if (!repoName || !githubToken || !username) {
+    return res.status(400).json({ error: "Missing required details" });
+  }
+
   try {
-    const { repoName, githubToken, username } = job.data;
     const repoUrl = `https://${githubToken}@github.com/${username}/${repoName}.git`;
     const repoPath = path.join(TEMP_REPO_DIR, repoName);
 
     await cloneRepo(repoUrl, repoPath);
     const analysis = analyzeRepo(repoPath);
 
-    job.res.json({ success: true, repo: repoName, analysis });
+    res.json({ success: true, repo: repoName, analysis });
 
     setTimeout(async () => {
       try {
@@ -615,35 +570,10 @@ const processNextCloneJob = async () => {
         console.error("Error deleting repo:", err);
       }
     }, 5 * 60 * 1000);
+    
   } catch (error) {
-    console.error("Error in clone job:", error);
-    job.res.status(200).json({ 
-      success: false, 
-      message: "Repository import failed. Only repositories owned or created by you can be imported." 
-    });
-  } finally {
-    isProcessingClone = false;
-    // Process next job
-    processNextCloneJob();
+    return res.status(200).json({ success: false, message: "Repository import failed. Only repositories owned or created by you can be imported." });
   }
-};
-
-app.post("/api/github/clone", async (req, res) => {
-  const { repoName, githubToken, username } = req.body;
-
-  if (!repoName || !githubToken || !username) {
-    return res.status(400).json({ error: "Missing required details" });
-  }
-
-  // Add to clone queue
-  cloneQueue.push({
-    id: Date.now().toString(),
-    data: { repoName, githubToken, username },
-    res: res
-  });
-
-  // Start processing if not already
-  processNextCloneJob();
 });
 
 const analyzeRepo = (repoPath) => {
@@ -655,103 +585,44 @@ const analyzeRepo = (repoPath) => {
     "cs", "r", "dart", "lua", "pl", "sql", "jsx", "tsx", "vue", "dockerfile", "makefile"
   ];
 
-  // Further reduced max file size (from 100KB to 50KB)
-  const MAX_FILE_SIZE = 100 * 1024; 
-  
-  // Maximum depth for directory traversal
-  const MAX_DEPTH = 5;
+  // Maximum file size to include (100KB)
+  const MAX_FILE_SIZE = 100 * 1024;
 
-  const readFiles = (dir, relativePath = "", depth = 0) => {
-    // Stop traversing if we've gone too deep
-    if (depth >= MAX_DEPTH) return;
-    
-    try {
-      const files = fs.readdirSync(dir);
-      files.forEach((file) => {
-        const filePath = path.join(dir, file);
-        const relFilePath = path.join(relativePath, file);
-        
-        try {
-          const stats = fs.statSync(filePath);
+  const readFiles = (dir, relativePath = "") => {
+    const files = fs.readdirSync(dir);
+    files.forEach((file) => {
+      const filePath = path.join(dir, file);
+      const relFilePath = path.join(relativePath, file);
+      const stats = fs.statSync(filePath);
 
-          if (stats.isDirectory()) {
-            // Skip large/unnecessary directories
-            if (
-              file === "node_modules" || 
-              file === ".git" || 
-              file === "dist" || 
-              file === "build" ||
-              file === "public" ||
-              file === "assets" ||
-              file === "images" ||
-              file === "vendor" ||
-              file === "target" ||
-              file === "cache" ||
-              file.startsWith(".")
-            ) {
-              return;
-            }
-            readFiles(filePath, relFilePath, depth + 1);
-          } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
-            try {
-              // Skip very large files entirely
-              if (stats.size > 5 * MAX_FILE_SIZE) {
-                fileStructure.push({ 
-                  file: relFilePath, 
-                  content: `[File size ${Math.round(stats.size/1024)}KB is too large to include in analysis]`
-                });
-                return;
-              }
-              
-              // For medium-sized files, truncate
-              if (stats.size <= MAX_FILE_SIZE) {
-                const content = fs.readFileSync(filePath, "utf-8");
-                fileStructure.push({ file: relFilePath, content });
-              } else {
-                // For large files, only include the first part
-                const content = fs.readFileSync(filePath, { 
-                  encoding: 'utf-8', 
-                  start: 0, 
-                  end: Math.min(stats.size, MAX_FILE_SIZE - 1) 
-                });
-                fileStructure.push({ 
-                  file: relFilePath, 
-                  content: content + "\n\n[File truncated due to size...]"
-                });
-              }
-            } catch (fileReadError) {
-              console.error(`Error reading file ${filePath}:`, fileReadError);
-              // Add error info to the file structure instead of failing
-              fileStructure.push({ 
-                file: relFilePath, 
-                content: "[Error reading file content]" 
-              });
-            }
-          }
-        } catch (statError) {
-          console.error(`Error getting stats for ${filePath}:`, statError);
+      if (stats.isDirectory()) {
+        // Skip node_modules and other large directories
+        if (file === "node_modules" || file === ".git" || file === "dist" || file === "build") {
+          return;
         }
-      });
-    } catch (dirError) {
-      console.error(`Error reading directory ${dir}:`, dirError);
-    }
+        readFiles(filePath, relFilePath);
+      } else if (supportedExtensions.includes(path.extname(file).slice(1))) {
+        if (stats.size <= MAX_FILE_SIZE) {
+          const content = fs.readFileSync(filePath, "utf-8");
+          fileStructure.push({ file: relFilePath, content });
+        } else {
+          // For large files, only include the first part
+          const content = fs.readFileSync(filePath, { 
+            encoding: 'utf-8', 
+            start: 0, 
+            end: Math.min(stats.size, MAX_FILE_SIZE - 1) 
+          });
+          fileStructure.push({ 
+            file: relFilePath, 
+            content: content + "\n\n[File truncated due to size...]"
+          });
+        }
+      }
+    });
   };
 
-  try {
-    readFiles(repoPath);
-    
-    // Limit the number of files to prevent OOM
-    const MAX_FILES = 200;
-    if (fileStructure.length > MAX_FILES) {
-      console.log(`Repository has ${fileStructure.length} files, limiting to ${MAX_FILES}`);
-      fileStructure = fileStructure.slice(0, MAX_FILES);
-    }
-    
-    return { totalFiles: fileStructure.length, files: fileStructure };
-  } catch (error) {
-    console.error("Error in analyzeRepo:", error);
-    return { totalFiles: 0, files: [] };
-  }
+  readFiles(repoPath);
+  return { totalFiles: fileStructure.length, files: fileStructure };
 };
 
 app.use("/api/messages", messageRoutes);
