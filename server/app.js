@@ -648,7 +648,8 @@ const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
-  // ✅ 3️⃣ Move keepAlive AFTER the server starts
+  // ❌ Commented out keepAlive because we are using an external service (Cron-job.org)
+  /*
   const keepAlive = () => {
     axios.get(`https://sooru-ai.onrender.com/api/ping`)
       .then(() => console.log("Keep-alive ping successful"))
@@ -657,7 +658,10 @@ app.listen(PORT, () => {
 
   // Initial ping when server is fully running
   keepAlive();
-  
+
   // Set up interval (30 minutes)
   setInterval(keepAlive, 1800000);
+  */
+
+  // ✅ No need for self-ping anymore. Using Cron-job.org instead.
 });
