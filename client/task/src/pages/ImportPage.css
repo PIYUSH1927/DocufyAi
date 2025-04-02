@@ -325,7 +325,7 @@
 .formatted-markdown pre {
   background-color: #f6f8fa;
   border-radius: 3px;
-  padding: 16px;
+  padding: 0px;
   overflow: auto;
 }
 

@@ -633,6 +633,10 @@ const analyzeRepo = (repoPath) => {
   return { totalFiles: fileStructure.length, files: fileStructure };
 };
 
+app.get("/api/ping", (req, res) => {
+  res.status(200).send("pong");
+});
+
 
 // Keep server awake by self-pinging every 30 minutes
 const keepAlive = () => {

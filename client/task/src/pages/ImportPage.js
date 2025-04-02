@@ -669,8 +669,7 @@ const ImportPage = () => {
               padding: 20px;
             }
             .container {
-              max-width: 800px;
-              margin: 0 auto;
+              margin: 0 50px;
             }
           </style>
         </head>
