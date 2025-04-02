@@ -633,8 +633,6 @@ const analyzeRepo = (repoPath) => {
   return { totalFiles: fileStructure.length, files: fileStructure };
 };
 
-// On your backend
-const axios = require('axios');
 
 // Keep server awake by self-pinging every 30 minutes
 const keepAlive = () => {
