@@ -638,19 +638,6 @@ app.get("/api/ping", (req, res) => {
 });
 
 
-// Keep server awake by self-pinging every 30 minutes
-const keepAlive = () => {
-  axios.get('https://sooru-ai.onrender.com/api/ping')
-    .then(() => console.log("Keep-alive ping successful"))
-    .catch(error => console.error("Keep-alive ping failed:", error.message));
-};
-
-// Initial ping when starting up
-keepAlive();
-
-// Set up interval (30 minutes)
-setInterval(keepAlive, 1800000);
-
 app.use("/api/messages", messageRoutes);
 
 app.use("/api/auth", authRoutes);
@@ -658,4 +645,19 @@ app.use("/api/github", authRoutes);
 app.use("/api/user", userRoutes);
 
 const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+
+  // ✅ 3️⃣ Move keepAlive AFTER the server starts
+  const keepAlive = () => {
+    axios.get(`https://sooru-ai.onrender.com/api/ping`)
+      .then(() => console.log("Keep-alive ping successful"))
+      .catch(error => console.error("Keep-alive ping failed:", error.message));
+  };
+
+  // Initial ping when server is fully running
+  keepAlive();
+  
+  // Set up interval (30 minutes)
+  setInterval(keepAlive, 1800000);
+});
