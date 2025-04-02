@@ -223,7 +223,7 @@ const Pricing = () => {
             description: "Best for developers and small teams.",
             features: [
               "GitHub Sync (Up to 10 Repos)",
-              "Download document as PDF",
+              "Download document",
               "Interactive Chat Assistance",
               "Sync latest changes",
               "All Free Plan features included",

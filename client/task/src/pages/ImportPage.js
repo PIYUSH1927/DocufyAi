@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Copy, Download, RefreshCw } from "lucide-react";
+import { Document, Packer, Paragraph, HeadingLevel, AlignmentType } from "docx";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -343,37 +344,151 @@ const ImportPage = () => {
 
   const handleDownloadPDF = (index) => {
     if (currentPlan === "Free Plan (₹0/month)") {
-      alert("Upgrade to Pro plan to download as a PDF.");
+      alert("Upgrade to Pro plan to download as a document.");
       return;
     }
+  
     const formattedElement = document.querySelector(
       `.import-chat-message[data-key="${index}"] .formatted-markdown`
     );
-
-    if (formattedElement && html2pdf) {
+  
+    if (formattedElement) {
+      // First, get formatted HTML content with all styles preserved
       const tempContainer = document.createElement("div");
-      tempContainer.className = "formatted-markdown";
-
-      tempContainer.innerHTML = formattedElement.innerHTML;
-
-      const styleElement = document.createElement("style");
-      styleElement.textContent = `
+      
+      // Clone the formatted element to preserve ALL styling including syntax highlighting
+      const clonedContent = formattedElement.cloneNode(true);
+      tempContainer.appendChild(clonedContent);
+      
+      // Get all the stylesheets from the document that might affect the formatting
+      const stylesheets = Array.from(document.styleSheets);
+      let cssRules = "";
+      
+      // Extract CSS rules from all stylesheets
+      stylesheets.forEach(sheet => {
+        try {
+          if (sheet.cssRules) {
+            Array.from(sheet.cssRules).forEach(rule => {
+              cssRules += rule.cssText + "\\n";
+            });
+          }
+        } catch (e) {
+          // Some stylesheets might be protected by CORS
+          console.log("Could not access stylesheet:", e);
+        }
+      });
+      
+      // Add highlight.js styles to ensure code highlighting is preserved
+      cssRules += `
+        /* Syntax highlighting styles */
+        .hljs {
+          display: block;
+          overflow-x: auto;
+          color: #333;
+          background: #f8f8f8;
+        }
+        
+        .hljs-comment,
+        .hljs-quote {
+          color: #998;
+          font-style: italic;
+        }
+        
+        .hljs-keyword,
+        .hljs-selector-tag,
+        .hljs-subst {
+          color: #333;
+          font-weight: bold;
+        }
+        
+        .hljs-number,
+        .hljs-literal,
+        .hljs-variable,
+        .hljs-template-variable,
+        .hljs-tag .hljs-attr {
+          color: #008080;
+        }
+        
+        .hljs-string,
+        .hljs-doctag {
+          color: #d14;
+        }
+        
+        .hljs-title,
+        .hljs-section,
+        .hljs-selector-id {
+          color: #900;
+          font-weight: bold;
+        }
+        
+        .hljs-subst {
+          font-weight: normal;
+        }
+        
+        .hljs-type,
+        .hljs-class .hljs-title {
+          color: #458;
+          font-weight: bold;
+        }
+        
+        .hljs-tag,
+        .hljs-name,
+        .hljs-attribute {
+          color: #000080;
+          font-weight: normal;
+        }
+        
+        .hljs-regexp,
+        .hljs-link {
+          color: #009926;
+        }
+        
+        .hljs-symbol,
+        .hljs-bullet {
+          color: #990073;
+        }
+        
+        .hljs-built_in,
+        .hljs-builtin-name {
+          color: #0086b3;
+        }
+        
+        .hljs-meta {
+          color: #999;
+          font-weight: bold;
+        }
+        
+        .hljs-deletion {
+          background: #fdd;
+        }
+        
+        .hljs-addition {
+          background: #dfd;
+        }
+        
+        .hljs-emphasis {
+          font-style: italic;
+        }
+        
+        .hljs-strong {
+          font-weight: bold;
+        }
+        
+        /* Additional styles to match your formatting */
         .formatted-markdown {
           line-height: 1.4;
           word-wrap: break-word;
           overflow-wrap: break-word;
           hyphens: auto;
-          color: #000000;
-          background-color: #ffffff;
-          padding: 20px;
-          padding-top:0px;
-          font-family: Arial, sans-serif;
+          font-family: Poppins, sans-serif; 
+          font-size: 0.8em;
+          margin: 0.5cm;
         }
         
         .formatted-markdown h1 {
           font-size: 1.8em;
           font-weight: bold;
-          margin-top: 0.6em;
+          margin-top: 1.2em;
           margin-bottom: 0.6em;
         }
         
@@ -381,7 +496,7 @@ const ImportPage = () => {
           font-size: 1.5em;
           font-weight: bold;
           margin-top: 1em;
-          margin-bottom: 0.5em;
+          margin-bottom: 0.6em;
         }
         
         .formatted-markdown h3 {
@@ -427,15 +542,35 @@ const ImportPage = () => {
           border-radius: 3px;
           padding: 16px;
           overflow: auto;
-          margin: 0.8em 0;
+          margin: 0.4em 0;
         }
-        
+  
+  
+        .formatted-markdown pre code {
+          font-family: monospace;
+          line-height: 1 !important;
+          white-space: pre !important;
+          display: block;
+          background-color: transparent;
+          padding: 0;
+        }
+  
+        code.hljs {
+          padding: 0 !important;
+          line-height: 1 !important;
+          background-color: transparent !important;
+        }
+  
+        pre code.hljs {
+          padding: 0 !important;
+        }
+  
         .formatted-markdown blockquote {
           padding-left: 1em;
           border-left: 4px solid #ddd;
           color: #666;
           line-height: 1.4;
-          margin: 0.7em 0;
+          margin: 0.5em 0;
         }
         
         .formatted-markdown strong {
@@ -448,7 +583,7 @@ const ImportPage = () => {
         
         .formatted-markdown table {
           border-collapse: collapse;
-          width: 100%;
+          width: 90%;
           margin: 1em 0;
           table-layout: fixed;
           word-wrap: break-word;
@@ -459,61 +594,178 @@ const ImportPage = () => {
           border: 1px solid #ddd;
           padding: 8px;
           text-align: left;
+          font-size: 0.9em;
+          white-space: normal; 
+          word-break: break-word;
         }
         
         .formatted-markdown th {
           background-color: #f6f8fa;
           font-weight: bold;
         }
-      `;
-      tempContainer.appendChild(styleElement);
-
-      const options = {
-        margin: 10,
-        filename: `${repoName}_documentation.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
-
-      html2pdf().from(tempContainer).set(options).save();
-    } else {
-      const { text } = messages[index];
-
-      if (!text || typeof text !== "string") {
-        console.error("Invalid text format for PDF:", text);
-        return;
-      }
-
-      const doc = new jsPDF({
-        orientation: "p",
-        unit: "mm",
-        format: "a4",
-        lineHeightFactor: 1.2,
-      });
-
-      const margin = 15;
-      const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
-      const pageHeight = doc.internal.pageSize.getHeight() - margin * 2;
-      let yPosition = margin;
-
-      doc.setFont("Arial", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-
-      const lines = doc.splitTextToSize(text, pageWidth);
-
-      lines.forEach((line) => {
-        if (yPosition + 5 > pageHeight + margin) {
-          doc.addPage();
-          yPosition = margin;
+        
+        /* Keyword highlights */
+        .token.keyword, .token.operator, .token.important {
+          color: #07a;
         }
-        doc.text(line, margin, yPosition);
-        yPosition += 5;
-      });
+        
+        /* String highlights */
+        .token.string, .token.char, .token.attr-value {
+          color: #690;
+        }
+        
+        /* Numbers */
+        .token.number, .token.boolean {
+          color: #905;
+        }
+        
+        /* Function names */
+        .token.function {
+          color: #dd4a68;
+        }
+        
+        /* Variables */
+        .token.variable {
+          color: #e90;
+        }
+        
+        /* Imports, special keywords */
+        .token.selector, .token.doctype, .token.important, .token.namespace {
+          color: #07a;
+          font-weight: bold;
+        }
+      `;
 
-      const fileName = `${repoName}_documentation.pdf`;
-      doc.save(fileName);
+      const getAdjustedCssForHtml = (originalCss) => {
+        // Increase font size for HTML format
+        return originalCss.replace(
+          '.formatted-markdown {',
+          '.formatted-markdown {'
+        ) + `
+          /* HTML-specific adjustments */
+          .formatted-markdown {
+            font-size: 0.95em !important; /* Increase from 0.8em to 0.9em for HTML format */
+          }
+          
+          .formatted-markdown pre {
+            margin: 0.6em 0 !important; /* Adjust margin as requested */
+          }
+        `;
+      };
+      
+      
+      // Create HTML content
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${repoName} Documentation</title>
+          <style>
+             ${getAdjustedCssForHtml(cssRules)}
+            body {
+              font-family: Poppins, sans-serif;
+              margin: 0;
+              padding: 20px;
+            }
+            .container {
+              max-width: 800px;
+              margin: 0 auto;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            ${clonedContent.outerHTML}
+          </div>
+        </body>
+        </html>
+      `;
+  
+      // Create Word-compatible HTML document for Windows
+      const wordDoc = `
+        <!DOCTYPE html>
+        <html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:w="urn:schemas-microsoft-com:office:word"
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <meta name="ProgId" content="Word.Document">
+          <meta name="Generator" content="Microsoft Word 15">
+          <meta name="Originator" content="Microsoft Word 15">
+          <title>${repoName} Documentation</title>
+          <style>
+            ${cssRules}
+            /* Word-specific narrow margin settings */
+            @page WordSection1 {
+              size: 8.5in 11.0in;
+              margin: 0.5in 0.5in 0.5in 0.5in; /* Narrow margins: top right bottom left */
+              mso-header-margin: 0.5in;
+              mso-footer-margin: 0.5in;
+              mso-paper-source: 0;
+            }
+            div.WordSection1 {
+              page: WordSection1;
+            }
+          </style>
+          <!--[if gte mso 9]>
+          <xml>
+            <w:WordDocument>
+              <w:View>Print</w:View>
+              <w:Zoom>100</w:Zoom>
+              <w:DoNotOptimizeForBrowser/>
+            </w:WordDocument>
+          </xml>
+          <![endif]-->
+        </head>
+        <body style="font-family: Poppins, sans-serif;">
+          <div class="WordSection1">
+            ${clonedContent.outerHTML}
+          </div>
+        </body>
+        </html>
+      `;
+      
+      // Detect OS
+      const isWindows = navigator.userAgent.indexOf("Windows") !== -1;
+      
+      // Create a blob and download link based on the OS
+      let blob;
+      let filename;
+      
+      if (isWindows) {
+        // Windows: Use Word-compatible format (.doc)
+        blob = new Blob([wordDoc], { type: "application/msword;charset=utf-8" });
+        filename = `${repoName}_documentation.doc`;
+      } else {
+        // macOS, Linux, or other: Use HTML format
+        blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+        filename = `${repoName}_documentation.html`;
+      }
+      
+      // Create a download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 0);
+  
+      // Update status
+      const statusText = isWindows ? "Downloaded" : "Downloaded";
+      setDownloadStatus((prev) => ({ ...prev, [index]: statusText }));
+      setTimeout(() => {
+        setDownloadStatus((prev) => ({ ...prev, [index]: "Download Document" }));
+      }, 2000);
+    } else {
+      console.error("Unable to find formatted content");
+      alert("Error: Unable to download content. Please try again.");
     }
   };
 
@@ -886,10 +1138,10 @@ const ImportPage = () => {
                     size={16}
                     className="icon"
                     onClick={() => handleDownloadPDF(index)}
-                    title={downloadStatus?.[index] || "Download as PDF"}
+                    title={downloadStatus?.[index] || "Download Document"}
                   />
                   <span className="tooltip-text">
-                    {downloadStatus[index] || "Download as PDF"}
+                    {downloadStatus[index] || "Download Document"}
                   </span>
                 </div>
               </div>

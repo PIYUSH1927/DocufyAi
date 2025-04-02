@@ -633,6 +633,22 @@ const analyzeRepo = (repoPath) => {
   return { totalFiles: fileStructure.length, files: fileStructure };
 };
 
+// On your backend
+const axios = require('axios');
+
+// Keep server awake by self-pinging every 30 minutes
+const keepAlive = () => {
+  axios.get('https://sooru-ai.onrender.com/api/ping')
+    .then(() => console.log("Keep-alive ping successful"))
+    .catch(error => console.error("Keep-alive ping failed:", error.message));
+};
+
+// Initial ping when starting up
+keepAlive();
+
+// Set up interval (30 minutes)
+setInterval(keepAlive, 1800000);
+
 app.use("/api/messages", messageRoutes);
 
 app.use("/api/auth", authRoutes);
