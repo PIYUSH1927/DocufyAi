@@ -727,12 +727,15 @@ const ImportPage = () => {
       
       // Detect OS
       const isWindows = navigator.userAgent.indexOf("Windows") !== -1;
+
+      const userAgent = navigator.userAgent;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(userAgent);
       
       // Create a blob and download link based on the OS
       let blob;
       let filename;
       
-      if (isWindows) {
+      if (isWindows|| isMobile) {
         // Windows: Use Word-compatible format (.doc)
         blob = new Blob([wordDoc], { type: "application/msword;charset=utf-8" });
         filename = `${repoName}_documentation.doc`;
