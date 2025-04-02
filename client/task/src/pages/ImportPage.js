@@ -682,7 +682,7 @@ const ImportPage = () => {
       `;
   
       // Create Word-compatible HTML document for Windows
-      const wordDoc = `
+      const wordDocument = `
         <!DOCTYPE html>
         <html xmlns:o="urn:schemas-microsoft-com:office:office"
               xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -737,12 +737,14 @@ const ImportPage = () => {
       
       if (isWindows|| isMobile) {
         // Windows: Use Word-compatible format (.doc)
-        blob = new Blob([wordDoc], { type: "application/msword;charset=utf-8" });
+        blob = new Blob(["\ufeff", wordDocument], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
         filename = `${repoName}_documentation.doc`;
       } else {
         // macOS, Linux, or other: Use HTML format
         blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-        filename = `${repoName}_documentation.html`;
+        filename = `${repoName}_documentation.htm`;
       }
       
       // Create a download link
