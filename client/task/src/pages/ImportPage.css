@@ -306,12 +306,15 @@
 .formatted-markdown ul, .formatted-markdown ol {
   padding-left: 2em;
   margin-top: -10px;
- 
+  margin-bottom: -10px;
+
 }
 
 .formatted-markdown li {
-  margin-top: -5px;
-  margin-bottom: -5px;
+  margin-top: -10px;
+  margin-bottom: -10px;
+  
+
 }
 
 .formatted-markdown code {
@@ -325,7 +328,7 @@
 .formatted-markdown pre {
   background-color: #f6f8fa;
   border-radius: 3px;
-  padding: 0px;
+  padding: 2px;
   overflow: auto;
 }
 
@@ -392,4 +395,5 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
+
 
