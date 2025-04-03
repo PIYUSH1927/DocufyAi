@@ -682,13 +682,13 @@ const ImportPage = () => {
       `;
   
       // Create Word-compatible HTML document for Windows
-      const wordDocument = `
+      const wordDoc = `
         <!DOCTYPE html>
         <html xmlns:o="urn:schemas-microsoft-com:office:office"
               xmlns:w="urn:schemas-microsoft-com:office:word"
               xmlns="http://www.w3.org/TR/REC-html40">
         <head>
-          <meta charset="utf-8">
+             <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
           <meta name="ProgId" content="Word.Document">
           <meta name="Generator" content="Microsoft Word 15">
           <meta name="Originator" content="Microsoft Word 15">
@@ -706,6 +706,13 @@ const ImportPage = () => {
             div.WordSection1 {
               page: WordSection1;
             }
+
+                  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+      
+      body, div, p, h1, h2, h3, h4, h5, h6, 
+      ul, ol, li, table, tr, td, th, code, pre {
+        font-family: 'Poppins', Arial, sans-serif !important;
+      }
           </style>
           <!--[if gte mso 9]>
           <xml>
@@ -716,6 +723,7 @@ const ImportPage = () => {
             </w:WordDocument>
           </xml>
           <![endif]-->
+
         </head>
         <body style="font-family: Poppins, sans-serif;">
           <div class="WordSection1">
@@ -727,18 +735,17 @@ const ImportPage = () => {
       
       // Detect OS
       const isWindows = navigator.userAgent.indexOf("Windows") !== -1;
-
-      const userAgent = navigator.userAgent;
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(userAgent);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       
       // Create a blob and download link based on the OS
       let blob;
       let filename;
       
+    
       if (isWindows|| isMobile) {
         // Windows: Use Word-compatible format (.doc)
-        blob = new Blob(["\ufeff", wordDocument], {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        blob = new Blob(["\ufeff", wordDoc], {
+          type: "application/msword",
         });
         filename = `${repoName}_documentation.doc`;
       } else {
@@ -746,6 +753,7 @@ const ImportPage = () => {
         blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
         filename = `${repoName}_documentation.htm`;
       }
+      
       
       // Create a download link
       const url = URL.createObjectURL(blob);
