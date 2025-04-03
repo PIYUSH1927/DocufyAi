@@ -117,7 +117,7 @@ app.post("/api/generate-doc", async (req, res) => {
        - For frontend: document components, state management, UI flow, and user interactions
        - For backend: document services, controllers, models, and data flow
     
-    4. For API documentation, include:
+    4. Important: For API documentation dont give that in table and, include:
        - Base URL/endpoint
        - HTTP method
        - Request headers
