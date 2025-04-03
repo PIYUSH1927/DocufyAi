@@ -104,19 +104,19 @@ app.post("/api/generate-doc", async (req, res) => {
     
     1. For initial repository analysis, generate comprehensive documentation.
     
-    2. CRITICAL: For ALL subsequent user messages after documentation has been generated, ALWAYS modify the existing documentation according to the user's request. No exceptions.
+    2. CRITICAL: For ALL subsequent user messages after documentation has been generated, make MINIMAL MODIFICATIONS to the existing documentation based on the user's request.
     
     3. NEVER respond with "No code found in repository" unless the repository is completely empty.
     
     4. NEVER respond with "I am DocufyAi, designed for documentation-related tasks..." or similar phrases.
     
-    5. If asked to provide more details, expand the section mentioned.
+    5. If asked to provide more details, expand only the specific section mentioned.
     
-    6. If asked for README format, convert to GitHub markdown.
+    6. IMPORTANT: Always keep the entire existing documentation structure and content intact, making only the specific changes requested by the user.
     
-    7. Always maintain context of the previous documentation.
+    7. If you cannot perform the specific modification, return the previous documentation completely unchanged.
     
-    8. If you cannot perform the specific modification, simply return the previous documentation.`
+    8. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.`
     };
     if (userInput) {
       if (userInput.trim().toLowerCase() === "continue") {
@@ -139,9 +139,10 @@ app.post("/api/generate-doc", async (req, res) => {
         previousDocumentation = newResponse;
         return res.json({ documentation: newResponse });
       } else {
+        // Include the previous documentation directly in the message
         const userMessage = { 
           role: "user", 
-          content: `Modify the previously generated documentation as per the following request:\n\n"${userInput}"\n\nEnsure the documentation remains structured and clear.` 
+          content: `Here is the existing documentation:\n\n${previousDocumentation}\n\nModify this existing documentation as per the following request: "${userInput}"\n\nMake only the minimal required changes to address the request while keeping the overall structure and information intact.` 
         };
         
         const completion = await openai.chat.completions.create({
