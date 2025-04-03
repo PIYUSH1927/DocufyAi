@@ -745,7 +745,7 @@ const ImportPage = () => {
       if (isWindows|| isMobile) {
         // Windows: Use Word-compatible format (.doc)
         blob = new Blob(["\ufeff", wordDoc], {
-          type: "application/msword",
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         });
         filename = `${repoName}_documentation.doc`;
       } else {
