@@ -87,6 +87,67 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  
 });
 
+// Function to merge documentation chunks properly and remove repetitive sections
+function mergeDocumentationChunks(chunks) {
+  if (!chunks || chunks.length === 0) return "";
+  if (chunks.length === 1) return chunks[0];
+  
+  // Extract the first occurrence of "# Documentation" or similar headers
+  const headerRegex = /^# Documentation\s*$/im;
+  const architectureRegex = /^## Architecture Explanation\s*$/im;
+  const headingRegexes = [
+    /^# [^\n]+$/gim,                  // Match all H1 headings
+    /^## [^\n]+$/gim,                 // Match all H2 headings
+    /^### [^\n]+$/gim,                // Match all H3 headings
+    /^Documentation\s*$/gim,          // Match "Documentation" without #
+    /^Architecture Explanation\s*$/gim // Match "Architecture Explanation" without #
+  ];
+  
+  let mergedDoc = chunks[0];
+  
+  // Process each chunk after the first one
+  for (let i = 1; i < chunks.length; i++) {
+    let chunkContent = chunks[i];
+    
+    // Remove common headers that might be repeated
+    if (headerRegex.test(mergedDoc)) {
+      chunkContent = chunkContent.replace(headerRegex, '');
+    }
+    
+    if (architectureRegex.test(mergedDoc)) {
+      chunkContent = chunkContent.replace(architectureRegex, '');
+    }
+    
+    // Remove any continuation phrases or section indicators
+    chunkContent = chunkContent.replace(/^Continuing from previous section\.?[\s\n]*/i, '');
+    chunkContent = chunkContent.replace(/^Continuing the documentation\.?[\s\n]*/i, '');
+    chunkContent = chunkContent.replace(/^Moving on to the next part\.?[\s\n]*/i, '');
+    chunkContent = chunkContent.replace(/^Documentation continued[\s\n]*/i, '');
+    chunkContent = chunkContent.replace(/^Part \d+:[\s\n]*/i, '');
+    
+    // Check for duplicate headings
+    for (const regex of headingRegexes) {
+      const headingsInMerged = mergedDoc.match(regex) || [];
+      
+      if (headingsInMerged.length > 0) {
+        // For each heading already in the merged document, remove the same heading from the current chunk
+        headingsInMerged.forEach(heading => {
+          const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const dupeRegex = new RegExp(`^${escapedHeading}\\s*$`, 'im');
+          chunkContent = chunkContent.replace(dupeRegex, '');
+        });
+      }
+    }
+    
+    // Append the cleaned chunk content
+    mergedDoc += '\n\n' + chunkContent.trim();
+  }
+  
+  // Perform a final cleanup to remove any doubled-up newlines
+  mergedDoc = mergedDoc.replace(/\n{3,}/g, '\n\n');
+  
+  return mergedDoc;
+}
 
 let previousDocumentation = "";
 
@@ -213,7 +274,7 @@ app.post("/api/generate-doc", async (req, res) => {
         }
 
         const chunks = prepareChunks(parsedContent);
-        let fullDocumentation = "";
+        const chunkResponses = []; // Store individual chunk responses
         let contextSummary = "";
         
         // Limit the number of chunks to process to avoid context length issues
@@ -254,7 +315,7 @@ app.post("/api/generate-doc", async (req, res) => {
             });
             
             const chunkResponse = chunkCompletion.choices[0].message.content;
-            fullDocumentation += (i > 0 ? "\n\n" : "") + chunkResponse;
+            chunkResponses.push(chunkResponse); // Store individual responses
             
             // Create a shorter context summary
             contextSummary = chunkResponse.slice(0, 200) + "...";
@@ -265,10 +326,13 @@ app.post("/api/generate-doc", async (req, res) => {
           }
         }
 
+        // Merge the chunk responses using our new function
+        let fullDocumentation = mergeDocumentationChunks(chunkResponses);
+
         // Only do the refinement if we have a reasonable amount of documentation
         if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
           try {
-            const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, professional, well-structured, and follows enterprise documentation standards. Ensure frontend and backend sections are clearly separated if both exist, with frontend documented first. Make sure API documentation uses proper tables and includes all necessary details:\n\n${fullDocumentation}`;
+            const refinementPrompt = `I have documentation for a repository that needs to be finalized. Please review and edit this documentation to ensure it is cohesive, professional, has no repetitive sections, and reads as a single coherent document. Ensure frontend and backend sections are clearly separated if both exist, with frontend documented first. Make sure API documentation uses proper formats and includes all necessary details:\n\n${fullDocumentation}`;
             
             const refinementMessage = { role: "user", content: refinementPrompt };
             
@@ -675,5 +739,3 @@ app.listen(PORT, () => {
 
   // ✅ No need for self-ping anymore. Using Cron-job.org instead.
 });
-
-
