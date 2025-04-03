@@ -185,7 +185,7 @@ app.post("/api/generate-doc", async (req, res) => {
     }
     if (repoContent) {
       const contentSize = repoContent.length;
-      const isLargeRepo = contentSize > 20000; // Reduced from 100000 to detect large repos earlier
+      const isLargeRepo = contentSize > 40000; // Reduced from 100000 to detect large repos earlier
       
       if (!isLargeRepo) {
         const userMessage = { 
@@ -231,8 +231,8 @@ app.post("/api/generate-doc", async (req, res) => {
           // Trim chunk content for safety
           const chunkContent = JSON.stringify(chunk);
           // Limit chunk size to avoid context length issues
-          const trimmedChunk = chunkContent.length > 20000 ? 
-            chunkContent.substring(0, 20000) + "..." : 
+          const trimmedChunk = chunkContent.length > 40000 ? 
+            chunkContent.substring(0, 40000) + "..." : 
             chunkContent;
           
           let chunkPrompt;
@@ -269,7 +269,7 @@ app.post("/api/generate-doc", async (req, res) => {
         // Only do the refinement if we have a reasonable amount of documentation
         if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
           try {
-            const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, well-structured, and without repetitive sections or awkward transitions:\n\n${fullDocumentation}`;
+            const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, professional, well-structured, and follows enterprise documentation standards. Ensure frontend and backend sections are clearly separated if both exist, with frontend documented first. Make sure API documentation uses proper tables and includes all necessary details:\n\n${fullDocumentation}`;
             
             const refinementMessage = { role: "user", content: refinementPrompt };
             
