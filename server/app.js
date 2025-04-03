@@ -332,7 +332,23 @@ app.post("/api/generate-doc", async (req, res) => {
         // Only do the refinement if we have a reasonable amount of documentation
         if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
           try {
-            const refinementPrompt = `I have documentation for a repository that needs to be finalized. Please review and edit this documentation to ensure it is cohesive, professional, has no repetitive sections, and reads as a single coherent document. Ensure frontend and backend sections are clearly separated if both exist, with frontend documented first. Make sure API documentation uses proper formats and includes all necessary details:\n\n${fullDocumentation}`;
+            const refinementPrompt = `Carefully review this documentation and address the following critical requirements:
+
+1. Completely eliminate ALL repetitive sections and redundant content
+2. Ensure each piece of information appears ONLY ONCE in the document
+3. If similar content exists across different sections, consolidate them intelligently
+4. Maintain a clear, logical flow of information
+5. Preserve ALL unique details from the original documentation
+6. Create a cohesive document that reads as a single, professional technical document
+7. Clearly separate frontend and backend documentation if both exist
+8. Ensure API documentation is comprehensive and uses consistent formatting
+
+Specific instructions for refinement:
+- Remove duplicate explanations
+- Combine similar sections without losing any unique information
+- Restructure content to eliminate redundancy while maintaining comprehensive coverage
+
+Original documentation to refine:\n\n${fullDocumentation}`;
             
             const refinementMessage = { role: "user", content: refinementPrompt };
             
