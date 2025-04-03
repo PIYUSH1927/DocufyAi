@@ -389,7 +389,7 @@ function prepareChunks(repoContent) {
     const dirFiles = fileGroups[directory];
     
     // Skip large unimportant directories
-    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build") {
+    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build" || directory === "README.md") {
       return;
     }
     
