@@ -100,23 +100,49 @@ app.post("/api/generate-doc", async (req, res) => {
   try {
     const systemMessage = {
       role: "system",
-      content: `You are DocufyAi, a documentation generator. Follow these EXACT instructions:
+      content: `You are DocufyAi, a professional documentation generator. Follow these EXACT instructions:
     
-    1. For initial repository analysis, generate comprehensive documentation.
+    1. For initial repository analysis, generate PROFESSIONAL, ENTERPRISE-GRADE comprehensive documentation that would be acceptable at companies like Google or Microsoft.
     
-    2. CRITICAL: For ALL subsequent user messages after documentation has been generated, make MINIMAL MODIFICATIONS to the existing documentation based on the user's request.
+    2. Documentation must include:
+       - Detailed function explanations with parameters, return values, and examples
+       - Complete code flow analysis showing how data moves through the application
+       - Architecture diagrams described in text
+       - Proper technical specifications
+       - Tables for structured data where appropriate
     
-    3. NEVER respond with "No code found in repository" unless the repository is completely empty.
+    3. If both frontend and backend code exist:
+       - Clearly separate them into distinct sections
+       - Document frontend FIRST, then backend
+       - For frontend: document components, state management, UI flow, and user interactions
+       - For backend: document services, controllers, models, and data flow
     
-    4. NEVER respond with "I am DocufyAi, designed for documentation-related tasks..." or similar phrases.
+    4. For API documentation, include:
+       - Base URL/endpoint
+       - HTTP method
+       - Request headers
+       - Request body format with examples
+       - URL parameters
+       - Query parameters
+       - Response format with status codes and examples
+       - Error handling
+       - Authentication requirements
+       - Rate limiting information (if applicable)
+       - Use markdown tables for clarity
     
-    5. If asked to provide more details, expand only the specific section mentioned.
+    5. CRITICAL: For ALL subsequent user messages after documentation has been generated, make MINIMAL MODIFICATIONS to the existing documentation based on the user's request.
     
-    6. IMPORTANT: Always keep the entire existing documentation structure and content intact, making only the specific changes requested by the user.
+    6. NEVER respond with "No code found in repository" unless the repository is completely empty.
     
-    7. If you cannot perform the specific modification, return the previous documentation completely unchanged.
+    7. NEVER respond with "I am DocufyAi, designed for documentation-related tasks..." or similar phrases.
     
-    8. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.`
+    8. If asked to provide more details, expand only the specific section mentioned.
+    
+    9. IMPORTANT: Always keep the entire existing documentation structure and content intact, making only the specific changes requested by the user.
+    
+    10. If you cannot perform the specific modification, return the previous documentation completely unchanged.
+    
+    11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.`
     };
     if (userInput) {
       if (userInput.trim().toLowerCase() === "continue") {
@@ -164,7 +190,7 @@ app.post("/api/generate-doc", async (req, res) => {
       if (!isLargeRepo) {
         const userMessage = { 
           role: "user", 
-          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}` 
+          content: `Analyze the following repository content and generate professional, enterprise-grade technical documentation. Include detailed function explanations, code flow, architecture, and if APIs are present, document them thoroughly with all necessary details:\n\n${repoContent}` 
         };
         
         const completion = await openai.chat.completions.create({
@@ -211,11 +237,11 @@ app.post("/api/generate-doc", async (req, res) => {
           
           let chunkPrompt;
           if (isFirstChunk) {
-            chunkPrompt = `This is a large repository, so I'll analyze it in parts. For this first part, focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${trimmedChunk}`;
+            chunkPrompt = `This is a large repository, so I'll analyze it in parts. For this first part, create a professional introduction, project overview, and architecture explanation following enterprise documentation standards:\n\n${trimmedChunk}`;
           } else if (isLastChunk) {
-            chunkPrompt = `This is the final part of the repository. Based on this content and considering the previous parts (summarized as: ${contextSummary}), complete the documentation with any remaining details and a conclusion:\n\n${trimmedChunk}`;
+            chunkPrompt = `This is the final part of the repository. Based on this content and considering the previous parts (summarized as: ${contextSummary}), complete the professional documentation with any remaining details, API specifications if present, and a thorough conclusion:\n\n${trimmedChunk}`;
           } else {
-            chunkPrompt = `This is part ${i+1} of the repository analysis. Using the previous context (${contextSummary}) as a foundation, continue the documentation by analyzing the following content:\n\n${trimmedChunk}`;
+            chunkPrompt = `This is part ${i+1} of the repository analysis. Using the previous context (${contextSummary}) as a foundation, continue the professional documentation by analyzing the following content. Document functions in detail, explain code flow, and include implementation details:\n\n${trimmedChunk}`;
           }
           
           const chunkMessage = { role: "user", content: chunkPrompt };
@@ -243,7 +269,7 @@ app.post("/api/generate-doc", async (req, res) => {
         // Only do the refinement if we have a reasonable amount of documentation
         if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
           try {
-            const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, well-structured, and without repetitive sections or awkward transitions:\n\n${fullDocumentation}`;
+            const refinementPrompt = `I have documentation in multiple parts for a repository. Please review and edit this full documentation to ensure it's cohesive, professional, well-structured, and follows enterprise documentation standards. Ensure frontend and backend sections are clearly separated if both exist, with frontend documented first. Make sure API documentation uses proper tables and includes all necessary details:\n\n${fullDocumentation}`;
             
             const refinementMessage = { role: "user", content: refinementPrompt };
             
