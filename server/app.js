@@ -112,12 +112,9 @@ app.post("/api/generate-doc", async (req, res) => {
        - Architecture diagrams described in text
        - Proper technical specifications
        - Tables for structured data where appropriate
-       - Dont include and introduction and conclusion and title heading of the documentation should only be Documentation nothing else.
+       - Dont include and introduction and conclusion and title heading of the documentation should only be Documentation in h1 .
     
     4. If both frontend and backend code exist:
-       - Clearly separate them into distinct sections
-       - Document frontend FIRST, then backend
-       - If any of the frontend or backend component dosent exist then dont give that part of documentation only give the other part.
        - For frontend: document components, state management, UI flow, and user interactions
        - For backend: document services, controllers, models, and data flow
     
