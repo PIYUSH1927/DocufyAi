@@ -179,17 +179,15 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
-       - Project Structure in diagram form
        - Detailed function explanations with parameters, return values, and examples
        - Complete code flow analysis showing how data moves through the application
-       - Architecture diagrams 
+       - Architecture diagrams described in text
        - Proper technical specifications
        - Tables for structured data where appropriate
        - Dont include and introduction and conclusion and title heading of the documentation should only be Documentation in h1 .
     
     4. If both frontend and backend code exist:
-       - First give full frontend documentation then give full backend dont give if it exist and vice versa.
-       - For frontend: document components, state management, UI flow, and user interactions
+       - For frontend: document components,pages, state management, UI flow, and user interactions
        - For backend: document services, controllers, models, and data flow
     
     5. Important: For API documentation dont give that in table and, include:
@@ -367,21 +365,34 @@ app.post("/api/generate-doc", async (req, res) => {
           try {
             const refinementPrompt = `Carefully review this documentation and address the following critical requirements:
 
-1. Completely eliminate ALL repetitive sections and redundant content
-2. Ensure each piece of information appears ONLY ONCE in the document
-3. If similar content exists across different sections, consolidate them intelligently
-4. Maintain a clear, logical flow of information
-5. Preserve ALL unique details from the original documentation
-6. Create a cohesive document that reads as a single, professional technical document
-7. Clearly separate frontend and backend documentation if both exist
-8. Ensure API documentation is comprehensive and uses consistent formatting
-
-Specific instructions for refinement:
-- Remove duplicate explanations
-- Combine similar sections without losing any unique information
-- Restructure content to eliminate redundancy while maintaining comprehensive coverage
-
-Original documentation to refine:\n\n${fullDocumentation}`;
+            1. DOCUMENTATION ORGANIZATION INSTRUCTIONS:
+               - If both frontend and client-side code AND backend/server-side code exist in the repository:
+                 * Logically separate and organize code-related explanations by their domain
+                 * Ensure clear distinction between different code domains
+                 * Prevent mixing implementation details from different architectural layers
+            
+            2. Completely eliminate ALL repetitive sections and redundant content
+            3. Ensure each piece of information appears ONLY ONCE in the document
+            4. If similar content exists across different sections, consolidate them intelligently
+            5. Maintain a clear, logical flow of information
+            6. Preserve ALL unique details from the original documentation
+            7. Create a cohesive document that reads as a single, professional technical document
+            8. Ensure API documentation is comprehensive and uses consistent formatting
+            
+            Specific instructions for refinement:
+            - Remove duplicate explanations
+            - Combine similar sections without losing any unique information
+            - Restructure content to eliminate redundancy while maintaining comprehensive coverage
+            - Organize code-related information by its architectural domain
+            - Clearly differentiate between different code domains without using explicit "Frontend" or "Backend" headings
+            
+            IMPORTANT GUIDELINES:
+            - If repository contains multiple architectural domains, organize accordingly
+            - Maintain a clear, logical progression of information
+            - Ensure technical depth and comprehensiveness
+            - Prevent information overlap between different code domains
+            
+            Original documentation to refine:\n\n${fullDocumentation}`;
             
             const refinementMessage = { role: "user", content: refinementPrompt };
             
