@@ -161,13 +161,16 @@ function mergeDocumentationChunks(chunks) {
 }
 
 let previousDocumentation = "";
+let documentationStore = {};
 
 app.post("/api/generate-doc", async (req, res) => {
-  const { repoContent, userInput } = req.body;
+  const { repoContent, userInput, userId, repoName } = req.body;
 
   if (!repoContent && !userInput) {
     return res.status(400).json({ error: "No input provided." });
   }
+
+  const chatId = userId && repoName ? `${userId}_${repoName}` : null;
 
   try {
     const systemMessage = {
@@ -215,14 +218,17 @@ app.post("/api/generate-doc", async (req, res) => {
     
     11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.`
     };
+
+    const previousDoc = chatId ? documentationStore[chatId] : null;
+
     if (userInput) {
       if (userInput.trim().toLowerCase() === "continue") {
-        if (!previousDocumentation) {
+        if (!previousDoc) {
           return res.status(400).json({ error: "No previous documentation found to continue." });
         }
         const userMessage = { 
           role: "user", 
-          content: `Continue from where you left off:\n\n${previousDocumentation}` 
+          content: `Continue from where you left off:\n\n${previousDoc}` 
         };
         
         const completion = await openai.chat.completions.create({
@@ -232,14 +238,16 @@ app.post("/api/generate-doc", async (req, res) => {
           temperature: 0.6,
         });
 
-        const newResponse = completion.choices[0].message.content;
-        previousDocumentation = newResponse;
+        if (chatId) {
+          documentationStore[chatId] = newResponse;
+        }
+
         return res.json({ documentation: newResponse });
       } else {
         // Include the previous documentation directly in the message
         const userMessage = { 
           role: "user", 
-          content: `Here is the existing documentation:\n\n${previousDocumentation}\n\nModify this existing documentation as per the following request: "${userInput}"\n\nMake only the minimal required changes to address the request while keeping the overall structure and information intact.` 
+          content: `Here is the existing documentation:\n\n${previousDoc || ""}\n\nModify this existing documentation as per the following request: "${userInput}"\n\nMake only the minimal required changes to address the request while keeping the overall structure and information intact.` 
         };
         
         const completion = await openai.chat.completions.create({
@@ -250,7 +258,11 @@ app.post("/api/generate-doc", async (req, res) => {
         });
 
         const newResponse = completion.choices[0].message.content;
-        previousDocumentation = newResponse;
+
+        if (chatId) {
+          documentationStore[chatId] = newResponse;
+        }
+
         return res.json({ documentation: newResponse });
       }
     }
@@ -272,7 +284,11 @@ app.post("/api/generate-doc", async (req, res) => {
         });
 
         const newResponse = completion.choices[0].message.content;
-        previousDocumentation = newResponse;
+
+        if (chatId) {
+          documentationStore[chatId] = newResponse;
+        }
+
         return res.json({ documentation: newResponse });
       } 
       
@@ -410,7 +426,9 @@ app.post("/api/generate-doc", async (req, res) => {
           }
         }
         
-        previousDocumentation = fullDocumentation;
+        if (chatId) {
+          documentationStore[chatId] = fullDocumentation;
+        }
         return res.json({ documentation: fullDocumentation });
       }
     }

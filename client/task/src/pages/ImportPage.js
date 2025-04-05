@@ -291,7 +291,10 @@ const ImportPage = () => {
 
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { userInput: inputText },
+        { userInput: inputText,
+          userId: userId,
+          repoName: repoName
+         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -998,7 +1001,10 @@ const ImportPage = () => {
 
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { repoContent },
+        { repoContent,
+          userId: user.id,  // Add userId
+          repoName: repoName
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
