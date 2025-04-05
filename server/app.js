@@ -179,15 +179,16 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
-       - Project Structure
+       - Project Structure in diagram form
        - Detailed function explanations with parameters, return values, and examples
        - Complete code flow analysis showing how data moves through the application
-       - Architecture diagrams described in text
+       - Architecture diagrams 
        - Proper technical specifications
        - Tables for structured data where appropriate
        - Dont include and introduction and conclusion and title heading of the documentation should only be Documentation in h1 .
     
     4. If both frontend and backend code exist:
+       - First give full frontend documentation then give full backend dont give if it exist and vice versa.
        - For frontend: document components, state management, UI flow, and user interactions
        - For backend: document services, controllers, models, and data flow
     
