@@ -238,6 +238,8 @@ app.post("/api/generate-doc", async (req, res) => {
           temperature: 0.6,
         });
 
+        const newResponse = completion.choices[0].message.content;
+
         if (chatId) {
           documentationStore[chatId] = newResponse;
         }

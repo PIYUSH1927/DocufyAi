@@ -242,7 +242,10 @@ const Home = () => {
 
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { repoContent },
+        { repoContent,
+          userId: user._id,
+          repoName: repo.name
+         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
