@@ -102,6 +102,12 @@ function mergeDocumentationChunks(chunks) {
     /^Documentation\s*$/gim,          // Match "Documentation" without #
     /^Architecture Explanation\s*$/gim // Match "Architecture Explanation" without #
   ];
+  const frontendBackendRegex = [
+    /^# Frontend Documentation\s*$/im,
+    /^# Backend Documentation\s*$/im,
+    /^## Frontend Documentation\s*$/im,
+    /^## Backend Documentation\s*$/im
+  ];
   
   let mergedDoc = chunks[0];
   
@@ -117,6 +123,11 @@ function mergeDocumentationChunks(chunks) {
     if (architectureRegex.test(mergedDoc)) {
       chunkContent = chunkContent.replace(architectureRegex, '');
     }
+
+    frontendBackendRegex.forEach(regex => {
+      chunkContent = chunkContent.replace(regex, '');
+    });
+    
     
     // Remove any continuation phrases or section indicators
     chunkContent = chunkContent.replace(/^Continuing from previous section\.?[\s\n]*/i, '');
@@ -168,6 +179,7 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
+       - Project Structure
        - Detailed function explanations with parameters, return values, and examples
        - Complete code flow analysis showing how data moves through the application
        - Architecture diagrams described in text
@@ -295,14 +307,34 @@ app.post("/api/generate-doc", async (req, res) => {
             chunkContent.substring(0, 40000) + "..." : 
             chunkContent;
           
-          let chunkPrompt;
-          if (isFirstChunk) {
-            chunkPrompt = `This is a large repository, so I'll analyze it in parts. For this first part, focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${trimmedChunk}`;
-          } else if (isLastChunk) {
-            chunkPrompt = `This is the final part of the repository. Based on this content and considering the previous parts (summarized as: ${contextSummary}), complete the documentation with any remaining details and a conclusion:\n\n${trimmedChunk}`;
-          } else {
-            chunkPrompt = `This is part ${i+1} of the repository analysis. Using the previous context (${contextSummary}) as a foundation, continue the documentation by analyzing the following content:\n\n${trimmedChunk}`;
-          }
+            let chunkPrompt;
+            if (isFirstChunk) {
+              chunkPrompt = `This is a large repository, so I'll analyze it in parts. 
+          
+          CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
+          If you find you're about to write something similar to previously generated content, 
+          REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
+          
+          Focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${trimmedChunk}`;
+            } else if (isLastChunk) {
+              chunkPrompt = `This is the final part of the repository. 
+          
+          CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
+          If you find you're about to write something similar to previously generated content, 
+          REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
+          
+          Based on this content and considering the previous parts (context: ${contextSummary}), 
+          complete the documentation with any remaining details and a conclusion:\n\n${trimmedChunk}`;
+            } else {
+              chunkPrompt = `This is part ${i+1} of the repository analysis. 
+          
+          CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
+          If you find you're about to write something similar to previously generated content, 
+          REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
+          
+          Using the previous context (${contextSummary}) as a foundation, 
+          continue the documentation by analyzing the following content:\n\n${trimmedChunk}`;
+            }
           
           const chunkMessage = { role: "user", content: chunkPrompt };
           
