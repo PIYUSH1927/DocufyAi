@@ -434,16 +434,44 @@ function prepareChunks(repoContent) {
   const files = repoContent.files || [];
   const totalFiles = repoContent.totalFiles || files.length;
   
+  // Filter out unwanted files
+  const filteredFiles = files.filter(file => {
+    const fileName = file.file.toLowerCase();
+    const ignoredFiles = [
+      'readme.md',
+      'sitemap.xml',
+      '.gitignore',
+      'license',
+      // CSS files - only skip content, keep file references
+      fileName.endsWith('.css') 
+    ];
+
+    return !ignoredFiles.some(ignoredFile => 
+      fileName.includes(ignoredFile)
+    );
+  });
+
+  // Modify files to remove CSS content while keeping references
+  const processedFiles = filteredFiles.map(file => {
+    if (file.file.toLowerCase().endsWith('.css')) {
+      return {
+        file: file.file,
+        content: `// CSS file: ${file.file}`
+      };
+    }
+    return file;
+  });
+
   // Create a more concise overview
   const overview = {
-    totalFiles,
+    totalFiles: processedFiles.length,
     // Only include first 20 files in the overview to reduce size
-    fileList: files.slice(0, 20).map(f => f.file),
-    structure: analyzeStructure(files)
+    fileList: processedFiles.slice(0, 20).map(f => f.file),
+    structure: analyzeStructure(processedFiles)
   };
   chunks.push(overview);
   
-  const fileGroups = groupFilesByDirectory(files);
+  const fileGroups = groupFilesByDirectory(processedFiles);
   
   Object.keys(fileGroups).forEach(directory => {
     const dirFiles = fileGroups[directory];
