@@ -52,7 +52,7 @@
   
   .import-chat-message.bot {
     
-    background: rgba(238, 238, 238, 0.9);
+    background: rgba(246, 244, 244, 0.9);
     min-width: 90%;
     align-self: flex-start;
     color: black;
@@ -234,6 +234,16 @@
   @media (max-width: 768px) {
     .sync-text {
       display: none; /* Hide text on small screens */
+    }
+
+    .import-chat-message.bot {
+
+      min-width: 100%;
+      align-self: flex-start;
+      color: black;
+      float: left;
+      padding-top: 25px;
+      
     }
   }
   
