@@ -163,6 +163,201 @@ function mergeDocumentationChunks(chunks) {
 let previousDocumentation = "";
 let documentationStore = {};
 
+// Modified prepareChunks function to improve directory structure preservation
+function prepareChunks(repoContent) {
+  const chunks = [];
+  const files = repoContent.files || [];
+  const totalFiles = repoContent.totalFiles || files.length;
+  
+  // Filter out unwanted files
+  const filteredFiles = files.filter(file => {
+    const fileName = file.file.toLowerCase();
+    const ignoredFiles = [
+      'readme.md',
+      'sitemap.xml',
+      '.gitignore',
+      'license',
+      // CSS files - only skip content, keep file references
+      fileName.endsWith('.css') 
+    ];
+
+    return !ignoredFiles.some(ignoredFile => 
+      fileName.includes(ignoredFile)
+    );
+  });
+
+  // Modify files to remove CSS content while keeping references
+  const processedFiles = filteredFiles.map(file => {
+    if (file.file.toLowerCase().endsWith('.css')) {
+      return {
+        file: file.file,
+        content: `// CSS file: ${file.file}`
+      };
+    }
+    return file;
+  });
+
+  // Create a more concise overview
+  const overview = {
+    totalFiles: processedFiles.length,
+    // Include all files in the overview to ensure full coverage
+    fileList: processedFiles.map(f => f.file),
+    structure: analyzeStructure(processedFiles)
+  };
+  chunks.push(overview);
+  
+  // Group files by their full directory path to preserve structure
+  const fileGroups = groupFilesByFullPath(processedFiles);
+  
+  Object.keys(fileGroups).forEach(directory => {
+    const dirFiles = fileGroups[directory];
+    
+    // Skip large unimportant directories
+    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build" || directory === "README.md") {
+      return;
+    }
+    
+    if (JSON.stringify(dirFiles).length > 8000) { // Reduced from 16000 to 8000 for smaller chunks
+      // Create smaller chunks with logical grouping of related files
+      const subChunks = createLogicalChunks(dirFiles, directory, 5);
+      subChunks.forEach(subChunk => {
+        chunks.push({
+          directory,
+          files: subChunk.files,
+          type: subChunk.type || 'general'
+        });
+      });
+    } else {
+      chunks.push({
+        directory,
+        files: dirFiles
+      });
+    }
+  });
+  
+  return chunks;
+}
+
+// Group files by their full directory path
+function groupFilesByFullPath(files) {
+  const groups = {};
+  
+  files.forEach(file => {
+    const filePath = file.file;
+    const parts = filePath.split('/');
+    
+    let directoryPath;
+    if (parts.length === 1) {
+      directoryPath = 'root'; // Root files
+    } else {
+      // Use full directory path
+      directoryPath = parts.slice(0, -1).join('/');
+    }
+    
+    if (!groups[directoryPath]) {
+      groups[directoryPath] = [];
+    }
+    groups[directoryPath].push(file);
+  });
+  
+  return groups;
+}
+
+// Create logical chunks by grouping related files together
+function createLogicalChunks(files, directory, maxChunks) {
+  // Sort files by type and name to keep related files together
+  const sortedFiles = [...files].sort((a, b) => {
+    // Keep index files first
+    if (a.file.includes('index') && !b.file.includes('index')) return -1;
+    if (!a.file.includes('index') && b.file.includes('index')) return 1;
+    
+    // Group by file type
+    const aExt = a.file.split('.').pop();
+    const bExt = b.file.split('.').pop();
+    if (aExt !== bExt) return aExt.localeCompare(bExt);
+    
+    // Then by name
+    return a.file.localeCompare(b.file);
+  });
+  
+  // Classify files into types
+  const fileTypes = {
+    components: [],
+    pages: [],
+    utils: [],
+    hooks: [],
+    contexts: [],
+    tests: [],
+    other: []
+  };
+  
+  sortedFiles.forEach(file => {
+    const fileName = file.file.toLowerCase();
+    
+    if (fileName.includes('component') || 
+        fileName.endsWith('.jsx') || 
+        fileName.endsWith('.tsx') ||
+        /[A-Z][a-z]+\.(jsx|tsx|js|ts)$/.test(fileName)) {
+      fileTypes.components.push(file);
+    } else if (fileName.includes('page') || fileName.includes('/pages/')) {
+      fileTypes.pages.push(file);
+    } else if (fileName.includes('util') || fileName.includes('helper')) {
+      fileTypes.utils.push(file);
+    } else if (fileName.includes('hook') || fileName.startsWith('use')) {
+      fileTypes.hooks.push(file);
+    } else if (fileName.includes('context') || fileName.includes('provider')) {
+      fileTypes.contexts.push(file);
+    } else if (fileName.includes('test') || fileName.includes('spec')) {
+      fileTypes.tests.push(file);
+    } else {
+      fileTypes.other.push(file);
+    }
+  });
+  
+  // Create chunks based on logical file groupings
+  const chunks = [];
+  Object.entries(fileTypes).forEach(([type, typeFiles]) => {
+    if (typeFiles.length === 0) return;
+    
+    if (typeFiles.length > 20) {
+      // Split large categories into smaller chunks
+      const chunkSize = Math.ceil(typeFiles.length / Math.min(3, maxChunks));
+      for (let i = 0; i < typeFiles.length; i += chunkSize) {
+        chunks.push({
+          type,
+          files: typeFiles.slice(i, i + chunkSize)
+        });
+      }
+    } else {
+      chunks.push({
+        type,
+        files: typeFiles
+      });
+    }
+  });
+  
+  return chunks;
+}
+
+function analyzeStructure(files) {
+  const extensions = {};
+  const directories = {};
+  
+  files.forEach(file => {
+    const ext = file.file.split('.').pop();
+    if (ext) {
+      extensions[ext] = (extensions[ext] || 0) + 1;
+    }
+    
+    const dir = file.file.split('/')[0];
+    if (dir) {
+      directories[dir] = (directories[dir] || 0) + 1;
+    }
+  });
+  
+  return { extensions, directories };
+}
+
 app.post("/api/generate-doc", async (req, res) => {
   const { repoContent, userInput, userId, repoName } = req.body;
 
@@ -216,7 +411,9 @@ app.post("/api/generate-doc", async (req, res) => {
     
     10. If you cannot perform the specific modification, return the previous documentation completely unchanged.
     
-    11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.`
+    11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.
+       
+    12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
     };
 
     const previousDoc = chatId ? documentationStore[chatId] : null;
@@ -275,7 +472,7 @@ app.post("/api/generate-doc", async (req, res) => {
       if (!isLargeRepo) {
         const userMessage = { 
           role: "user", 
-          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details:\n\n${repoContent}` 
+          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details. MAKE SURE to document ALL components, pages, and important files in the repository structure:\n\n${repoContent}` 
         };
         
         const completion = await openai.chat.completions.create({
@@ -307,11 +504,12 @@ app.post("/api/generate-doc", async (req, res) => {
         let contextSummary = "";
         
         // Limit the number of chunks to process to avoid context length issues
-        const chunkLimit = Math.min(chunks.length, 50);
+        const chunkLimit = Math.min(chunks.length, 80); // Increased from 50 to 80
         const processingChunks = chunks.slice(0, chunkLimit);
         
         console.log(`Processing ${processingChunks.length} chunks out of ${chunks.length} total chunks`);
         
+        // First pass: Process all chunks with enhanced context about the repository structure
         for (let i = 0; i < processingChunks.length; i++) {
           const chunk = processingChunks[i];
           const isFirstChunk = i === 0;
@@ -324,34 +522,46 @@ app.post("/api/generate-doc", async (req, res) => {
             chunkContent.substring(0, 40000) + "..." : 
             chunkContent;
           
-            let chunkPrompt;
-            if (isFirstChunk) {
-              chunkPrompt = `This is a large repository, so I'll analyze it in parts. 
+          let chunkPrompt;
+          if (isFirstChunk) {
+            chunkPrompt = `This is a large repository, so I'll analyze it in parts. 
           
           CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
           If you find you're about to write something similar to previously generated content, 
           REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
           
-          Focus on creating an introduction, overview, and architecture explanation based on the following repository content:\n\n${trimmedChunk}`;
-            } else if (isLastChunk) {
-              chunkPrompt = `This is the final part of the repository. 
+          Focus on creating an introduction, overview, and architecture explanation based on the following repository content.
+          
+          IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
+          
+          Repository chunk to analyze:\n\n${trimmedChunk}`;
+          } else if (isLastChunk) {
+            chunkPrompt = `This is the final part of the repository. 
           
           CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
           If you find you're about to write something similar to previously generated content, 
           REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
           
           Based on this content and considering the previous parts (context: ${contextSummary}), 
-          complete the documentation with any remaining details and a conclusion:\n\n${trimmedChunk}`;
-            } else {
-              chunkPrompt = `This is part ${i+1} of the repository analysis. 
+          complete the documentation with any remaining details.
+          
+          IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
+          
+          Repository chunk to analyze:\n\n${trimmedChunk}`;
+          } else {
+            chunkPrompt = `This is part ${i+1} of the repository analysis. 
           
           CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
           If you find you're about to write something similar to previously generated content, 
           REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
           
           Using the previous context (${contextSummary}) as a foundation, 
-          continue the documentation by analyzing the following content:\n\n${trimmedChunk}`;
-            }
+          continue the documentation by analyzing the following content.
+          
+          IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
+          
+          Repository chunk to analyze:\n\n${trimmedChunk}`;
+          }
           
           const chunkMessage = { role: "user", content: chunkPrompt };
           
@@ -448,123 +658,6 @@ app.post("/api/generate-doc", async (req, res) => {
     res.status(500).json({ error: "Failed to generate documentation" });
   }
 });
-
-function prepareChunks(repoContent) {
-  const chunks = [];
-  const files = repoContent.files || [];
-  const totalFiles = repoContent.totalFiles || files.length;
-  
-  // Filter out unwanted files
-  const filteredFiles = files.filter(file => {
-    const fileName = file.file.toLowerCase();
-    const ignoredFiles = [
-      'readme.md',
-      'sitemap.xml',
-      '.gitignore',
-      'license',
-      // CSS files - only skip content, keep file references
-      fileName.endsWith('.css') 
-    ];
-
-    return !ignoredFiles.some(ignoredFile => 
-      fileName.includes(ignoredFile)
-    );
-  });
-
-  // Modify files to remove CSS content while keeping references
-  const processedFiles = filteredFiles.map(file => {
-    if (file.file.toLowerCase().endsWith('.css')) {
-      return {
-        file: file.file,
-        content: `// CSS file: ${file.file}`
-      };
-    }
-    return file;
-  });
-
-  // Create a more concise overview
-  const overview = {
-    totalFiles: processedFiles.length,
-    // Only include first 20 files in the overview to reduce size
-    fileList: processedFiles.slice(0, 20).map(f => f.file),
-    structure: analyzeStructure(processedFiles)
-  };
-  chunks.push(overview);
-  
-  const fileGroups = groupFilesByDirectory(processedFiles);
-  
-  Object.keys(fileGroups).forEach(directory => {
-    const dirFiles = fileGroups[directory];
-    
-    // Skip large unimportant directories
-    if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build" || directory === "README.md") {
-      return;
-    }
-    
-    if (JSON.stringify(dirFiles).length > 8000) { // Reduced from 16000 to 8000 for smaller chunks
-      const subChunks = splitArrayIntoChunks(dirFiles, 5); // Split into more chunks (was 3)
-      subChunks.forEach(subChunk => {
-        chunks.push({
-          directory,
-          files: subChunk
-        });
-      });
-    } else {
-      chunks.push({
-        directory,
-        files: dirFiles
-      });
-    }
-  });
-  
-  return chunks;
-}
-
-function analyzeStructure(files) {
-  const extensions = {};
-  const directories = {};
-  
-  files.forEach(file => {
-    const ext = file.file.split('.').pop();
-    if (ext) {
-      extensions[ext] = (extensions[ext] || 0) + 1;
-    }
-    
-    const dir = file.file.split('/')[0];
-    if (dir) {
-      directories[dir] = (directories[dir] || 0) + 1;
-    }
-  });
-  
-  return { extensions, directories };
-}
-
-function groupFilesByDirectory(files) {
-  const groups = {};
-  
-  files.forEach(file => {
-    const parts = file.file.split('/');
-    const directory = parts.length > 1 ? parts[0] : 'root';
-    
-    if (!groups[directory]) {
-      groups[directory] = [];
-    }
-    groups[directory].push(file);
-  });
-  
-  return groups;
-}
-
-function splitArrayIntoChunks(array, numChunks) {
-  const result = [];
-  const chunkSize = Math.ceil(array.length / numChunks);
-  
-  for (let i = 0; i < array.length; i += chunkSize) {
-    result.push(array.slice(i, i + chunkSize));
-  }
-  
-  return result;
-}
 
 setInterval(async () => {
   console.log("Cleaning up old repos...");
