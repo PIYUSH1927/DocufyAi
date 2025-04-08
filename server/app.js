@@ -191,8 +191,8 @@ function prepareChunks(repoContent) {
       fileName.endsWith('.css') 
     ];
 
-    return !ignoredFiles.some(ignoredFile => 
-      fileName.includes(ignoredFile)
+    return !ignoredPatterns.some(pattern => 
+      fileName.includes(pattern)
     );
   });
 
