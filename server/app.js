@@ -172,11 +172,21 @@ function prepareChunks(repoContent) {
   // Filter out unwanted files
   const filteredFiles = files.filter(file => {
     const fileName = file.file.toLowerCase();
-    const ignoredFiles = [
+    const ignoredPatterns = [
+      '.png', 
+      '.jpg',
+      '.jpeg',
+      '.gif',
+      '.svg',
+      'manifest.json',
+      'robots.txt',
+      'index.html',
+      '.ico',
       'readme.md',
       'sitemap.xml',
       '.gitignore',
       'license',
+
       // CSS files - only skip content, keep file references
       fileName.endsWith('.css') 
     ];
