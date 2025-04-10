@@ -409,6 +409,8 @@
       font-family: Arial, sans-serif;
       color: black;
       text-align: left;
+      overflow: hidden; 
+      box-sizing: border-box; 
     }
 
   @media (max-width: 450px) {
@@ -433,14 +435,20 @@
       background: #E8E8E8;
       padding: 10px 5px;
       border-radius: 5px;
+      width: 98%;              
+      max-width: 98%;  
       width: fit-content;
       font-weight: bold;
       font-size: 14px;
+      overflow: hidden;         
+      text-overflow: ellipsis;
+      box-sizing: border-box;
   }
   .github-info img {
       width: 16px;
       height: 16px;
       margin-right: 5px;
+      flex-shrink: 0; 
   }
   .repo-update {
       font-size: 14px;
