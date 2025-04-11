@@ -227,7 +227,7 @@ function prepareChunks(repoContent) {
       return;
     }
     
-    if (JSON.stringify(dirFiles).length > 8000) { // Reduced from 16000 to 8000 for smaller chunks
+    if (JSON.stringify(dirFiles).length > 16000) { // Reduced from 16000 to 8000 for smaller chunks
       // Create smaller chunks with logical grouping of related files
       const subChunks = createLogicalChunks(dirFiles, directory, 5);
       subChunks.forEach(subChunk => {
@@ -477,7 +477,7 @@ app.post("/api/generate-doc", async (req, res) => {
     }
     if (repoContent) {
       const contentSize = repoContent.length;
-      const isLargeRepo = contentSize > 100000; // Reduced from 100000 to detect large repos earlier
+      const isLargeRepo = contentSize > 60000; // Reduced from 100000 to detect large repos earlier
       
       if (!isLargeRepo) {
         const userMessage = { 
