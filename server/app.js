@@ -460,7 +460,7 @@ app.post("/api/generate-doc", async (req, res) => {
         };
         
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",  
+          model: "gpt-4-turbo",  
           messages: [systemMessage, userMessage],
           max_tokens: 16000,
           temperature: 0.6,
@@ -477,7 +477,7 @@ app.post("/api/generate-doc", async (req, res) => {
     }
     if (repoContent) {
       const contentSize = repoContent.length;
-      const isLargeRepo = contentSize > 40000; // Reduced from 100000 to detect large repos earlier
+      const isLargeRepo = contentSize > 100000; // Reduced from 100000 to detect large repos earlier
       
       if (!isLargeRepo) {
         const userMessage = { 
@@ -486,7 +486,7 @@ app.post("/api/generate-doc", async (req, res) => {
         };
         
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",  
+          model: "gpt-4-turbo",  
           messages: [systemMessage, userMessage],
           max_tokens: 16000,
           temperature: 0.6,
@@ -577,7 +577,7 @@ app.post("/api/generate-doc", async (req, res) => {
           
           try {
             const chunkCompletion = await openai.chat.completions.create({
-              model: "gpt-4o-mini",  
+              model: "gpt-4-turbo",  
               messages: [systemMessage, chunkMessage],
               max_tokens: 16000,
               temperature: 0.6,
@@ -635,7 +635,7 @@ app.post("/api/generate-doc", async (req, res) => {
             const refinementMessage = { role: "user", content: refinementPrompt };
             
             const refinementCompletion = await openai.chat.completions.create({
-              model: "gpt-4o-mini",  
+              model: "gpt-4-turbo",  
               messages: [systemMessage, refinementMessage],
               max_tokens: 16000,
               temperature: 0.6,
