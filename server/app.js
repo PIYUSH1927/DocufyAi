@@ -439,7 +439,7 @@ app.post("/api/generate-doc", async (req, res) => {
         };
         
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",  
+          model: "gpt-4-turbo",  
           messages: [systemMessage, userMessage],
           max_tokens: 16000,
           temperature: 0.6,
