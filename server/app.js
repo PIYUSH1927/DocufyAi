@@ -213,6 +213,27 @@ function prepareChunks(repoContent) {
     return file;
   });
 
+  const configSetupFiles = processedFiles.filter(file => {
+    const fileName = file.file.toLowerCase();
+    return fileName.includes('package.json') || 
+           fileName.includes('.env') || 
+           fileName.includes('readme') || 
+           fileName.includes('config') || 
+           fileName.endsWith('.config.js') || 
+           fileName.includes('setup') || 
+           fileName.includes('install');
+  });
+
+  // If we found any setup files, create a dedicated chunk for them
+  if (configSetupFiles.length > 0) {
+    chunks.push({
+      directory: 'setup',
+      files: configSetupFiles,
+      type: 'configuration'
+    });
+  }
+
+
   // Create a more concise overview
   const overview = {
     totalFiles: processedFiles.length,
@@ -298,6 +319,7 @@ function createLogicalChunks(files, directory, maxChunks) {
   
   // Classify files into types
   const fileTypes = {
+    config: [],
     components: [],
     pages: [],
     utils: [],
@@ -393,6 +415,7 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
+       - Getting started instructions including environment setup, installation steps, and configuration
        - Detailed function explanations with parameters for each file, return values, and examples
        - Complete code flow analysis showing how data moves through the application
        - Architecture diagrams described in text
@@ -544,7 +567,7 @@ app.post("/api/generate-doc", async (req, res) => {
           If you find you're about to write something similar to previously generated content, 
           REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
           
-          Focus on creating an introduction, overview, and architecture explanation based on the following repository content.
+          Focus on creating an introduction, overview, architecture explanation, and GETTING STARTED GUIDE based on the following repository content. The Getting Started guide should include environment setup, installation steps, and configuration instructions.
           
           IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
           
@@ -612,6 +635,7 @@ app.post("/api/generate-doc", async (req, res) => {
                  * Logically separate and organize code-related explanations by their domain
                  * Ensure clear distinction between different code domains
                  * Prevent mixing implementation details from different architectural layers
+               - Ensure there is a clear "Getting Started" section that includes environment setup, installation steps, and configuration
             
             2. Completely eliminate ALL repetitive sections and redundant content
             3. Ensure each piece of information appears ONLY ONCE in the document
