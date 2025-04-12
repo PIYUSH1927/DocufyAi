@@ -408,7 +408,7 @@ const Home = () => {
             <div style={{color: '#333'}}>
               <h3 style={{fontSize: '18px', marginBottom: '10px', color: '#016601'}}>Generating Documentation</h3>
               <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>Please wait while we analyze your repository and generate documentation.</p>
-              <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>This process may take 5-7 minutes to complete.</p>
+              <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>This process may take 5-10 minutes to complete.</p>
               <p style={{
                 fontStyle: 'italic',
                 fontSize: '12px',

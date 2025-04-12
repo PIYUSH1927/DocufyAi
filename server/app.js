@@ -428,10 +428,8 @@ app.post("/api/generate-doc", async (req, res) => {
     10. If you cannot perform the specific modification, return the previous documentation completely unchanged.
     
     11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.
-    
-    12. Ignore bootstrap files.
-       
-    13. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
+
+    12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
     };
 
     const previousDoc = chatId ? documentationStore[chatId] : null;
