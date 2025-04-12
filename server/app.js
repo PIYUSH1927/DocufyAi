@@ -393,7 +393,7 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
-       - Detailed function explanations with parameters, return values, and examples
+       - Detailed function explanations with parameters for each file, return values, and examples
        - Complete code flow analysis showing how data moves through the application
        - Architecture diagrams described in text
        - Proper technical specifications
@@ -427,18 +427,7 @@ app.post("/api/generate-doc", async (req, res) => {
     
     11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.
 
-    12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.
-    
-    13.CRITICAL DOCUMENTATION GENERATION RULE:
-- For code documentation, EXPLAIN the PURPOSE and FUNCTIONALITY
-- Describe WHAT the code does
-- Focus on:
-  * Overall purpose of the file/component
-  * Key functions and their responsibilities
-  * Unique algorithms or design patterns
-  * Interactions with other parts of the system
-- Use code snippets ONLY to illustrate specific, important points
-- Provide context and insights, not a line-by-line translation of code`
+    12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
     };
 
     const previousDoc = chatId ? documentationStore[chatId] : null;
