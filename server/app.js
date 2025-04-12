@@ -430,9 +430,8 @@ app.post("/api/generate-doc", async (req, res) => {
     12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.
     
     13.CRITICAL DOCUMENTATION GENERATION RULE:
-- NEVER directly copy-paste entire code blocks
 - For code documentation, EXPLAIN the PURPOSE and FUNCTIONALITY
-- Describe WHAT the code does, not just transcribe its contents
+- Describe WHAT the code does
 - Focus on:
   * Overall purpose of the file/component
   * Key functions and their responsibilities
