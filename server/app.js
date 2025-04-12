@@ -186,6 +186,12 @@ function prepareChunks(repoContent) {
       'sitemap.xml',
       '.gitignore',
       'license',
+      'bootstrap.min.css',
+      'bootstrap.css',
+      '_bootstrap',
+      'bootstrap-grid.css',
+      'bootstrap-reboot.css',
+      'bootstrap-theme.css',
 
       // CSS files - only skip content, keep file references
       fileName.endsWith('.css') 
@@ -387,7 +393,7 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
-       - Detailed function explanations with parameters, return values, and examples
+       - Detailed function explanations with parameters, return values, and examples, dont just copy paste the code back
        - Complete code flow analysis showing how data moves through the application
        - Architecture diagrams described in text
        - Proper technical specifications
@@ -422,8 +428,10 @@ app.post("/api/generate-doc", async (req, res) => {
     10. If you cannot perform the specific modification, return the previous documentation completely unchanged.
     
     11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.
+    
+    12. Ignore bootstrap files.
        
-    12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
+    13. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
     };
 
     const previousDoc = chatId ? documentationStore[chatId] : null;
@@ -876,7 +884,7 @@ const analyzeRepo = (repoPath) => {
     "js", "jsx", "ts", "tsx", "html", "css", "scss", "json", "md", "yaml", "yml",
     "xml", "toml", "env", "sh", "bat", "ps1", "ini", "conf", "txt", "log",
     "py", "java", "kt", "kts", "go", "rs", "rb", "swift", "php", "cpp", "h", "hpp", "c",
-    "cs", "r", "dart", "lua", "pl", "sql", "jsx", "tsx", "vue", "dockerfile", "makefile"
+    "cs", "r", "dart", "lua", "pl", "sql", "jsx", "tsx", "vue", "dockerfile", "makefile", "ejs"
   ];
 
   // Maximum file size to include (100KB)
