@@ -393,7 +393,7 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
-       - Detailed function explanations with parameters, return values, and examples, dont just copy paste the code back
+       - Detailed function explanations with parameters, return values, and examples
        - Complete code flow analysis showing how data moves through the application
        - Architecture diagrams described in text
        - Proper technical specifications
