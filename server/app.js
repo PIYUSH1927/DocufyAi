@@ -415,7 +415,6 @@ app.post("/api/generate-doc", async (req, res) => {
     2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
     
     3. Documentation must include:
-       - Getting started instructions including environment setup, installation steps, and configuration
        - Detailed function explanations with parameters for each file, return values, and examples
        - Complete code flow analysis showing how data moves through the application
        - Architecture diagrams described in text
@@ -480,7 +479,6 @@ app.post("/api/generate-doc", async (req, res) => {
 
         return res.json({ documentation: newResponse });
       } else {
-        // Include the previous documentation directly in the message
         const userMessage = { 
           role: "user", 
           content: `Here is the existing documentation:\n\n${previousDoc || ""}\n\nModify this existing documentation as per the following request: "${userInput}"\n\nMake only the minimal required changes to address the request while keeping the overall structure and information intact.` 
@@ -567,7 +565,7 @@ app.post("/api/generate-doc", async (req, res) => {
           If you find you're about to write something similar to previously generated content, 
           REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
           
-          Focus on creating an introduction, overview, architecture explanation, and GETTING STARTED GUIDE based on the following repository content. The Getting Started guide should include environment setup, installation steps, and configuration instructions.
+          Focus on creating an introduction, overview and architecture explanation based on the following repository content.
           
           IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
           
