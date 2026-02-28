@@ -4,7 +4,7 @@ const cors = require("cors");
 const session = require("express-session");
 const Razorpay = require("razorpay");
 const passport = require("passport");
-const { router: authRoutes } = require("./routes/authRoutes"); 
+const { router: authRoutes } = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const crypto = require("crypto");
 const User = require("./models/User");
@@ -12,9 +12,9 @@ const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const simpleGit = require("simple-git");
-const esprima = require("esprima"); 
+const esprima = require("esprima");
 const router = express.Router();
-const { rimraf } = require("rimraf");  
+const { rimraf } = require("rimraf");
 const axios = require("axios")
 const messageRoutes = require("./routes/messages");
 const OpenAI = require("openai");
@@ -27,7 +27,7 @@ setInterval(() => {
     if (err) {
       console.error("Error deleting repos:", err);
     } else {
-      fs.mkdirSync("/tmp/repos", { recursive: true }); 
+      fs.mkdirSync("/tmp/repos", { recursive: true });
       console.log("Old repos cleaned up and directory recreated.");
     }
   });
@@ -59,7 +59,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "random_secret_key",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, 
+    cookie: { secure: false },
   })
 );
 
@@ -76,7 +76,7 @@ if (!fs.existsSync(TEMP_REPO_DIR)) {
 const deleteRepo = async (repoPath) => {
   try {
     if (fs.existsSync(repoPath)) {
-      await rimraf(repoPath);   
+      await rimraf(repoPath);
     }
   } catch (err) {
     console.error("Error deleting repo:", err);
@@ -84,14 +84,14 @@ const deleteRepo = async (repoPath) => {
 };
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,  
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Function to merge documentation chunks properly and remove repetitive sections
 function mergeDocumentationChunks(chunks) {
   if (!chunks || chunks.length === 0) return "";
   if (chunks.length === 1) return chunks[0];
-  
+
   // Extract the first occurrence of "# Documentation" or similar headers
   const headerRegex = /^# Documentation\s*$/im;
   const architectureRegex = /^## Architecture Explanation\s*$/im;
@@ -108,18 +108,18 @@ function mergeDocumentationChunks(chunks) {
     /^## Frontend Documentation\s*$/im,
     /^## Backend Documentation\s*$/im
   ];
-  
+
   let mergedDoc = chunks[0];
-  
+
   // Process each chunk after the first one
   for (let i = 1; i < chunks.length; i++) {
     let chunkContent = chunks[i];
-    
+
     // Remove common headers that might be repeated
     if (headerRegex.test(mergedDoc)) {
       chunkContent = chunkContent.replace(headerRegex, '');
     }
-    
+
     if (architectureRegex.test(mergedDoc)) {
       chunkContent = chunkContent.replace(architectureRegex, '');
     }
@@ -127,19 +127,19 @@ function mergeDocumentationChunks(chunks) {
     frontendBackendRegex.forEach(regex => {
       chunkContent = chunkContent.replace(regex, '');
     });
-    
-    
+
+
     // Remove any continuation phrases or section indicators
     chunkContent = chunkContent.replace(/^Continuing from previous section\.?[\s\n]*/i, '');
     chunkContent = chunkContent.replace(/^Continuing the documentation\.?[\s\n]*/i, '');
     chunkContent = chunkContent.replace(/^Moving on to the next part\.?[\s\n]*/i, '');
     chunkContent = chunkContent.replace(/^Documentation continued[\s\n]*/i, '');
     chunkContent = chunkContent.replace(/^Part \d+:[\s\n]*/i, '');
-    
+
     // Check for duplicate headings
     for (const regex of headingRegexes) {
       const headingsInMerged = mergedDoc.match(regex) || [];
-      
+
       if (headingsInMerged.length > 0) {
         // For each heading already in the merged document, remove the same heading from the current chunk
         headingsInMerged.forEach(heading => {
@@ -149,14 +149,14 @@ function mergeDocumentationChunks(chunks) {
         });
       }
     }
-    
+
     // Append the cleaned chunk content
     mergedDoc += '\n\n' + chunkContent.trim();
   }
-  
+
   // Perform a final cleanup to remove any doubled-up newlines
   mergedDoc = mergedDoc.replace(/\n{3,}/g, '\n\n');
-  
+
   return mergedDoc;
 }
 
@@ -168,12 +168,12 @@ function prepareChunks(repoContent) {
   const chunks = [];
   const files = repoContent.files || [];
   const totalFiles = repoContent.totalFiles || files.length;
-  
+
   // Filter out unwanted files
   const filteredFiles = files.filter(file => {
     const fileName = file.file.toLowerCase();
     const ignoredPatterns = [
-      '.png', 
+      '.png',
       '.jpg',
       '.jpeg',
       '.gif',
@@ -194,10 +194,10 @@ function prepareChunks(repoContent) {
       'bootstrap-theme.css',
 
       // CSS files - only skip content, keep file references
-      fileName.endsWith('.css') 
+      fileName.endsWith('.css')
     ];
 
-    return !ignoredPatterns.some(pattern => 
+    return !ignoredPatterns.some(pattern =>
       fileName.includes(pattern)
     );
   });
@@ -215,13 +215,13 @@ function prepareChunks(repoContent) {
 
   const configSetupFiles = processedFiles.filter(file => {
     const fileName = file.file.toLowerCase();
-    return fileName.includes('package.json') || 
-           fileName.includes('.env') || 
-           fileName.includes('readme') || 
-           fileName.includes('config') || 
-           fileName.endsWith('.config.js') || 
-           fileName.includes('setup') || 
-           fileName.includes('install');
+    return fileName.includes('package.json') ||
+      fileName.includes('.env') ||
+      fileName.includes('readme') ||
+      fileName.includes('config') ||
+      fileName.endsWith('.config.js') ||
+      fileName.includes('setup') ||
+      fileName.includes('install');
   });
 
   // If we found any setup files, create a dedicated chunk for them
@@ -242,18 +242,18 @@ function prepareChunks(repoContent) {
     structure: analyzeStructure(processedFiles)
   };
   chunks.push(overview);
-  
+
   // Group files by their full directory path to preserve structure
   const fileGroups = groupFilesByFullPath(processedFiles);
-  
+
   Object.keys(fileGroups).forEach(directory => {
     const dirFiles = fileGroups[directory];
-    
+
     // Skip large unimportant directories
     if (directory === "node_modules" || directory === ".git" || directory === "dist" || directory === "build" || directory === "README.md") {
       return;
     }
-    
+
     if (JSON.stringify(dirFiles).length > 16000) { // Reduced from 16000 to 8000 for smaller chunks
       // Create smaller chunks with logical grouping of related files
       const subChunks = createLogicalChunks(dirFiles, directory, 5);
@@ -271,18 +271,18 @@ function prepareChunks(repoContent) {
       });
     }
   });
-  
+
   return chunks;
 }
 
 // Group files by their full directory path
 function groupFilesByFullPath(files) {
   const groups = {};
-  
+
   files.forEach(file => {
     const filePath = file.file;
     const parts = filePath.split('/');
-    
+
     let directoryPath;
     if (parts.length === 1) {
       directoryPath = 'root'; // Root files
@@ -290,13 +290,13 @@ function groupFilesByFullPath(files) {
       // Use full directory path
       directoryPath = parts.slice(0, -1).join('/');
     }
-    
+
     if (!groups[directoryPath]) {
       groups[directoryPath] = [];
     }
     groups[directoryPath].push(file);
   });
-  
+
   return groups;
 }
 
@@ -307,16 +307,16 @@ function createLogicalChunks(files, directory, maxChunks) {
     // Keep index files first
     if (a.file.includes('index') && !b.file.includes('index')) return -1;
     if (!a.file.includes('index') && b.file.includes('index')) return 1;
-    
+
     // Group by file type
     const aExt = a.file.split('.').pop();
     const bExt = b.file.split('.').pop();
     if (aExt !== bExt) return aExt.localeCompare(bExt);
-    
+
     // Then by name
     return a.file.localeCompare(b.file);
   });
-  
+
   // Classify files into types
   const fileTypes = {
     config: [],
@@ -328,14 +328,14 @@ function createLogicalChunks(files, directory, maxChunks) {
     tests: [],
     other: []
   };
-  
+
   sortedFiles.forEach(file => {
     const fileName = file.file.toLowerCase();
-    
-    if (fileName.includes('component') || 
-        fileName.endsWith('.jsx') || 
-        fileName.endsWith('.tsx') ||
-        /[A-Z][a-z]+\.(jsx|tsx|js|ts)$/.test(fileName)) {
+
+    if (fileName.includes('component') ||
+      fileName.endsWith('.jsx') ||
+      fileName.endsWith('.tsx') ||
+      /[A-Z][a-z]+\.(jsx|tsx|js|ts)$/.test(fileName)) {
       fileTypes.components.push(file);
     } else if (fileName.includes('page') || fileName.includes('/pages/')) {
       fileTypes.pages.push(file);
@@ -351,12 +351,12 @@ function createLogicalChunks(files, directory, maxChunks) {
       fileTypes.other.push(file);
     }
   });
-  
+
   // Create chunks based on logical file groupings
   const chunks = [];
   Object.entries(fileTypes).forEach(([type, typeFiles]) => {
     if (typeFiles.length === 0) return;
-    
+
     if (typeFiles.length > 20) {
       // Split large categories into smaller chunks
       const chunkSize = Math.ceil(typeFiles.length / Math.min(3, maxChunks));
@@ -373,26 +373,26 @@ function createLogicalChunks(files, directory, maxChunks) {
       });
     }
   });
-  
+
   return chunks;
 }
 
 function analyzeStructure(files) {
   const extensions = {};
   const directories = {};
-  
+
   files.forEach(file => {
     const ext = file.file.split('.').pop();
     if (ext) {
       extensions[ext] = (extensions[ext] || 0) + 1;
     }
-    
+
     const dir = file.file.split('/')[0];
     if (dir) {
       directories[dir] = (directories[dir] || 0) + 1;
     }
   });
-  
+
   return { extensions, directories };
 }
 
@@ -459,13 +459,13 @@ app.post("/api/generate-doc", async (req, res) => {
         if (!previousDoc) {
           return res.status(400).json({ error: "No previous documentation found to continue." });
         }
-        const userMessage = { 
-          role: "user", 
-          content: `Continue from where you left off:\n\n${previousDoc}` 
+        const userMessage = {
+          role: "user",
+          content: `Continue from where you left off:\n\n${previousDoc}`
         };
-        
+
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",  
+          model: "gpt-4o-mini",
           messages: [systemMessage, userMessage],
           max_tokens: 16000,
           temperature: 0.6,
@@ -479,13 +479,13 @@ app.post("/api/generate-doc", async (req, res) => {
 
         return res.json({ documentation: newResponse });
       } else {
-        const userMessage = { 
-          role: "user", 
-          content: `Here is the existing documentation:\n\n${previousDoc || ""}\n\nModify this existing documentation as per the following request: "${userInput}"\n\nMake only the minimal required changes to address the request while keeping the overall structure and information intact.` 
+        const userMessage = {
+          role: "user",
+          content: `Here is the existing documentation:\n\n${previousDoc || ""}\n\nModify this existing documentation as per the following request: "${userInput}"\n\nMake only the minimal required changes to address the request while keeping the overall structure and information intact.`
         };
-        
+
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",  
+          model: "gpt-4o-mini",
           messages: [systemMessage, userMessage],
           max_tokens: 16000,
           temperature: 0.6,
@@ -503,15 +503,15 @@ app.post("/api/generate-doc", async (req, res) => {
     if (repoContent) {
       const contentSize = repoContent.length;
       const isLargeRepo = contentSize > 60000; // Reduced from 100000 to detect large repos earlier
-      
+
       if (!isLargeRepo) {
-        const userMessage = { 
-          role: "user", 
-          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details. MAKE SURE to document ALL components, pages, and important files in the repository structure:\n\n${repoContent}` 
+        const userMessage = {
+          role: "user",
+          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details. MAKE SURE to document ALL components, pages, and important files in the repository structure:\n\n${repoContent}`
         };
-        
+
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",  
+          model: "gpt-4o-mini",
           messages: [systemMessage, userMessage],
           max_tokens: 16000,
           temperature: 0.6,
@@ -524,8 +524,8 @@ app.post("/api/generate-doc", async (req, res) => {
         }
 
         return res.json({ documentation: newResponse });
-      } 
-      
+      }
+
       else {
         let parsedContent;
         try {
@@ -537,26 +537,26 @@ app.post("/api/generate-doc", async (req, res) => {
         const chunks = prepareChunks(parsedContent);
         const chunkResponses = []; // Store individual chunk responses
         let contextSummary = "";
-        
+
         // Limit the number of chunks to process to avoid context length issues
         const chunkLimit = Math.min(chunks.length, 80); // Increased from 50 to 80
         const processingChunks = chunks.slice(0, chunkLimit);
-        
+
         console.log(`Processing ${processingChunks.length} chunks out of ${chunks.length} total chunks`);
-        
+
         // First pass: Process all chunks with enhanced context about the repository structure
         for (let i = 0; i < processingChunks.length; i++) {
           const chunk = processingChunks[i];
           const isFirstChunk = i === 0;
           const isLastChunk = i === processingChunks.length - 1;
-          
+
           // Trim chunk content for safety
           const chunkContent = JSON.stringify(chunk);
           // Limit chunk size to avoid context length issues
-          const trimmedChunk = chunkContent.length > 40000 ? 
-            chunkContent.substring(0, 40000) + "..." : 
+          const trimmedChunk = chunkContent.length > 40000 ?
+            chunkContent.substring(0, 40000) + "..." :
             chunkContent;
-          
+
           let chunkPrompt;
           if (isFirstChunk) {
             chunkPrompt = `This is a large repository, so I'll analyze it in parts. 
@@ -584,7 +584,7 @@ app.post("/api/generate-doc", async (req, res) => {
           
           Repository chunk to analyze:\n\n${trimmedChunk}`;
           } else {
-            chunkPrompt = `This is part ${i+1} of the repository analysis. 
+            chunkPrompt = `This is part ${i + 1} of the repository analysis. 
           
           CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
           If you find you're about to write something similar to previously generated content, 
@@ -597,20 +597,20 @@ app.post("/api/generate-doc", async (req, res) => {
           
           Repository chunk to analyze:\n\n${trimmedChunk}`;
           }
-          
+
           const chunkMessage = { role: "user", content: chunkPrompt };
-          
+
           try {
             const chunkCompletion = await openai.chat.completions.create({
-              model: "gpt-4o-mini",  
+              model: "gpt-4o-mini",
               messages: [systemMessage, chunkMessage],
               max_tokens: 16000,
               temperature: 0.6,
             });
-            
+
             const chunkResponse = chunkCompletion.choices[0].message.content;
             chunkResponses.push(chunkResponse); // Store individual responses
-            
+
             // Create a shorter context summary
             contextSummary = chunkResponse.slice(0, 200) + "...";
           } catch (error) {
@@ -657,23 +657,23 @@ app.post("/api/generate-doc", async (req, res) => {
             - Prevent information overlap between different code domains
             
             Original documentation to refine:\n\n${fullDocumentation}`;
-            
+
             const refinementMessage = { role: "user", content: refinementPrompt };
-            
+
             const refinementCompletion = await openai.chat.completions.create({
-              model: "gpt-4o-mini",  
+              model: "gpt-4o-mini",
               messages: [systemMessage, refinementMessage],
               max_tokens: 16000,
               temperature: 0.6,
             });
-            
+
             fullDocumentation = refinementCompletion.choices[0].message.content;
           } catch (error) {
             console.error("Error during refinement:", error);
             // Continue with the unrefined documentation if refinement fails
           }
         }
-        
+
         if (chatId) {
           documentationStore[chatId] = fullDocumentation;
         }
@@ -698,8 +698,8 @@ app.post("/api/generate-doc", async (req, res) => {
 setInterval(async () => {
   console.log("Cleaning up old repos...");
   try {
-    await rimraf(TEMP_REPO_DIR); 
-    fs.mkdirSync(TEMP_REPO_DIR, { recursive: true }); 
+    await rimraf(TEMP_REPO_DIR);
+    fs.mkdirSync(TEMP_REPO_DIR, { recursive: true });
     console.log("Old repos cleaned successfully.");
   } catch (error) {
     console.error("Error during cleanup:", error);
@@ -708,7 +708,7 @@ setInterval(async () => {
 
 const cloneRepo = async (repoUrl, repoPath) => {
   try {
-    await deleteRepo(repoPath); 
+    await deleteRepo(repoPath);
 
     return new Promise((resolve, reject) => {
       exec(
@@ -807,7 +807,7 @@ app.post("/verify-payment", async (req, res) => {
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
       signature: razorpay_signature,
-      amount: order.amount / 100, 
+      amount: order.amount / 100,
     });
 
     await newPayment.save();
@@ -852,7 +852,7 @@ const resetExpiredPlans = async () => {
   }
 };
 
-setInterval(resetExpiredPlans, 24 * 60 * 60 * 1000); 
+setInterval(resetExpiredPlans, 24 * 60 * 60 * 1000);
 
 app.get("/get-razorpay-key", (req, res) => {
   res.json({ key: process.env.RAZORPAY_KEY_ID });
@@ -882,7 +882,7 @@ app.post("/api/github/clone", async (req, res) => {
         console.error("Error deleting repo:", err);
       }
     }, 5 * 60 * 1000);
-    
+
   } catch (error) {
     return res.status(200).json({
       success: false,
@@ -927,13 +927,13 @@ const analyzeRepo = (repoPath) => {
           fileStructure.push({ file: relFilePath, content });
         } else {
           // For large files, only include the first part
-          const content = fs.readFileSync(filePath, { 
-            encoding: 'utf-8', 
-            start: 0, 
-            end: Math.min(stats.size, MAX_FILE_SIZE - 1) 
+          const content = fs.readFileSync(filePath, {
+            encoding: 'utf-8',
+            start: 0,
+            end: Math.min(stats.size, MAX_FILE_SIZE - 1)
           });
-          fileStructure.push({ 
-            file: relFilePath, 
+          fileStructure.push({
+            file: relFilePath,
             content: content + "\n\n[File truncated due to size...]"
           });
         }
