@@ -18,14 +18,12 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
-  const [sortOption, setSortOption] = useState("Sort by activity ⬇");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [githubUsername, setGithubUsername] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [messages, setMessages] = useState([]);
   const [repoMessages, setRepoMessages] = useState({});
-  const [deleteRepo, setDeleteRepo] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredReposs, setFilteredRepos] = useState(repoMessages);
 
