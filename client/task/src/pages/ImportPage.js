@@ -4,14 +4,10 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Copy, Download, RefreshCw } from "lucide-react";
-import { Document, Packer, Paragraph, HeadingLevel, AlignmentType } from "docx";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github.css";
-import html2pdf from "html2pdf.js";
-
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./ImportPage.css";
 
@@ -28,6 +24,7 @@ const ImportPage = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [lastSyncedCommit, setLastSyncedCommit] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [isGenerating, setIsGenerating] = useState(false);
   const messagesEndRef = useRef(null);
   const location = useLocation();
@@ -116,6 +113,7 @@ const ImportPage = () => {
 
   useEffect(() => {
     fetchMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoName]);
 
   useEffect(() => {
@@ -172,6 +170,7 @@ const ImportPage = () => {
         },
       ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUserProfile = async () => {
@@ -1078,6 +1077,7 @@ const ImportPage = () => {
         <span style={{ padding: "0px 35px" }} className="repo-name">
           <b>{repoName}</b> - Documentation
         </span>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a
           href="#"
           onClick={handleSyncLatest}

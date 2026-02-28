@@ -6,7 +6,6 @@ import {
   FaUser,
   FaPhone,
   FaEnvelope,
-  FaKey,
   FaCrown,
   FaTimes,
   FaTag
