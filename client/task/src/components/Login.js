@@ -1,7 +1,7 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; 
+import "./Login.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -21,16 +21,16 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("https://sooru-ai.onrender.com/api/auth/login", formData,   {
+      const res = await axios.post("https://sooru-ai.onrender.com/api/auth/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true, 
-      } );
+        withCredentials: true,
+      });
       localStorage.setItem("token", res.data.token);
       navigate("/home");
     } catch (err) {
-      alert( "Login failed! Incorrect username or password");
+      alert("Login failed! Incorrect username or password");
     } finally {
       setLoading(false);
     }
@@ -56,9 +56,9 @@ const Login = () => {
     toast.style.padding = "10px 20px";
     toast.style.borderRadius = "5px";
     toast.style.zIndex = "1000";
-  
+
     document.body.appendChild(toast);
-  
+
     setTimeout(() => {
       toast.remove();
     }, 3000);
@@ -75,11 +75,11 @@ const Login = () => {
     }
     setLoading(true);
     try {
-      
+
       const userCheckRes = await axios.post("https://sooru-ai.onrender.com/api/auth/checkuser", { email: resetData.email });
-      
+
       if (userCheckRes.data.exists) {
-     
+
         await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", { email: resetData.email });
         setOtpSent(true);
         alert(`OTP sent to ${resetData.email}`);
@@ -106,78 +106,81 @@ const Login = () => {
     return () => clearInterval(timer);
   }, [countdown]);
 
-  
 
-const handleResetSubmit = async () => {
-  setLoading(true);
-  try {
-    const res = await axios.post("https://sooru-ai.onrender.com/api/auth/resetpassword", {
-      email: resetData.email,
-      otp: resetData.otp, 
-      newPassword: resetData.newPassword,
-    });
 
-    
-    if (res.status === 200) {
-      alert("Password reset successful!");
-      setShowForgotPassword(false);
-      setOtpSent(false);
-      setResetData({ email: "", newPassword: "", otp: "" });
+  const handleResetSubmit = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post("https://sooru-ai.onrender.com/api/auth/resetpassword", {
+        email: resetData.email,
+        otp: resetData.otp,
+        newPassword: resetData.newPassword,
+      });
+
+
+      if (res.status === 200) {
+        alert("Password reset successful!");
+        setShowForgotPassword(false);
+        setOtpSent(false);
+        setResetData({ email: "", newPassword: "", otp: "" });
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Invalid OTP or failed to reset password. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    alert(error.response?.data?.message || "Invalid OTP or failed to reset password. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="login-container body">
-        {loading && (
-      <div className="loading-overlay">
-        <div className="loading-spinner"></div>
-      </div>
-    )}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+        </div>
+      )}
       <div className="form-container">
-        <h2>Login</h2>
+        <div className="form-logo">
+          <div className="form-logo-title">DocufyAi</div>
+        </div>
+        <h2>Welcome back</h2>
+        <p className="form-subtitle">Sign in to continue building great docs</p>
         <form onSubmit={handleSubmit}>
-          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+          <input type="email" name="email" placeholder="Email address" value={formData.email} onChange={handleChange} required />
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
-          <button type="submit" disabled={loading}>Login</button>
+          <button type="submit" disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
         </form>
 
-        <p className="register-link">
-          New user?{" "}
-          <span onClick={() => navigate("/register")} className="register-text">
-            Register
-          </span>
-        </p>
-
         <p className="forgot-password" onClick={() => setShowForgotPassword(true)}>Forgot Password?</p>
-  
-        <button className="github-btn" onClick={handleGitHubLogin} style={{background:"black"}}>
-        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
-        Login with GitHub
-      </button>
 
+        <div className="auth-divider"><span>or continue with</span></div>
 
+        <button className="github-btn" onClick={handleGitHubLogin}>
+          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
+          Login with GitHub
+        </button>
+
+        <p className="register-link">
+          Don't have an account?{" "}
+          <span onClick={() => navigate("/register")} className="register-text">Sign up free</span>
+        </p>
       </div>
 
       {showForgotPassword && (
         <div className="otp-popup">
           <div className="otp-box">
-            <h2 className="close-popup"  style={{cursor:"pointer"}}  onClick={() => setShowForgotPassword(false)}>×</h2>
+            <button className="close-popup" onClick={() => setShowForgotPassword(false)}>×</button>
             <h3>Reset Password</h3>
-            <input type="email" name="email" placeholder="Email" value={resetData.email} onChange={handleResetChange} />
+            <input type="email" name="email" placeholder="Your email address" value={resetData.email} onChange={handleResetChange} />
             <button onClick={sendOtp} disabled={loading || countdown > 0}>
               {countdown > 0 ? `Resend OTP in ${countdown}s` : "Send OTP"}
             </button>
             {otpSent && (
               <>
-              <p>(If otp not received, check your spam folder)</p>
+                <p className="otp-message">OTP sent to {resetData.email}</p>
+                <p>(Check spam folder if not received)</p>
                 <input type="text" name="otp" placeholder="Enter OTP" value={resetData.otp} onChange={handleResetChange} maxLength={4} />
                 <input type="password" name="newPassword" placeholder="New Password" value={resetData.newPassword} onChange={handleResetChange} />
-                <button onClick={handleResetSubmit} disabled={loading} style={{background:"green"}}>Reset Password</button>
+                <button onClick={handleResetSubmit} disabled={loading}>Reset Password</button>
               </>
             )}
           </div>

@@ -227,10 +227,10 @@ const Home = () => {
 
       if (!response.data.success) {
         const errorMessage = response.data.errorDetails
-          ? "Repository import failed. Possible reasons:\n\n" + 
-            response.data.errorDetails.map(detail => `• ${detail}`).join('\n')
+          ? "Repository import failed. Possible reasons:\n\n" +
+          response.data.errorDetails.map(detail => `• ${detail}`).join('\n')
           : response.data.message;
-        
+
         alert(errorMessage);
         setIsImporting(false);
         return;
@@ -242,10 +242,11 @@ const Home = () => {
 
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { repoContent,
+        {
+          repoContent,
           userId: user._id,
           repoName: repo.name
-         },
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -295,7 +296,7 @@ const Home = () => {
       }
       alert(
         "Repository import failed. Possible reasons:\n\n" +
-        "• Only repositories owned or created by you can be imported\n" + 
+        "• Only repositories owned or created by you can be imported\n" +
         "• Repository doesn't contain code files (documentation works only for code repositories)\n" +
         "• Repository contains extremely large files or ML models that exceed size limits"
       );
@@ -309,7 +310,7 @@ const Home = () => {
 
     const confirmDelete = window.confirm(
       `Are you sure you want to delete chat for ${repoName}?\n` +
-        "⚠️ Note: Deleting chat won't reduce the number of imported repos.",
+      "⚠️ Note: Deleting chat won't reduce the number of imported repos.",
       "color: red;"
     );
     if (!confirmDelete) return;
@@ -370,60 +371,53 @@ const Home = () => {
   return (
     <div className="home-container">
       <style>{spinKeyframes}</style>
-      
+
       {isImporting && (
         <div style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          top: 0, left: 0,
+          width: '100%', height: '100%',
+          backgroundColor: 'rgba(8, 12, 20, 0.88)',
+          backdropFilter: 'blur(12px)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 10000
         }}>
           <div style={{
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '8px',
-            maxWidth: '400px',
+            background: 'rgba(17, 24, 39, 0.98)',
+            border: '1px solid rgba(99, 102, 241, 0.2)',
+            borderRadius: '20px',
+            padding: '40px 36px',
+            maxWidth: '420px',
             width: '90%',
             textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 20px 80px rgba(0,0,0,0.6), 0 0 40px rgba(99,102,241,0.1)',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            alignItems: 'center',
+            gap: '16px'
           }}>
             <div style={{
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #016601',
+              border: '3px solid rgba(99,102,241,0.15)',
+              borderTop: '3px solid #6366f1',
               borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              animation: 'spin 1s linear infinite',
-              marginBottom: '15px'
+              width: '44px',
+              height: '44px',
+              animation: 'spin 0.8s linear infinite'
             }}></div>
-            <div style={{color: '#333'}}>
-              <h3 style={{fontSize: '18px', marginBottom: '10px', color: '#016601'}}>Generating Documentation</h3>
-              <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>Please wait while we analyze your repository and generate documentation.</p>
-              <p style={{margin: '8px 0', fontSize: '14px', lineHeight: '1.4'}}>This process may take 5-10 minutes to complete.</p>
-              <p style={{
-                fontStyle: 'italic',
-                fontSize: '12px',
-                color: '#666',
-                marginTop: '10px',
-                borderTop: '1px solid #eee',
-                paddingTop: '10px'
-              }}>Tip: For complex repositories, processing time may be longer.</p>
+            <div>
+              <h3 style={{ fontSize: '18px', marginBottom: '10px', color: '#818cf8', fontFamily: '"Space Grotesk", sans-serif', fontWeight: '700' }}>Generating Documentation</h3>
+              <p style={{ margin: '6px 0', fontSize: '14px', lineHeight: '1.7', color: '#4b5563', fontFamily: 'Inter, sans-serif' }}>Analyzing your repository and generating structured documentation...</p>
+              <p style={{ margin: '6px 0', fontSize: '14px', lineHeight: '1.7', color: '#4b5563', fontFamily: 'Inter, sans-serif' }}>This may take 5–10 minutes for large repositories.</p>
+              <p style={{ fontStyle: 'italic', fontSize: '12px', color: '#374151', marginTop: '12px', fontFamily: 'Inter, sans-serif' }}>Tip: Complex repos with many files may take longer.</p>
             </div>
           </div>
         </div>
       )}
 
       <div className="dashboard-header">
-        <h2 style={{ position: "relative", top: "13px" }}>Dashboard</h2>
+        <h2>Dashboard</h2>
         <div
           className="buttons"
           style={{
@@ -472,36 +466,15 @@ const Home = () => {
           </button>
         </div>
 
-        <p
-          className="imported-repos-text"
-          style={{ textAlign: "center", position: "relative", bottom: "30px" }}
-        >
+        <p className="imported-repos-text">
           Total imported repos: {user?.Imports ?? 0}
         </p>
 
-        <hr
-          style={{
-            position: "relative",
-            bottom: "25px",
-            background: "grey",
-            height: "0.5px",
-            border: "none",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            position: "relative",
-            bottom: "15px",
-          }}
-        >
+        <div className="repo-cards-grid">
           {Object.keys(filteredReposs).map((repoName) => (
             <div
               key={repoName}
               className="repo-card"
-              style={{ margin: "10px 10px", cursor: "pointer" }}
               onClick={() => navigate(`/import/${repoName}`)}
             >
               <div
@@ -512,21 +485,19 @@ const Home = () => {
                 }}
               >
                 <FaTrash className="delete-icon" />
-                <span className="delete-tooltip">Delete chat</span>
               </div>
-              <div className="repo-title pb">{repoName}-Documentation</div>
-              <span className="delete-tooltip">Delete chat</span>
-              <div className="github-info pb">
+              <div className="repo-title">{repoName} Documentation</div>
+              <div className="github-info">
                 <img
                   src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                  alt="GitHub Logo"
+                  alt="GitHub"
                 />
                 {githubUsername}/{repoName}
               </div>
               <div className="repo-update">
                 {repoMessages[repoName]?.timestamp
                   ? formatDate(repoMessages[repoName].timestamp)
-                  : "No timestamp available"}
+                  : "No timestamp"}
               </div>
             </div>
           ))}

@@ -1,520 +1,506 @@
+/* ============================================
+   HOME / DASHBOARD PAGE
+   ============================================ */
 .home-container {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    font-family: "Arial", sans-serif;
-    position: relative;
-    top: 70px;
-  }
-  
-  /* Dashboard Header */
-  .dashboard-header {
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    display: flex;
-   
- 
-  }
-  
-  .dashboard-header h2 {
-    font-size: 4.5vh;
-    font-weight: 700;
-    background: linear-gradient(90deg, 
-      #d0d0d0, 
-      #f5f5f5, 
-      #d0d0d0, 
-      #a0a0a0, 
-      #d0d0d0);
-    background-size: 400% 400%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 
-      0 2px 5px rgba(0, 0, 0, 0.3),
-      0 5px 10px rgba(0, 0, 0, 0.2);
-    letter-spacing: 1px;
-    animation: liquidMetal 5s ease infinite;
-  }
-  
-  @keyframes liquidMetal {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  
-  
-  .buttons {
-    display: flex;
-    gap: 10px;
-    position: relative;
-    top: 4px;
-  }
-  
-  /* Buttons */
-  .create-btn, .githubb-btn {
-    background-color: #4a7c59;
-    color: white;
-    border: none;
-    padding: 10px 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s ease-in-out;
-    width: 250px;
-    height: 60px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  .create-btn:hover, .githubb-btn:hover {
-    transform: translateY(-1px); 
-}
-  .githubb-btn {
-    background-color:black;
-  }
-  
-  .create-btn:hover {
-    background-color: #1b1f23;
-  }
-  
-  .githubb-btn:hover {
-    background-color: #1b1f23;
-  }
-  
-  .githubb-icon, .icon {
-    font-size: 1.3rem;
-  }
-
-  .home-content {
-
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.2);
-    width: 90%;
-    min-height: 90vh;
-    margin-top: 5px;
-  }
-  
-  .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-  }
-  
-  .popup-box {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
-    width: 750px;  /* Increased width */
-    min-height: 75vh;
-    text-align: left;
-    position: relative;
-    top: 30px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  
-  .popup-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 10px;
-  }
-  
-  .popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .github-user {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: white;
-  }
-  
-  .github-icon {
-    margin-right: 8px;
-  }
-  
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: #334155;
-    padding: 0px 5px;
-    border-radius: 6px;
-    width: 250px; 
-    height: 40px;
-    margin-left: 8px;  
-  }
-
-  @media (max-width: 700px) {
-    .search-box {
-        width: 200px;  
-    }
-
-    .dashboard-header h2 {
-      font-size: 4vh;
-    }
+  background: #080c14;
+  min-height: 100vh;
+  padding-top: 64px;
 }
 
-@media (max-width: 500px) {
-    .search-box {
-        width: 180px;  
-    }
+/* ---- HEADER ---- */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px 22px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+  flex-wrap: wrap;
+  gap: 14px;
+  background: #080c14;
 }
 
-  
-  .search-icon {
-    color: white;
-    margin-right: 5px;
-  }
-  
-  .search-box input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: white;
-  }
-  
-  .repo-list-container {
-    overflow-y: auto;
-    max-height: 65vh;
-  }
-  
-  .repo-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .repo-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 6px;
-  }
-  
-  .import-btn {
-    background: black;
-    color: white;
-    padding: 6px 5px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    width: 80px;
-  }
-  
-  .import-btn:hover {
-    background: white;
-    color: black;
-  }
-  
-  .no-repos {
-    color: red;
-    text-align: center;
-  }
-  
-  .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-  
-
-  
-  
-  @media (max-width: 500px) {
-
-    .home-container {
-        position: relative;
-        top: 55px;
-      }
-
-      .dashboard-header h2 {
-        font-size: 3.2vh;
-      }
-      
-  .create-btn, .githubb-btn {
-
-    font-size: 0.8rem;
-
-  }
-  
-      
-  }
-
-  @media (max-width: 700px) {
-
-      .popup-box {
-        background: #1e293b;
-        padding: 20px;
-        border-radius: 12px;
-        width: 90%;
-        text-align: center;
-        position: relative;
-      }
-
-    }
-
-
-  
-    
-    .unique-header-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 40px;
-      padding: 0px 10px;
-    }
-
-    .unique-search-container {
-      display: flex;
-      align-items: center;
-      background-color: #d4d2d2;
-      border: 1px solid #cfcfcf;
-      border-radius: 8px;
-      width: 100%;
-      height: 5.5vh;
-      padding: 0px 5px;
-      position: relative;
-      top: 8px;
-      
-    }
-    
-    .unique-search-icon {
-      font-size: 6px;
-      color: gray;
-      margin-right: 8px;
-    }
-    
-    
-    .unique-search-box {
-      flex-grow: 1;
-      padding: 10px 10px;
-      border: 1px solid #cfcfcf;
-      background: transparent;
-      border-radius: 8px;
-      font-size: 16px;
-     outline: none;
-     border: 0px solid white;
-  
-    }
-    
-    .unique-add-btn {
-      background-color: black;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      width: 28%;
-      height: 5.6vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 0;
-    }
-
-    @media (max-width: 1024px) {
-      .unique-add-btn {
-        font-size: 0.9rem;
-        width: 30%;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .unique-add-btn {
-        font-size: 0.85rem;
-        width: 32%;
-      }
-    }
-
-    .unique-add-btn:hover{
-      background-color: rgb(21, 20, 20);
-    }
-    
-   
-    .unique-main-content {
-      text-align: center;
-      margin-top: 150px;
-    }
-    
-    .unique-upload-icon {
-      font-size: 50px;
-      color: gray;
-      margin-bottom: 10px;
-    }
-    
-    h3 {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    
-    p {
-      font-size: 14px;
-      color: #666;
-    }
-    
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999; 
-    }
-    
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 6px solid rgba(255, 255, 255, 0.3);
-      border-top: 6px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .repo-card {
-      position: relative;
-      width: 380px; 
-      max-width: 100%; 
-      background-color:rgba(255, 255, 255, 0.5); 
-      border-radius: 10px;
-      padding: 30px 20px;
-      margin-left: 10px;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-      font-family: Arial, sans-serif;
-      color: black;
-      text-align: left;
-      overflow: hidden; 
-      box-sizing: border-box; 
-    }
-
-  @media (max-width: 450px) {
-    .repo-card {
-        width: 95%;
-        margin-left: 0;
-    }
-}
-  .repo-title {
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 0px;
-  }
-  .repo-link {
-      color: #555;
-      font-size: 14px;
-      margin-bottom: 8px;
-  }
-  .github-info {
-      display: flex;
-      align-items: center;
-      background: #E8E8E8;
-      padding: 10px 5px;
-      border-radius: 5px;
-      width: 99%;              
-      max-width: 99%;  
-      width: fit-content;
-      font-weight: bold;
-      font-size: 14px;
-      overflow: hidden;         
-      text-overflow: ellipsis;
-      box-sizing: border-box;
-  }
-  .github-info img {
-      width: 16px;
-      height: 16px;
-      margin-right: 5px;
-      flex-shrink: 0; 
-  }
-  .repo-update {
-      font-size: 14px;
-      color: #555;
-      margin-top: 8px;
-  }
-  .repo-branch {
-      font-weight: bold;
-  }
-  .pb{
-    margin-bottom: 15px;
-  }
-
-  .delete-icon {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    font-size: 18px;
-    color: black; 
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
+.dashboard-header h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.3px;
+  position: static !important;
+  top: auto !important;
 }
 
-.delete-icon:hover {
-    color: #d32f2f;
-    transform: scale(1.2);
+.buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.delete-tooltip {
-  visibility: hidden;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  text-align: center;
-  font-size: 10px;
-  padding: 4px 8px;
-  border-radius: 5px;
-  position: absolute;
-  top: 32px;
-    left: 90%;
-    transform: translateX(-50%);
+/* ---- BUTTONS ---- */
+.githubb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
   white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
-.delete-container:hover .delete-tooltip {
-  visibility: visible;
+.github-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.github-btn:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  transform: translateY(-1px);
+}
+
+.githubb-icon {
+  font-size: 18px;
+}
+
+/* ---- HOME CONTENT ---- */
+.home-content {
+  padding: 24px 32px;
+  background: #080c14;
+}
+
+/* ---- SEARCH BAR ---- */
+.unique-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.unique-search-container {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #111827;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: border-color 0.18s;
+}
+
+.unique-search-container:focus-within {
+  border-color: rgba(99, 102, 241, 0.45);
+}
+
+.unique-search-container svg {
+  color: #1f2937 !important;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.unique-search-box {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  padding: 12px 0;
+}
+
+.unique-search-box::placeholder {
+  color: #1f2937;
+}
+
+.unique-add-btn {
+  padding: 11px 20px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 10px;
+  color: #818cf8;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.unique-add-btn:hover {
+  background: rgba(99, 102, 241, 0.22);
+  color: #c7d2fe;
+  transform: translateY(-1px);
+}
+
+/* ---- STATS ---- */
+.imported-repos-text {
+  font-size: 12px;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  text-align: right !important;
+  position: static !important;
+  bottom: auto !important;
+  margin-bottom: 8px;
+}
+
+/* ---- REPO CARDS GRID ---- */
+.repo-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: static !important;
+  bottom: auto !important;
+}
+
+/* ---- REPO CARD ---- */
+.repo-card {
+  background: #111827;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 14px;
+  padding: 22px;
+  width: calc(33.33% - 12px);
+  min-width: 200px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+  margin: 0 !important;
+}
+
+@media (max-width: 900px) {
+  .repo-card {
+    width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 540px) {
+  .repo-card {
+    width: 100%;
+  }
+}
+
+.repo-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.repo-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: #161f33;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.repo-card:hover::before {
   opacity: 1;
 }
 
+.repo-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  padding-right: 28px;
+  display: block;
+}
+
+.github-info {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 6px;
+}
+
+.github-info img {
+  width: 14px;
+  height: 14px;
+  filter: invert(0.4);
+  border-radius: 50%;
+}
+
+.repo-update {
+  font-size: 10px;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ---- DELETE ---- */
+.delete-container {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+}
+
+.delete-icon {
+  color: #1f2937;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  padding: 5px;
+  border-radius: 6px;
+  display: block;
+}
+
+.delete-icon:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.delete-tooltip {
+  display: none;
+}
+
+/* ---- EMPTY STATE ---- */
+.unique-main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  padding: 80px 24px;
+}
+
+.unique-upload-icon {
+  font-size: 60px;
+  color: rgba(99, 102, 241, 0.2);
+}
+
+.unique-main-content h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.unique-main-content p {
+  font-size: 14px;
+  color: #1f2937;
+  max-width: 340px;
+  line-height: 1.7;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ---- IMPORT POPUP ---- */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.88);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+  padding: 16px;
+}
+
+.popup-box {
+  background: #111827;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 18px;
+  padding: 28px 26px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+  animation: fadeInUp 0.25s ease;
+  overflow: hidden;
+}
+
+.popup-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent);
+}
+
+.popup-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f5f9;
+  padding-right: 36px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 18px;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 400;
+  transition: color 0.18s;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #e2e8f0;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.github-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.github-icon {
+  color: #374151;
+  font-size: 18px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f1724;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 9px;
+  padding: 0 12px;
+  flex: 1;
+}
+
+.search-box:focus-within {
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.search-icon {
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  padding: 10px 0;
+  flex: 1;
+}
+
+.search-box input::placeholder {
+  color: #1f2937;
+}
+
+.repo-list-container {
+  overflow-y: auto;
+  max-height: calc(80vh - 200px);
+  flex: 1;
+}
+
+.repo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.repo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(99, 102, 241, 0.08);
+  border-radius: 9px;
+  gap: 10px;
+  transition: all 0.18s ease;
+}
+
+.repo-item:hover {
+  border-color: rgba(99, 102, 241, 0.2);
+  background: rgba(22, 31, 51, 0.9);
+}
+
+.repo-item span {
+  font-size: 13px;
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.import-btn {
+  padding: 7px 16px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.import-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(79, 70, 229, 0.5);
+}
+
+.no-repos {
+  text-align: center;
+  color: #374151;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  padding: 24px;
+}
+
+/* ---- MOBILE ---- */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 20px 16px 16px;
+  }
+
+  .home-content {
+    padding: 16px;
+  }
+}

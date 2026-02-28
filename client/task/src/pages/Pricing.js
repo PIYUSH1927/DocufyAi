@@ -157,8 +157,8 @@ const Pricing = () => {
 
     const updatedPlan =
       plan === "Pro Plan"
-        ? "Pro Plan (₹499/month)"
-        : "Enterprise Plan (₹1,499/month)";
+        ? "Pro Plan (₹499 one-time)"
+        : "Enterprise Plan (₹1,499 one-time)";
 
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 30);
@@ -184,7 +184,7 @@ const Pricing = () => {
   };
 
   return (
-    <div className="pricing-page" style={{ position: "relative", top: "50px" }}>
+    <div className="pricing-page">
       {isLoading && (
         <div className="loading-overlay">
           <div className="spinner"></div>
@@ -207,19 +207,20 @@ const Pricing = () => {
         {[
           {
             title: "Free Plan",
-            price: "₹0/month",
-            description: "Great for individuals for getting started.",
+            price: "₹0",
+            period: "forever free",
+            description: "Perfect for individuals getting started.",
             features: [
               "AI-Generated Docs",
               "GitHub Sync (1 Repo)",
               "Versioned Documentation",
               "Copy documentation to clipboard",
-              
             ],
           },
           {
             title: "Pro Plan",
-            price: "₹499/month",
+            price: "₹499",
+            period: "one-time payment",
             description: "Best for developers and small teams.",
             features: [
               "GitHub Sync (Up to 10 Repos)",
@@ -231,7 +232,8 @@ const Pricing = () => {
           },
           {
             title: "Enterprise Plan",
-            price: "₹1,499/month",
+            price: "₹1,499",
+            period: "one-time payment",
             description: "Best for large teams and organizations.",
             features: [
               "AI-Generated Docs (Unlimited)",
@@ -247,7 +249,10 @@ const Pricing = () => {
             whileHover={{ scale: 1.05 }}
           >
             <h2>{plan.title}</h2>
-            <p className="pricing-price">{plan.price}</p>
+            <div className="pricing-price-block">
+              <span className="pricing-price">{plan.price}</span>
+              <span className="pricing-period">{plan.period}</span>
+            </div>
             <p className="pricing-desc">{plan.description}</p>
             <ul>
               {plan.features.map((feature, i) => (

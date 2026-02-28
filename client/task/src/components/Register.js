@@ -1,10 +1,10 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; 
+import axios from "axios";
 import "./Register.css";
 
 const Register = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -43,22 +43,22 @@ const Register = () => {
   const sendOtp = async () => {
     try {
       setLoading(true);
-     
+
       const existingUserResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/checkuser", {
         email: formData.email,
       });
-  
+
       if (existingUserResponse.data.exists) {
         setErrors({ apiError: "User already exists." });
         setLoading(false);
         return;
       }
-  
-    
+
+
       const response = await axios.post("https://sooru-ai.onrender.com/api/auth/sendotp", {
         email: formData.email,
       });
-  
+
       if (response.status === 200) {
         setShowOtpPopup(true);
         setTimer(60);
@@ -66,10 +66,10 @@ const Register = () => {
     } catch (error) {
       setErrors({ apiError: error.response?.data?.message || "Failed to send OTP" });
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -82,7 +82,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      sendOtp(); 
+      sendOtp();
     }
   };
 
@@ -93,20 +93,21 @@ const Register = () => {
         email: formData.email,
         otp: otp,
       });
-  
+
       if (response.status === 200) {
         try {
           const registerResponse = await axios.post("https://sooru-ai.onrender.com/api/auth/register", {
-            ...formData,  
-            currentPlan: "Free Plan (₹0/month)", 
-          Imports:0});
-  
+            ...formData,
+            currentPlan: "Free Plan (₹0/month)",
+            Imports: 0
+          });
+
           if (registerResponse.status === 201) {
             setSuccessMessage("User registered successfully!");
             setShowOtpPopup(false);
             setFormData({ firstName: "", lastName: "", email: "", password: "", phone: "" });
             localStorage.setItem("registrationMessage", "Registration successful! Please log in.");
-window.location.href = "/login"; // Redirect to login page
+            window.location.href = "/login"; // Redirect to login page
           }
         } catch (registerError) {
           const errorMessage = registerError.response?.data?.message || "Registration failed.";
@@ -119,20 +120,24 @@ window.location.href = "/login"; // Redirect to login page
       setErrors({ apiError: errorMessage });
       alert(errorMessage);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
   return (
     <div className="register-container body">
-            {loading && (
+      {loading && (
         <div className="loading-overlay">
           <div className="loading-spinner"></div>
         </div>
       )}
       <div className="form-container">
-        <h2>Register</h2>
-        {successMessage && <p className="success" style={{color:"lightgreen"}}>{successMessage}</p>}
+        <div className="form-logo">
+          <div className="form-logo-title">DocufyAi</div>
+        </div>
+        <h2>Create account</h2>
+        <p className="form-subtitle">Start automating your documentation today</p>
+        {successMessage && <p className="success">{successMessage}</p>}
         <form onSubmit={handleSubmit}>
           <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} />
           {errors.firstName && <span className="error">{errors.firstName}</span>}
@@ -140,41 +145,40 @@ window.location.href = "/login"; // Redirect to login page
           <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} />
           {errors.lastName && <span className="error">{errors.lastName}</span>}
 
-          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+          <input type="email" name="email" placeholder="Email address" value={formData.email} onChange={handleChange} />
           {errors.email && <span className="error">{errors.email}</span>}
 
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+          <input type="password" name="password" placeholder="Password (min 6 chars)" value={formData.password} onChange={handleChange} />
           {errors.password && <span className="error">{errors.password}</span>}
 
           <input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} />
           {errors.phone && <span className="error">{errors.phone}</span>}
 
-          {errors.apiError && <span style={{marginLeft:"80px",marginTop:"10px", fontSize:"medium"}} className="error">{errors.apiError}</span>}
+          {errors.apiError && <span className="error" style={{ textAlign: "center", fontSize: "13px" }}>{errors.apiError}</span>}
 
-          <button type="submit" disabled={loading}>Register</button>
+          <button type="submit" disabled={loading}>{loading ? "Sending OTP..." : "Create Account"}</button>
         </form>
 
+        <div className="auth-divider"><span>or sign up with</span></div>
+
+        <button className="github-btn" onClick={handleGitHubLogin}>
+          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
+          Sign Up with GitHub
+        </button>
+
         <p className="login-link">
-          Already registered?{" "}
-          <span onClick={() => navigate("/login")} className="login-text">
-            Login
-          </span>
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")} className="login-text">Sign in</span>
         </p>
-
-        <button className="github-btn" onClick={handleGitHubLogin} style={{background:"black"}}>
-        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" className="github-logo" />
-        Sign Up with GitHub
-      </button>
-
       </div>
 
       {showOtpPopup && (
         <div className="otp-popup">
           <div className="otp-box">
-            <h2 className="close-popup" onClick={() => setShowOtpPopup(false)} style={{cursor:"pointer"}}>×</h2>
+            <button className="close-popup" onClick={() => setShowOtpPopup(false)}>×</button>
             <h3>OTP Verification</h3>
-            <p style={{color:"darkgreen"}} className="otp-message">The OTP has been sent to {formData.email}</p>
-            <p>(If not received, check your spam folder)</p>
+            <p className="otp-message">OTP sent to {formData.email}</p>
+            <p>(Check spam folder if not received)</p>
             <input
               type="text"
               placeholder="Enter OTP"
@@ -182,11 +186,10 @@ window.location.href = "/login"; // Redirect to login page
               onChange={(e) => setOtp(e.target.value)}
               maxLength={4}
             />
-             <button onClick={handleOtpSubmit} disabled={loading}>Verify OTP</button>
+            <button onClick={handleOtpSubmit} disabled={loading}>{loading ? "Verifying..." : "Verify OTP"}</button>
           </div>
         </div>
       )}
-
     </div>
   );
 };

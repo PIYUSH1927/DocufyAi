@@ -1,18 +1,24 @@
-import React, { useState , useEffect} from "react";  
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaBars, FaTimes, FaHome, FaInfoCircle, FaTags, FaUserPlus, FaSignOutAlt, FaUser } from "react-icons/fa";
 import "./Navbar.css";
 import axios from "axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isAuthenticated = !!localStorage.getItem("token");
   const [menuOpen, setMenuOpen] = useState(false);
   const [profile, setProfile] = useState({ avatar: "" });
 
+  const isActive = (path) => {
+    if (path === "/" || path === "/home") return location.pathname === "/" || location.pathname === "/home";
+    return location.pathname === path;
+  };
+
   const handleNavigation = (path) => {
     navigate(path);
-    setMenuOpen(false);  
+    setMenuOpen(false);
   };
 
   const handleLogout = () => {
@@ -67,12 +73,11 @@ const Navbar = () => {
         onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")}
       />
 
-     
+
       <div className="nb-links">
-        <p onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")} className="nb-link">Home</p>
-        <p onClick={() => handleNavigation("/about")} className="nb-link">About</p>
-        <p onClick={() => handleNavigation("/pricing")} className="nb-link">Pricing</p>
-        {!isAuthenticated && <p onClick={() => handleNavigation("/register")} className="nb-link">Sign Up</p>}
+        <p onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")} className={`nb-link${isActive("/") ? " nb-link-active" : ""}`}>Home</p>
+        <p onClick={() => handleNavigation("/about")} className={`nb-link${isActive("/about") ? " nb-link-active" : ""}`}>About</p>
+        <p onClick={() => handleNavigation("/pricing")} className={`nb-link${isActive("/pricing") ? " nb-link-active" : ""}`}>Pricing</p>
       </div>
 
       {/* Mobile Hamburger Menu */}
@@ -86,25 +91,34 @@ const Navbar = () => {
           <p onClick={() => handleNavigation(isAuthenticated ? "/home" : "/")}><FaHome /> Home</p>
           <p onClick={() => handleNavigation("/about")}><FaInfoCircle /> About</p>
           <p onClick={() => handleNavigation("/pricing")}><FaTags /> Pricing</p>
-          {!isAuthenticated && <p onClick={() => handleNavigation("/register")}><FaUserPlus /> Sign Up</p>}
+          {!isAuthenticated && <p onClick={() => handleNavigation("/login")}><FaUserPlus /> Login / Sign Up</p>}
           {isAuthenticated && (
             <>
-            <p onClick={() => handleNavigation("/profile")}><FaUser /> Profile</p>
-              <p onClick={handleLogout} style={{color:"red"}}><FaSignOutAlt /> Logout</p>
-              
+              <p onClick={() => handleNavigation("/profile")}><FaUser /> Profile</p>
+              <p onClick={handleLogout} style={{ color: "red" }}><FaSignOutAlt /> Logout</p>
+
             </>
           )}
         </div>
+      )}
+
+      {!isAuthenticated && (
+        <button
+          className="nb-cta-btn"
+          onClick={() => handleNavigation("/login")}
+        >
+          Login / Sign Up
+        </button>
       )}
 
       {isAuthenticated && (
         <div className="nb-user">
           <p onClick={handleLogout} className="nb-logout">Logout</p>
           <div onClick={() => handleNavigation("/profile")} className="nb-profile">
-          <img 
-              src={profile.avatar || "https://www.w3schools.com/howto/img_avatar.png"} 
-              alt="Profile" 
-              className="nb-avatar" 
+            <img
+              src={profile.avatar || "https://www.w3schools.com/howto/img_avatar.png"}
+              alt="Profile"
+              className="nb-avatar"
             />
             <p className="nb-profile-text">Profile</p>
           </div>
