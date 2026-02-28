@@ -22,7 +22,7 @@
   border-radius: 14px;
   background: #0d1424;
   max-height: 88vh;
-  padding-bottom: 70px;
+  padding-bottom: 90px;
 }
 
 .import-repo-name {
@@ -45,25 +45,32 @@
   border-radius: 12px;
   max-width: 96%;
   word-wrap: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  overflow-x: hidden;
   display: block;
   white-space: pre-wrap;
   animation: fadeInUp 0.25s ease;
 }
 
 .import-chat-message.user {
-  background: rgba(79, 70, 229, 0.12);
-  border: 1px solid rgba(79, 70, 229, 0.2);
+  background: #1e293b;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  /* faint indigo outline */
   min-width: 80%;
   margin-left: auto;
-  color: #c7d2fe;
+  color: #e2e8f0;
 }
 
 .import-chat-message.bot {
   background: #111827;
-  border: 1px solid rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* faint white/grey outline */
   min-width: 90%;
   color: #cbd5e1;
   padding-top: 30px;
+  white-space: normal;
+  /* override pre-wrap — ReactMarkdown handles spacing */
 }
 
 /* ---- ICON ACTIONS ---- */
@@ -107,7 +114,8 @@
 
 .icon {
   cursor: pointer;
-  color: #374151;
+  color: #4b5563;
+  /* was #374151 — invisible on dark bg */
   font-size: 14px;
   transition: all 0.18s ease;
   padding: 4px;
@@ -122,7 +130,8 @@
 /* ---- TIMESTAMP ---- */
 .timestamp {
   font-size: 9px;
-  color: #1f2937;
+  color: #64748b;
+  /* was #1f2937 — invisible on dark bg */
   font-family: 'Inter', sans-serif;
   margin-right: 6px;
 }
@@ -139,7 +148,7 @@
   position: fixed;
   bottom: 6px;
   left: 6px;
-  right: 6px;
+  right: 22px;
   z-index: 100;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -211,7 +220,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 6px 12px;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
@@ -265,56 +274,70 @@
 
 /* ---- MARKDOWN (dark) ---- */
 .formatted-markdown {
-  line-height: 1.75;
+  line-height: 1.6;
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 14px;
   color: #cbd5e1;
   font-family: 'Inter', sans-serif;
+  white-space: normal;
+}
+
+.formatted-markdown>*+* {
+  margin-top: 0;
+  /* kill default top margins on siblings */
 }
 
 .formatted-markdown h1 {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.55em;
+  font-size: 1.4em;
   font-weight: 700;
   color: #f1f5f9;
-  margin: 16px 0 8px;
+  margin: 16px 0 6px;
 }
 
 .formatted-markdown h2 {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25em;
+  font-size: 1.15em;
   font-weight: 700;
   color: #a5b4fc;
-  margin: 12px 0 6px;
+  margin: 12px 0 4px;
 }
 
 .formatted-markdown h3 {
-  font-size: 1.05em;
+  font-size: 1em;
   font-weight: 600;
   color: #818cf8;
-  margin: 10px 0 4px;
+  margin: 10px 0 3px;
 }
 
 .formatted-markdown h4 {
   font-size: 1em;
   font-weight: 600;
   color: #6b7280;
+  margin: 8px 0 2px;
 }
 
 .formatted-markdown p {
-  margin: 6px 0;
+  margin: 5px 0;
+}
+
+/* remove extra paragraph spacing when p is inside a list item */
+.formatted-markdown li>p {
+  margin: 0;
 }
 
 .formatted-markdown ul,
 .formatted-markdown ol {
-  padding-left: 1.4em;
-  margin: 4px 0;
+  padding-left: 1.5em;
+  margin: 5px 0;
 }
 
 .formatted-markdown li {
-  margin: 2px 0;
+  margin: 3px 0;
+  /* minimal gap between bullets */
   color: #6b7280;
+  line-height: 1.55;
 }
 
 .formatted-markdown code {
@@ -393,11 +416,19 @@
 @media (max-width: 900px) {
   .import-chat-container {
     padding: 10px;
-    padding-bottom: 80px;
+    padding-bottom: 130px;
   }
 
   .import-input-container {
     flex-wrap: wrap;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    bottom: 0;
+  }
+
+  .import-page-container {
+    padding: 6px 0;
   }
 
   .import-text-input {
@@ -412,6 +443,20 @@
     flex: 1;
     min-width: 0;
     justify-content: center;
+  }
+
+  /* prevent messages from overflowing screen width */
+  .import-chat-message.user,
+  .import-chat-message.bot {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .formatted-markdown pre {
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 

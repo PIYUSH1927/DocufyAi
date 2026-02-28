@@ -1,29 +1,55 @@
 /* ============================================
    PROFILE PAGE
    ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---- PAGE WRAPPER ---- */
 .bod {
   background: #080c14;
   min-height: 100vh;
   padding-top: 64px;
+  padding-bottom: 60px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-bottom: 60px;
 }
 
+/* ---- CARD ---- */
 .profile-container {
   width: 100%;
-  max-width: 520px;
-  margin: 40px 20px;
-  background: #111827;
-  border: 1px solid rgba(99, 102, 241, 0.14);
-  border-radius: 20px;
-  padding: 36px 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: 560px;
+  margin: 36px 20px;
+  background: #0f1724;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  border-radius: 22px;
+  padding: 40px 36px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
   position: relative;
   animation: fadeInUp 0.4s ease;
+  box-sizing: border-box;
 }
 
+/* top gradient bar */
 .profile-container::before {
   content: '';
   position: absolute;
@@ -32,96 +58,142 @@
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent);
-  border-radius: 20px 20px 0 0;
+  border-radius: 22px 22px 0 0;
 }
 
+/* ---- HEADER ---- */
 .profile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 32px;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: 10px;
 }
 
 .profile-title {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   background: linear-gradient(135deg, #818cf8, #22d3ee);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: transparent !important;
   margin: 0 !important;
   position: static !important;
   left: auto !important;
+  letter-spacing: -0.5px;
 }
 
+/* Avatar initials circle */
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 18px rgba(99, 102, 241, 0.4);
+}
+
+.profile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Support / Upgrade button */
 .small-upgrade-button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
-  border-radius: 9px;
+  padding: 8px 16px;
+  border-radius: 10px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   border: none;
   font-family: 'Inter', sans-serif;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   background: linear-gradient(135deg, #d97706, #f59e0b) !important;
   color: white;
   white-space: nowrap;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
 }
 
 .small-upgrade-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.5);
+}
+
+/* ---- DIVIDER ---- */
+.profile-divider {
+  height: 1px;
+  background: rgba(99, 102, 241, 0.1);
+  margin: 0 0 28px;
+  border: none;
 }
 
 /* ---- FORM ---- */
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+}
+
+/* Two-column row for first/last name */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .form-group label {
   font-size: 11px;
   font-weight: 700;
-  color: #1f2937;
+  color: #64748b;
+  /* ← was #1f2937 (invisible!) */
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   font-family: 'Inter', sans-serif;
 }
 
+/* Input wrapper */
 .input-group {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #0f1724;
-  border: 1px solid rgba(99, 102, 241, 0.14);
-  border-radius: 10px;
+  background: #131d30;
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  border-radius: 11px;
   padding: 0 14px;
-  transition: border-color 0.18s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-group:focus-within {
-  border-color: rgba(99, 102, 241, 0.45);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.07);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+/* Icons — indigo and visible */
 .input-group .icon {
-  color: #1f2937;
-  font-size: 15px;
+  color: #6366f1;
+  /* ← was #1f2937 (invisible!) */
+  font-size: 14px;
   flex-shrink: 0;
+  opacity: 0.75;
 }
 
 .input-group input {
@@ -133,16 +205,28 @@
   font-size: 14px;
   font-family: 'Inter', sans-serif;
   padding: 13px 0;
+  -webkit-box-shadow: 0 0 0 100px #131d30 inset !important;
+  box-shadow: 0 0 0 100px #131d30 inset !important;
+  -webkit-text-fill-color: #e2e8f0 !important;
 }
 
 .input-group input::placeholder {
-  color: #1f2937;
+  color: #374151;
+  /* ← was #1f2937 (invisible!) */
+  opacity: 1;
 }
 
+.input-group input[readOnly] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* Plan row */
 .plan-group {
   flex-direction: row;
   align-items: center;
   padding: 12px 14px;
+  gap: 12px;
 }
 
 .plan-text {
@@ -153,24 +237,33 @@
   font-weight: 600;
 }
 
+/* Upgrade button inside plan row — smaller variant */
+.plan-group .small-upgrade-button {
+  font-size: 11px;
+  padding: 6px 13px;
+}
+
+/* Save Changes button */
 .update-button {
-  padding: 13px;
+  margin-top: 4px;
+  padding: 14px;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 11px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   transition: all 0.22s ease;
-  box-shadow: 0 0 18px rgba(79, 70, 229, 0.35);
+  box-shadow: 0 0 20px rgba(79, 70, 229, 0.38);
   width: 100%;
+  letter-spacing: 0.2px;
 }
 
 .update-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(79, 70, 229, 0.6);
+  box-shadow: 0 0 36px rgba(79, 70, 229, 0.65);
 }
 
 /* ---- CONTACT MODAL ---- */
@@ -188,15 +281,16 @@
 }
 
 .contact-modal-content {
-  background: #111827;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: #0f1724;
+  border: 1px solid rgba(99, 102, 241, 0.22);
   border-radius: 18px;
-  padding: 32px 28px;
+  padding: 36px 30px;
   width: 100%;
   max-width: 460px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
   position: relative;
   animation: fadeInUp 0.3s ease;
+  box-sizing: border-box;
 }
 
 .contact-modal-content::before {
@@ -215,15 +309,15 @@
   font-size: 20px;
   font-weight: 700;
   color: #f1f5f9;
-  margin-bottom: 20px;
+  margin: 0 0 20px;
 }
 
 .close-modal {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 18px;
+  right: 18px;
   font-size: 17px;
-  color: #374151;
+  color: #4b5563;
   cursor: pointer;
   transition: color 0.18s;
 }
@@ -244,10 +338,10 @@
 
 .contact-textarea {
   width: 100%;
-  min-height: 110px;
+  min-height: 120px;
   padding: 13px 15px;
-  background: #0f1724;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  background: #131d30;
+  border: 1px solid rgba(99, 102, 241, 0.16);
   border-radius: 10px;
   color: #e2e8f0;
   font-size: 14px;
@@ -256,19 +350,20 @@
   outline: none;
   line-height: 1.6;
   transition: border-color 0.18s;
+  box-sizing: border-box;
 }
 
 .contact-textarea::placeholder {
-  color: #1f2937;
+  color: #374151;
 }
 
 .contact-textarea:focus {
-  border-color: rgba(99, 102, 241, 0.45);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.07);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
 }
 
 .contact-submit-btn {
-  padding: 12px;
+  padding: 13px;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   border: none;
@@ -282,12 +377,28 @@
 
 .contact-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 22px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 0 22px rgba(79, 70, 229, 0.55);
 }
 
-@media (max-width: 560px) {
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
   .profile-container {
-    padding: 24px 16px;
+    padding: 28px 20px;
     margin: 20px 12px;
+    border-radius: 18px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-title {
+    font-size: 20px;
+  }
+
+  .profile-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
   }
 }

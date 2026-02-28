@@ -19,7 +19,8 @@ const ImportPage = () => {
   const navigate = useNavigate();
   const { repoName } = useParams();
   const [messages, setMessages] = useState([]);
-  const [userInput, setUserInput] = useState("");
+  const userInputRef = useRef("");        // uncontrolled — no re-render on typing
+  const textareaRef = useRef(null);       // direct DOM ref to clear after send
   const [copyStatus, setCopyStatus] = useState({});
   const [downloadStatus, setDownloadStatus] = useState({});
   const [currentPlan, setCurrentPlan] = useState("");
@@ -216,13 +217,13 @@ const ImportPage = () => {
     if (!commit || !repoName) return;
     localStorage.setItem(`lastSyncedCommit_${repoName}`, commit);
   };
-  
+
   // Add this function to load the last synced commit from localStorage
   const loadLastSyncedCommit = () => {
     if (!repoName) return null;
     return localStorage.getItem(`lastSyncedCommit_${repoName}`);
   };
-  
+
 
   const handleGenerate = async () => {
 
@@ -231,11 +232,11 @@ const ImportPage = () => {
       return;
     }
 
-    if (!userInput.trim()) return;
+    if (!userInputRef.current.trim()) return;
 
     const maxLength = 5000;
 
-    if (userInput.length > maxLength) {
+    if (userInputRef.current.length > maxLength) {
       const tooLongMessage = {
         type: "bot",
         text: "⚠️ Your input is too long. Please shorten it and try again.",
@@ -243,7 +244,8 @@ const ImportPage = () => {
       };
 
       setMessages((prev) => [...prev, tooLongMessage]);
-      setUserInput("");
+      userInputRef.current = "";
+      if (textareaRef.current) textareaRef.current.value = "";
       return;
     }
 
@@ -265,11 +267,12 @@ const ImportPage = () => {
       userId,
       repoName,
       type: "user",
-      text: userInput,
+      text: userInputRef.current,
       timestamp,
     };
-    const inputText = userInput;
-    setUserInput("");
+    const inputText = userInputRef.current;
+    userInputRef.current = "";
+    if (textareaRef.current) textareaRef.current.value = "";  // clear DOM instantly
     setMessages((prev) => [...prev, userMessage]);
 
     try {
@@ -291,10 +294,11 @@ const ImportPage = () => {
 
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { userInput: inputText,
+        {
+          userInput: inputText,
           userId: userId,
           repoName: repoName
-         },
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -350,24 +354,20 @@ const ImportPage = () => {
       alert("Upgrade to Pro plan to download as a document.");
       return;
     }
-  
+
     const formattedElement = document.querySelector(
       `.import-chat-message[data-key="${index}"] .formatted-markdown`
     );
-  
+
     if (formattedElement) {
-      // First, get formatted HTML content with all styles preserved
       const tempContainer = document.createElement("div");
-      
-      // Clone the formatted element to preserve ALL styling including syntax highlighting
+
       const clonedContent = formattedElement.cloneNode(true);
       tempContainer.appendChild(clonedContent);
-      
-      // Get all the stylesheets from the document that might affect the formatting
+
       const stylesheets = Array.from(document.styleSheets);
       let cssRules = "";
-      
-      // Extract CSS rules from all stylesheets
+
       stylesheets.forEach(sheet => {
         try {
           if (sheet.cssRules) {
@@ -376,12 +376,10 @@ const ImportPage = () => {
             });
           }
         } catch (e) {
-          // Some stylesheets might be protected by CORS
           console.log("Could not access stylesheet:", e);
         }
       });
-      
-      // Add highlight.js styles to ensure code highlighting is preserved
+
       cssRules += `
         /* Syntax highlighting styles */
         .hljs {
@@ -640,24 +638,22 @@ const ImportPage = () => {
       `;
 
       const getAdjustedCssForHtml = (originalCss) => {
-        // Increase font size for HTML format
         return originalCss.replace(
           '.formatted-markdown {',
           '.formatted-markdown {'
         ) + `
           /* HTML-specific adjustments */
           .formatted-markdown {
-            font-size: 0.95em !important; /* Increase from 0.8em to 0.9em for HTML format */
+            font-size: 0.95em !important;
           }
           
           .formatted-markdown pre {
-            margin: 0.6em 0 !important; /* Adjust margin as requested */
+            margin: 0.6em 0 !important;
           }
         `;
       };
-      
-      
-      // Create HTML content
+
+
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -683,8 +679,7 @@ const ImportPage = () => {
         </body>
         </html>
       `;
-  
-      // Create Word-compatible HTML document for Windows
+
       const wordDoc = `
         <!DOCTYPE html>
         <html xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -698,10 +693,9 @@ const ImportPage = () => {
           <title>${repoName} Documentation</title>
           <style>
             ${cssRules}
-            /* Word-specific narrow margin settings */
             @page WordSection1 {
               size: 8.5in 11.0in;
-              margin: 0.5in 0.5in 0.5in 0.5in; /* Narrow margins: top right bottom left */
+              margin: 0.5in 0.5in 0.5in 0.5in;
               mso-header-margin: 0.5in;
               mso-footer-margin: 0.5in;
               mso-paper-source: 0;
@@ -735,44 +729,35 @@ const ImportPage = () => {
         </body>
         </html>
       `;
-      
-      // Detect OS
+
       const isWindows = navigator.userAgent.indexOf("Windows") !== -1;
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
-      // Create a blob and download link based on the OS
+
       let blob;
       let filename;
-      
-    
-      if (isWindows|| isMobile) {
-        // Windows: Use Word-compatible format (.doc)
+
+      if (isWindows || isMobile) {
         blob = new Blob(["\ufeff", wordDoc], {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         });
         filename = `${repoName}_documentation.doc`;
       } else {
-        // macOS, Linux, or other: Use HTML format
         blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
         filename = `${repoName}_documentation.htm`;
       }
-      
-      
-      // Create a download link
+
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
-      
-      // Clean up
+
       setTimeout(() => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       }, 0);
-  
-      // Update status
+
       const statusText = isWindows ? "Downloaded" : "Downloaded";
       setDownloadStatus((prev) => ({ ...prev, [index]: statusText }));
       setTimeout(() => {
@@ -1001,8 +986,9 @@ const ImportPage = () => {
 
       const generateDocResponse = await axios.post(
         "https://sooru-ai.onrender.com/api/generate-doc",
-        { repoContent,
-          userId: user.id,  // Add userId
+        {
+          repoContent,
+          userId: user.id,
           repoName: repoName
         },
         {
@@ -1017,7 +1003,6 @@ const ImportPage = () => {
         prevMessages.filter((msg) => msg.timestamp !== syncMessageTimestamp)
       );
 
-      // Check for documentation directly instead of success property
       if (generateDocResponse.data.documentation) {
         const newMessage = {
           userId: user.id,
@@ -1105,11 +1090,11 @@ const ImportPage = () => {
             fontSize: "0.9rem",
             position: "fixed",
             right: "15px",
-            top: "10px",
+            top: "2px",
             zIndex: "100px",
-    opacity: isSyncing || currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1",
-    cursor: isSyncing || currentPlan === "Free Plan (₹0/month)" ? "not-allowed" : "pointer",
-    pointerEvents: isSyncing ? "none" : "auto",
+            opacity: isSyncing || currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1",
+            cursor: isSyncing || currentPlan === "Free Plan (₹0/month)" ? "not-allowed" : "pointer",
+            pointerEvents: isSyncing ? "none" : "auto",
           }}
         >
           {isSyncing ? (
@@ -1190,20 +1175,21 @@ const ImportPage = () => {
 
       <div className="import-input-container">
         <textarea
+          ref={textareaRef}
           className="import-text-input"
-          placeholder={currentPlan === "Free Plan (₹0/month)" ? 
-            "Upgrade to Pro plan to use the chat feature" : 
+          placeholder={currentPlan === "Free Plan (₹0/month)" ?
+            "Upgrade to Pro plan to use the chat feature" :
             "Ask AI to refine documentation..."}
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
+          defaultValue=""
+          onChange={(e) => { userInputRef.current = e.target.value; }}
           style={{
             opacity: currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1"
           }}
         />
-        <button className="import-generate-btn" onClick={handleGenerate}  style={{
-      opacity: currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1",
-      cursor: currentPlan === "Free Plan (₹0/month)" ? "not-allowed" : "pointer"
-    }}>
+        <button className="import-generate-btn" onClick={handleGenerate} style={{
+          opacity: currentPlan === "Free Plan (₹0/month)" ? "0.5" : "1",
+          cursor: currentPlan === "Free Plan (₹0/month)" ? "not-allowed" : "pointer"
+        }}>
           Generate
         </button>
       </div>

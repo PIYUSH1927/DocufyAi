@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaTimes } from "react-icons/fa";
 import "./Register.css";
 
 const Register = () => {
@@ -175,7 +176,14 @@ const Register = () => {
       {showOtpPopup && (
         <div className="otp-popup">
           <div className="otp-box">
-            <button className="close-popup" onClick={() => setShowOtpPopup(false)}>×</button>
+            {loading && (
+              <div className="otp-loading">
+                <div className="loading-spinner" />
+              </div>
+            )}
+            <span className="close-popup" onClick={() => setShowOtpPopup(false)} role="button" aria-label="Close">
+              <FaTimes />
+            </span>
             <h3>OTP Verification</h3>
             <p className="otp-message">OTP sent to {formData.email}</p>
             <p>(Check spam folder if not received)</p>

@@ -10,19 +10,13 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
-// Define animation keyframes
-const spinKeyframes = `
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
 
 const Home = () => {
   const [user, setUser] = useState(null);
   const [repos, setRepos] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [sortOption, setSortOption] = useState("Sort by activity ⬇");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -121,14 +115,15 @@ const Home = () => {
         setUser(response.data);
         setAccessToken(response.data.accessToken);
         setGithubUsername(response.data.username);
-        setLoading(false);
+        // Don't clear loading here — wait for fetchMessages to finish
 
-        fetchMessages();
+        await fetchMessages();
         if (response.data.githubId) {
           fetchRepositories();
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -155,6 +150,8 @@ const Home = () => {
         setRepoMessages(groupedMessages);
       } catch (error) {
         console.error("Error fetching messages:", error);
+      } finally {
+        setMessagesLoading(false);
       }
     };
 
@@ -370,7 +367,14 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <style>{spinKeyframes}</style>
+
+      {/* Full-page loader: shown until profile + messages both loaded */}
+      {(loading || messagesLoading) && (
+        <div className="home-loading">
+          <div className="spin-ring" />
+          <p>Loading your dashboard…</p>
+        </div>
+      )}
 
       {isImporting && (
         <div style={{
@@ -437,12 +441,10 @@ const Home = () => {
           )}
           {user?.githubId && (
             <button
-              className="githubb-btn github-btn"
+              className="githubb-btn create-btn"
               onClick={handleCreateDocument}
-              style={{ width: "auto", height: "auto", background: "#016601" }}
             >
-              <FaPlus className="icon" style={{ color: "white" }} /> Create New
-              Project
+              <FaPlus className="icon" /> Create New Project
             </button>
           )}
         </div>
@@ -519,9 +521,7 @@ const Home = () => {
         <div className="popup-overlay">
           <div className="popup-box">
             <h2 className="popup-title">Import Git Repository</h2>
-            <h2 className="close-btn" onClick={() => setShowPopup(false)}>
-              ✖
-            </h2>
+            <button className="close-btn" onClick={() => setShowPopup(false)}>✕</button>
 
             {/* GitHub Username & Search Box */}
             <div className="popup-header">

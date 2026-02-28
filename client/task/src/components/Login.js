@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaTimes } from "react-icons/fa";
 import "./Login.css";
 
 const Login = () => {
@@ -168,7 +169,14 @@ const Login = () => {
       {showForgotPassword && (
         <div className="otp-popup">
           <div className="otp-box">
-            <button className="close-popup" onClick={() => setShowForgotPassword(false)}>×</button>
+            {loading && (
+              <div className="otp-loading">
+                <div className="loading-spinner" />
+              </div>
+            )}
+            <span className="close-popup" onClick={() => setShowForgotPassword(false)} role="button" aria-label="Close">
+              <FaTimes />
+            </span>
             <h3>Reset Password</h3>
             <input type="email" name="email" placeholder="Your email address" value={resetData.email} onChange={handleResetChange} />
             <button onClick={sendOtp} disabled={loading || countdown > 0}>

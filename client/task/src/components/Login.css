@@ -2,6 +2,75 @@
    AUTH PAGES — Login & Register (shared)
    ============================================ */
 
+/* ── Keyframe Animations ── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Shared loading overlay (full page) ── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* ── Spinning ring ── */
+.loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+/* ── OTP modal inner loader (covers only the otp-box) ── */
+.otp-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 36, 0.82);
+  backdrop-filter: blur(4px);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.otp-loading .loading-spinner {
+  width: 36px;
+  height: 36px;
+}
+
 /* Page wrapper */
 .login-container,
 .register-container {
@@ -427,6 +496,156 @@
   animation: spin 0.8s linear infinite;
 }
 
+/* ============================================
+   FORGOT PASSWORD / OTP MODAL
+   ============================================ */
+.otp-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.otp-box {
+  position: relative;
+  background: #0f1724;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  border-radius: 18px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeInUp 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* top gradient accent bar */
+.otp-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent);
+  border-radius: 18px 18px 0 0;
+}
+
+/* ── Close icon (span, not button — avoids global button styles) ── */
+.close-popup {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  background: rgba(99, 102, 241, 0.08);
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.close-popup:hover {
+  background: rgba(99, 102, 241, 0.22);
+  color: #f1f5f9;
+  border-color: rgba(99, 102, 241, 0.55);
+}
+
+/* ── Title ── */
+.otp-box h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 4px;
+}
+
+/* ── Inputs inside otp-box ── */
+.otp-box input {
+  width: 100%;
+  padding: 12px 16px;
+  background: #131d30;
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  border-radius: 10px;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  box-sizing: border-box;
+}
+
+.otp-box input::placeholder {
+  color: #374151;
+}
+
+.otp-box input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ── Buttons inside otp-box ── */
+.otp-box button:not(.close-popup) {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.22s ease;
+  box-shadow: 0 0 18px rgba(79, 70, 229, 0.35);
+  box-sizing: border-box;
+}
+
+.otp-box button:not(.close-popup):hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(79, 70, 229, 0.6);
+}
+
+.otp-box button:not(.close-popup):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── OTP sent message ── */
+.otp-message {
+  font-size: 13px;
+  color: #22d3ee;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
+
+.otp-box p {
+  font-size: 12px;
+  color: #4b5563;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 540px) {
   .form-container {
     padding: 24px 16px;
@@ -434,6 +653,7 @@
   }
 
   .otp-box {
-    padding: 24px 16px;
+    padding: 28px 18px;
+    border-radius: 14px;
   }
 }

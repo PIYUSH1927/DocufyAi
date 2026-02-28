@@ -1,10 +1,68 @@
 /* ============================================
    HOME / DASHBOARD PAGE
    ============================================ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- PAGE SHELL ---- */
 .home-container {
   background: #080c14;
   min-height: 100vh;
   padding-top: 64px;
+}
+
+/* ---- INITIAL LOADING OVERLAY ---- */
+.home-loading {
+  position: fixed;
+  inset: 0;
+  background: #080c14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  z-index: 9999;
+}
+
+.home-loading .spin-ring {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.home-loading p {
+  color: #4b5563;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
 }
 
 /* ---- HEADER ---- */
@@ -27,6 +85,7 @@
   letter-spacing: -0.3px;
   position: static !important;
   top: auto !important;
+  margin: 0;
 }
 
 .buttons {
@@ -35,7 +94,7 @@
   flex-wrap: wrap;
 }
 
-/* ---- BUTTONS ---- */
+/* ---- HEADER BUTTONS ---- */
 .githubb-btn {
   display: inline-flex;
   align-items: center;
@@ -51,19 +110,33 @@
   white-space: nowrap;
 }
 
-.github-btn {
+/* Connect GitHub — ghost border style */
+.githubb-btn.github-btn {
   background: rgba(255, 255, 255, 0.05) !important;
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-.github-btn:hover {
-  background: rgba(255, 255, 255, 0.09) !important;
+.githubb-btn.github-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
   transform: translateY(-1px);
 }
 
+/* Create New Project — green solid */
+.githubb-btn.create-btn {
+  background: linear-gradient(135deg, #059669, #10b981) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.3);
+}
+
+.githubb-btn.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.5);
+}
+
 .githubb-icon {
-  font-size: 18px;
+  font-size: 17px;
 }
 
 /* ---- HOME CONTENT ---- */
@@ -77,7 +150,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
@@ -99,8 +172,9 @@
 }
 
 .unique-search-container svg {
-  color: #1f2937 !important;
-  font-size: 15px;
+  color: #4b5563 !important;
+  /* ← was #1f2937 (invisible!) */
+  font-size: 14px;
   flex-shrink: 0;
 }
 
@@ -116,74 +190,85 @@
 }
 
 .unique-search-box::placeholder {
-  color: #1f2937;
+  color: #374151;
+  /* ← was #1f2937 (invisible!) */
 }
 
 .unique-add-btn {
-  padding: 11px 20px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 11px 22px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
   border-radius: 10px;
-  color: #818cf8;
+  color: white;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   transition: all 0.18s ease;
   white-space: nowrap;
+  box-shadow: 0 0 14px rgba(79, 70, 229, 0.3);
 }
 
 .unique-add-btn:hover {
-  background: rgba(99, 102, 241, 0.22);
-  color: #c7d2fe;
   transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(79, 70, 229, 0.55);
 }
 
 /* ---- STATS ---- */
 .imported-repos-text {
   font-size: 12px;
-  color: #1f2937;
+  color: #4b5563;
+  /* ← was #1f2937 (invisible!) */
   font-family: 'Inter', sans-serif;
-  text-align: right !important;
+  text-align: right;
+  margin-bottom: 14px;
   position: static !important;
-  bottom: auto !important;
-  margin-bottom: 8px;
 }
 
-/* ---- REPO CARDS GRID ---- */
+/* ============================================
+   REPO CARDS GRID — strict 3-column layout
+   ============================================ */
 .repo-cards-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  position: static !important;
-  bottom: auto !important;
+}
+
+/* tablet: still 3 columns */
+@media (max-width: 900px) {
+  .repo-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .home-content {
+    padding: 16px 20px;
+  }
+}
+
+/* mobile: 1 column */
+@media (max-width: 600px) {
+  .repo-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 /* ---- REPO CARD ---- */
 .repo-card {
-  background: #111827;
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  background: #131d30;
+  border: 1px solid rgba(99, 102, 241, 0.14);
   border-radius: 14px;
-  padding: 22px;
-  width: calc(33.33% - 12px);
-  min-width: 200px;
+  padding: 24px;
+  min-height: 105px;
   cursor: pointer;
   transition: all 0.22s ease;
   position: relative;
   overflow: hidden;
-  margin: 0 !important;
-}
-
-@media (max-width: 900px) {
-  .repo-card {
-    width: calc(50% - 8px);
-  }
-}
-
-@media (max-width: 540px) {
-  .repo-card {
-    width: 100%;
-  }
+  animation: fadeInUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .repo-card::before {
@@ -199,8 +284,8 @@
 }
 
 .repo-card:hover {
-  border-color: rgba(99, 102, 241, 0.3);
-  background: #161f33;
+  border-color: rgba(99, 102, 241, 0.35);
+  background: #1a2540;
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
@@ -214,6 +299,7 @@
   font-size: 14px;
   font-weight: 700;
   color: #e2e8f0;
+  /* off-white */
   margin-bottom: 10px;
   line-height: 1.4;
   padding-right: 28px;
@@ -225,7 +311,8 @@
   align-items: center;
   gap: 7px;
   font-size: 11px;
-  color: #1f2937;
+  color: #64748b;
+  /* ← was #1f2937 (invisible!) */
   font-family: 'Inter', sans-serif;
   margin-bottom: 6px;
 }
@@ -233,17 +320,18 @@
 .github-info img {
   width: 14px;
   height: 14px;
-  filter: invert(0.4);
+  filter: invert(0.5) brightness(1.5);
   border-radius: 50%;
 }
 
 .repo-update {
   font-size: 10px;
-  color: #1f2937;
+  color: #4b5563;
+  /* ← was #1f2937 (invisible!) */
   font-family: 'Inter', sans-serif;
 }
 
-/* ---- DELETE ---- */
+/* ---- DELETE ICON ---- */
 .delete-container {
   position: absolute;
   top: 14px;
@@ -252,7 +340,8 @@
 }
 
 .delete-icon {
-  color: #1f2937;
+  color: rgba(239, 68, 68, 0.5);
+  /* ← soft red, visible but not harsh */
   font-size: 13px;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -263,11 +352,7 @@
 
 .delete-icon:hover {
   color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
-}
-
-.delete-tooltip {
-  display: none;
+  background: rgba(248, 113, 113, 0.12);
 }
 
 /* ---- EMPTY STATE ---- */
@@ -282,26 +367,30 @@
 }
 
 .unique-upload-icon {
-  font-size: 60px;
-  color: rgba(99, 102, 241, 0.2);
+  font-size: 56px;
+  color: rgba(99, 102, 241, 0.25);
 }
 
 .unique-main-content h3 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 20px;
   font-weight: 700;
-  color: #374151;
+  color: #94a3b8;
+  /* ← was #374151 (invisible!) */
 }
 
 .unique-main-content p {
   font-size: 14px;
-  color: #1f2937;
+  color: #4b5563;
+  /* ← was #1f2937 (invisible!) */
   max-width: 340px;
   line-height: 1.7;
   font-family: 'Inter', sans-serif;
 }
 
-/* ---- IMPORT POPUP ---- */
+/* ============================================
+   IMPORT GITHUB MODAL
+   ============================================ */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -316,20 +405,21 @@
 }
 
 .popup-box {
-  background: #111827;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 18px;
-  padding: 28px 26px;
+  background: #0f1724;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  border-radius: 20px;
+  padding: 32px 28px;
   width: 100%;
-  max-width: 500px;
-  max-height: 80vh;
+  max-width: 540px;
+  max-height: 82vh;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  gap: 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
   position: relative;
   animation: fadeInUp 0.25s ease;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .popup-box::before {
@@ -344,36 +434,57 @@
 
 .popup-title {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   color: #f1f5f9;
-  padding-right: 36px;
+  padding-right: 40px;
+  margin: 0;
 }
 
+/* Close button — icon-only circle */
 .close-btn {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  font-size: 18px;
-  color: #374151;
-  cursor: pointer;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  background: rgba(99, 102, 241, 0.08);
+  color: #64748b;
+  font-size: 15px;
   font-weight: 400;
-  transition: color 0.18s;
-  background: none;
-  border: none;
+  cursor: pointer;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  padding: 0;
+  font-family: unset;
 }
 
 .close-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
   color: #e2e8f0;
+  border-color: rgba(99, 102, 241, 0.5);
 }
 
+/* Close btn inside modal — not affected by other button styles */
+.popup-box .close-btn {
+  background: rgba(99, 102, 241, 0.08) !important;
+}
+
+/* GitHub user + search row */
 .popup-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
 }
 
 .github-user {
@@ -381,13 +492,16 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #374151;
+  color: #c7d2fe;
+  /* ← was #374151 (invisible!) */
   font-family: 'Inter', sans-serif;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .github-icon {
-  color: #374151;
+  color: #818cf8;
+  /* ← was #374151 (invisible!) */
   font-size: 18px;
 }
 
@@ -395,11 +509,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #0f1724;
+  background: #131d30;
   border: 1px solid rgba(99, 102, 241, 0.15);
   border-radius: 9px;
   padding: 0 12px;
   flex: 1;
+  min-width: 140px;
 }
 
 .search-box:focus-within {
@@ -407,7 +522,8 @@
 }
 
 .search-icon {
-  color: #1f2937;
+  color: #4b5563;
+  /* ← was #1f2937 (invisible!) */
   font-size: 13px;
 }
 
@@ -423,13 +539,16 @@
 }
 
 .search-box input::placeholder {
-  color: #1f2937;
+  color: #374151;
 }
 
+/* Repo list */
 .repo-list-container {
   overflow-y: auto;
-  max-height: calc(80vh - 200px);
+  max-height: calc(82vh - 220px);
   flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.2) transparent;
 }
 
 .repo-list {
@@ -437,6 +556,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 0;
+  margin: 0;
 }
 
 .repo-item {
@@ -444,21 +565,22 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: rgba(17, 24, 39, 0.7);
-  border: 1px solid rgba(99, 102, 241, 0.08);
-  border-radius: 9px;
-  gap: 10px;
+  background: rgba(19, 29, 48, 0.85);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 10px;
+  gap: 12px;
   transition: all 0.18s ease;
 }
 
 .repo-item:hover {
-  border-color: rgba(99, 102, 241, 0.2);
-  background: rgba(22, 31, 51, 0.9);
+  border-color: rgba(99, 102, 241, 0.28);
+  background: rgba(26, 37, 64, 0.95);
 }
 
 .repo-item span {
   font-size: 13px;
-  color: #94a3b8;
+  color: #cbd5e1;
+  /* ← bright enough to read */
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   overflow: hidden;
@@ -467,11 +589,11 @@
 }
 
 .import-btn {
-  padding: 7px 16px;
+  padding: 7px 18px;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -479,19 +601,20 @@
   transition: all 0.18s ease;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(79, 70, 229, 0.3);
 }
 
 .import-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 14px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 0 20px rgba(79, 70, 229, 0.55);
 }
 
 .no-repos {
   text-align: center;
-  color: #374151;
+  color: #4b5563;
   font-size: 13px;
   font-family: 'Inter', sans-serif;
-  padding: 24px;
+  padding: 28px;
 }
 
 /* ---- MOBILE ---- */
@@ -502,5 +625,19 @@
 
   .home-content {
     padding: 16px;
+  }
+
+  .popup-box {
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
+
+  .popup-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    min-width: 0;
   }
 }

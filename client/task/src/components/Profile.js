@@ -5,10 +5,10 @@ import "./Profile.css";
 import {
   FaUser,
   FaPhone,
-  FaMapMarkerAlt,
+  FaEnvelope,
   FaKey,
   FaCrown,
-  FaTimes, 
+  FaTimes,
   FaTag
 } from "react-icons/fa";
 
@@ -38,11 +38,7 @@ const Profile = () => {
   }
 
   useEffect(() => {
-    if (!userId) {
-      console.error("User ID not found!");
-      return;
-    }
-
+    if (!userId) return;
     axios
       .get(`https://sooru-ai.onrender.com/api/user/${userId}`)
       .then((res) => setProfile(res.data))
@@ -78,16 +74,21 @@ const Profile = () => {
     }
   };
 
+  /* Initials for avatar circle */
+  const initials = `${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}`.toUpperCase() || "U";
+
   return (
-    <div className="bod" style={{paddingBottom:"20px"}} >
-      <div className="profile-container" >
-      <div className="profile-header">
-          <h2 className="profile-title" style={{ color: "rgb(0, 164, 235)" , margin:"auto",position:"relative",left:"40px"}}>
-            My Profile
-          </h2>
+    <div className="bod">
+      <div className="profile-container">
+
+        {/* ── Header ── */}
+        <div className="profile-header">
+          <div className="profile-header-left">
+            <div className="profile-avatar">{initials}</div>
+            <h2 className="profile-title">My Profile</h2>
+          </div>
           <button
             className="small-upgrade-button"
-            style={{background:"Peru"}}
             onClick={() => {
               if (profile.currentPlan === "Enterprise Plan (₹1,499/month)") {
                 setIsModalOpen(true);
@@ -96,56 +97,66 @@ const Profile = () => {
               }
             }}
           >
-            
-           <b><FaCrown className="icon" /><span style={{position:"relative", bottom:"4px"}}>Support</span></b> 
+            <FaCrown /> Support
           </button>
         </div>
 
+        <hr className="profile-divider" />
+
+        {/* ── Form ── */}
         <form onSubmit={handleSubmit} className="profile-form">
-          <div className="form-group">
-            <label>First Name:</label>
-            <div className="input-group">
-              <FaUser className="icon" />
-              <input
-                type="text"
-                name="firstName"
-                value={profile.firstName}
-                onChange={handleChange}
-                required
-              />
+
+          {/* First & Last name side-by-side */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>First Name</label>
+              <div className="input-group">
+                <FaUser className="icon" />
+                <input
+                  type="text"
+                  name="firstName"
+                  value={profile.firstName}
+                  onChange={handleChange}
+                  placeholder="First name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Last Name</label>
+              <div className="input-group">
+                <FaUser className="icon" />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={profile.lastName}
+                  onChange={handleChange}
+                  placeholder="Last name"
+                  required
+                />
+              </div>
             </div>
           </div>
 
+          {/* Email */}
           <div className="form-group">
-            <label>Last Name:</label>
+            <label>Email</label>
             <div className="input-group">
-              <FaUser className="icon" />
-              <input
-                type="text"
-                name="lastName"
-                value={profile.lastName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>Email:</label>
-            <div className="input-group">
-              <FaKey className="icon" />
+              <FaEnvelope className="icon" />
               <input
                 type="email"
                 name="email"
                 value={profile.email}
                 readOnly
-                style={{ opacity: "0.7" }}
+                placeholder="Email address"
               />
             </div>
           </div>
 
+          {/* Phone */}
           <div className="form-group">
-            <label>Phone:</label>
+            <label>Phone</label>
             <div className="input-group">
               <FaPhone className="icon" />
               <input
@@ -153,16 +164,18 @@ const Profile = () => {
                 name="phone"
                 value={profile.phone}
                 onChange={handleChange}
+                placeholder="10-digit phone number"
                 required
               />
             </div>
           </div>
 
+          {/* Current Plan */}
           <div className="form-group">
-            <label>Current Plan:</label>
+            <label>Current Plan</label>
             <div className="input-group plan-group">
               <FaTag className="icon" />
-              <span className="plan-text">{profile.currentPlan}</span>
+              <span className="plan-text">{profile.currentPlan || "Free Plan"}</span>
               {profile.currentPlan !== "Enterprise Plan (₹1,999/month)" && (
                 <button
                   type="button"
@@ -175,31 +188,38 @@ const Profile = () => {
             </div>
           </div>
 
-          <button style={{marginTop:"12px"}} type="submit" className="update-button">
+          <button type="submit" className="update-button">
             Save Changes
           </button>
         </form>
       </div>
 
+      {/* ── Support Modal ── */}
       {isModalOpen && (
-  <div className="contact-modal">
-    <div className="contact-modal-content">
-      <FaTimes className="close-modal" onClick={() => setIsModalOpen(false)} />
-      <h2>Contact Support </h2>
-      <form className="contact-form" name="contactForm" action="https://formspree.io/f/xpwqvkvn" method="POST">
-        <input type="email" name="email" value={profile.email} readOnly className="hidden-email-input" />
-        <textarea name="message" placeholder="Write your message here" required className="contact-textarea"></textarea>
-
-        <button type="submit" className="contact-submit-btn">Submit</button>
-      </form>
+        <div className="contact-modal">
+          <div className="contact-modal-content">
+            <FaTimes className="close-modal" onClick={() => setIsModalOpen(false)} />
+            <h2>Contact Support</h2>
+            <form
+              className="contact-form"
+              name="contactForm"
+              action="https://formspree.io/f/xpwqvkvn"
+              method="POST"
+            >
+              <input type="email" name="email" value={profile.email} readOnly className="hidden-email-input" />
+              <textarea
+                name="message"
+                placeholder="Write your message here…"
+                required
+                className="contact-textarea"
+              />
+              <button type="submit" className="contact-submit-btn">Submit</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-
-     
-     </div>
   );
 };
-
 
 export default Profile;
