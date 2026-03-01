@@ -51,44 +51,49 @@ const About = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.9, delay: 0.2 }}
         >
-          <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" className="ab-illustration">
+          <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" className="ab-illustration">
             <defs>
-              <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#1e2a45" />
-                <stop offset="100%" stopColor="#111827" />
+                <stop offset="100%" stopColor="#0f172a" />
               </linearGradient>
-              <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#6366f1" />
                 <stop offset="100%" stopColor="#8b5cf6" />
               </linearGradient>
             </defs>
-            {/* Main card */}
-            <rect x="40" y="40" width="400" height="280" rx="20" fill="url(#cardGrad)" stroke="rgba(99,102,241,0.3)" strokeWidth="1.5" />
-            {/* Top accent bar */}
-            <rect x="40" y="40" width="400" height="3" rx="2" fill="url(#accentGrad)" />
-            {/* Code lines */}
-            <rect x="72" y="80" width="120" height="8" rx="4" fill="#6366f1" opacity="0.7" />
-            <rect x="72" y="100" width="240" height="6" rx="3" fill="#334155" />
-            <rect x="72" y="116" width="200" height="6" rx="3" fill="#334155" />
-            <rect x="72" y="132" width="220" height="6" rx="3" fill="#334155" />
-            <rect x="88" y="148" width="180" height="6" rx="3" fill="#1d4ed8" opacity="0.6" />
-            <rect x="88" y="164" width="160" height="6" rx="3" fill="#334155" />
-            <rect x="88" y="180" width="200" height="6" rx="3" fill="#334155" />
-            <rect x="72" y="196" width="160" height="6" rx="3" fill="#1d4ed8" opacity="0.6" />
-            <rect x="72" y="212" width="240" height="6" rx="3" fill="#334155" />
-            {/* AI spark */}
-            <circle cx="380" cy="180" r="36" fill="rgba(99,102,241,0.15)" />
-            <circle cx="380" cy="180" r="24" fill="rgba(99,102,241,0.25)" />
-            <text x="380" y="186" textAnchor="middle" fontSize="18" fill="#818cf8">✦</text>
-            {/* Arrows from code to AI bubble */}
-            <line x1="320" y1="180" x2="344" y2="180" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4,3" opacity="0.7" />
-            {/* Doc card output */}
-            <rect x="200" y="260" width="200" height="50" rx="10" fill="#1e2a45" stroke="rgba(99,102,241,0.2)" strokeWidth="1" />
-            <rect x="212" y="272" width="80" height="6" rx="3" fill="#6366f1" opacity="0.8" />
-            <rect x="212" y="286" width="120" height="5" rx="2.5" fill="#334155" />
-            <rect x="212" y="297" width="100" height="5" rx="2.5" fill="#334155" />
-            {/* Arrow down from AI spark */}
-            <path d="M 380 216 Q 340 230 300 260" stroke="#8b5cf6" strokeWidth="1.5" strokeDasharray="4,3" opacity="0.6" fill="none" />
+
+            {/* Left Box: Code Repository */}
+            <rect x="20" y="100" width="110" height="100" rx="12" fill="url(#boxGrad)" stroke="#334155" strokeWidth="2" />
+            <text x="75" y="130" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="600" letterSpacing="1">CODEBASE</text>
+            <rect x="40" y="145" width="70" height="4" rx="2" fill="#3b82f6" />
+            <rect x="40" y="157" width="50" height="4" rx="2" fill="#64748b" />
+            <rect x="40" y="169" width="60" height="4" rx="2" fill="#64748b" />
+
+            {/* Connecting Line 1 */}
+            <path d="M 130 150 L 190 150" stroke="#475569" strokeWidth="2" strokeDasharray="4 4" />
+            <polygon points="185,145 195,150 185,155" fill="#475569" />
+
+            {/* Center Box: DocufyAi Engine */}
+            <rect x="195" y="90" width="130" height="120" rx="16" fill="url(#aiGrad)" style={{ filter: "drop-shadow(0 10px 15px rgba(99,102,241,0.3))" }} />
+            <circle cx="260" cy="140" r="24" fill="rgba(255,255,255,0.2)" />
+            <text x="260" y="146" textAnchor="middle" fill="#ffffff" fontSize="20">✨</text>
+            <text x="260" y="185" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold" letterSpacing="1">AI ENGINE</text>
+
+            {/* Connecting Line 2 */}
+            <path d="M 325 150 L 385 150" stroke="#475569" strokeWidth="2" strokeDasharray="4 4" />
+            <polygon points="380,145 390,150 380,155" fill="#475569" />
+
+            {/* Right Box: Documentation */}
+            <rect x="390" y="80" width="90" height="140" rx="12" fill="url(#boxGrad)" stroke="#334155" strokeWidth="2" />
+            <text x="435" y="105" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="bold" letterSpacing="1">DOCS</text>
+            <rect x="405" y="120" width="60" height="4" rx="2" fill="#8b5cf6" />
+            <rect x="405" y="132" width="40" height="4" rx="2" fill="#64748b" />
+            <rect x="405" y="144" width="50" height="4" rx="2" fill="#64748b" />
+            <rect x="405" y="162" width="55" height="4" rx="2" fill="#3b82f6" />
+            <rect x="405" y="174" width="45" height="4" rx="2" fill="#64748b" />
+            <rect x="405" y="192" width="60" height="4" rx="2" fill="#8b5cf6" />
+            <rect x="405" y="204" width="30" height="4" rx="2" fill="#64748b" />
           </svg>
         </motion.div>
       </section>
@@ -147,29 +152,29 @@ const About = () => {
         ))}
       </section>
 
-      {/* ── TIMELINE ── */}
+      {/* ── HOW IT WORKS ── */}
       <section className="ab-timeline-section">
-        <div className="ab-section-label">Journey</div>
-        <h2 className="ab-section-title">How we got here</h2>
+        <div className="ab-section-label">Workflow</div>
+        <h2 className="ab-section-title">How DocufyAi Works</h2>
 
         <div className="ab-timeline">
           {[
             {
-              year: "2024",
-              title: "The Idea Was Born",
-              desc: "Developers were spending hours writing docs that went stale within weeks. We decided to solve this once and for all — with AI that reads your code and writes the docs for you.",
+              step: "01",
+              title: "Connect Your Repository",
+              desc: "Securely link your GitHub account. Select the repositories you want documented. We establish a read-only connection to analyze your codebase instantly.",
               color: "#6366f1"
             },
             {
-              year: "2025",
-              title: "DocufyAi Launched",
-              desc: "After months of development, DocufyAi launched with GitHub integration, real-time API docs, and AI-powered summaries. Teams started saving hours every sprint cycle.",
+              step: "02",
+              title: "AI Analysis & Processing",
+              desc: "Our advanced LLM engine scans your directory structure, parses complex logic, and understands the relationships between your components, APIs, and utilities.",
               color: "#8b5cf6"
             },
             {
-              year: "Future",
-              title: "Expanding the Ecosystem",
-              desc: "GitLab, Bitbucket, interactive API explorers, custom doc templates, and team collaboration features are on the roadmap — building the ultimate documentation platform.",
+              step: "03",
+              title: "Publish & Auto-Sync",
+              desc: "Get a beautifully formatted, comprehensive documentation site. Every time your team pushes new code to the main branch, your docs are automatically regenerated and kept in perfect sync.",
               color: "#22d3ee"
             }
           ].map((item, i) => (
@@ -183,7 +188,7 @@ const About = () => {
             >
               <div className="ab-timeline-dot" style={{ background: item.color, boxShadow: `0 0 12px ${item.color}` }} />
               <div className="ab-timeline-content">
-                <span className="ab-timeline-year" style={{ color: item.color }}>{item.year}</span>
+                <span className="ab-timeline-year" style={{ color: item.color }}>{item.step}</span>
                 <h3>{item.title}</h3>
                 <p>{item.desc}</p>
               </div>

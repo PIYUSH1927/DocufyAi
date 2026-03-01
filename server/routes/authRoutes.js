@@ -2,10 +2,10 @@
 const express = require("express");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");  
-const User = require("../models/User"); 
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
 const router = express.Router();
 
@@ -15,15 +15,9 @@ require("../config/passport");
 
 const blacklistedTokens = new Set();
 
-let otpStore = {}; 
+let otpStore = {};
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -33,19 +27,18 @@ router.post("/sendotp", async (req, res) => {
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   const otp = generateOtp();
-  otpStore[email] = otp; 
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP is ${otp}. It is valid for 5 minutes.`,
-  };
+  otpStore[email] = otp;
 
   try {
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: "DocufyAi <onboarding@resend.dev>",
+      to: email,
+      subject: "Your DocufyAi OTP Code",
+      text: `Your OTP is ${otp}. It is valid for 5 minutes.`,
+    });
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
+    console.error("Resend API Error:", error);
     res.status(500).json({ message: "Error sending OTP", error });
   }
 });
@@ -55,7 +48,7 @@ router.post("/verifyotp", async (req, res) => {
   const { email, otp } = req.body;
 
   if (otpStore[email] && otpStore[email] === otp) {
-    delete otpStore[email]; 
+    delete otpStore[email];
     res.status(200).json({ message: "OTP verified successfully" });
   } else {
     res.status(400).json({ message: "Invalid or expired OTP" });
@@ -82,13 +75,13 @@ router.post("/resetpassword", async (req, res) => {
 
     if (otpStore[email] && otpStore[email] === otp) {
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
 
-    delete otpStore[email]; 
+      delete otpStore[email];
 
-    res.status(200).json({ message: "Password reset successful" });
+      res.status(200).json({ message: "Password reset successful" });
     }
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

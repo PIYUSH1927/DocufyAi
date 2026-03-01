@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -34,6 +36,7 @@
     "path": "^0.12.7",
     "python-shell": "^5.0.0",
     "razorpay": "^2.9.6",
+    "resend": "^6.9.3",
     "rimraf": "^6.0.1",
     "simple-git": "^3.27.0"
   }
