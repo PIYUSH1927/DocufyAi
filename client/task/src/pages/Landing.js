@@ -3,7 +3,7 @@ import "./Landing1.css";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { FaGithub, FaCode, FaHistory, FaCogs, FaBolt } from "react-icons/fa";
+import { FaGithub, FaCode, FaHistory, FaCogs } from "react-icons/fa";
 
 const Landing = () => {
   const navigate = useNavigate();
