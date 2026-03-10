@@ -211,10 +211,10 @@ const Pricing = () => {
             period: "forever free",
             description: "Perfect for individuals getting started.",
             features: [
-              "AI-Generated Docs",
+              "AI-Generated API Docs",
               "GitHub Sync (1 Repo)",
-              "Versioned Documentation",
-              "Copy documentation to clipboard",
+              "Versioned API Documentation",
+              "Copy API docs to clipboard",
             ],
           },
           {
@@ -224,9 +224,9 @@ const Pricing = () => {
             description: "Best for developers and small teams.",
             features: [
               "GitHub Sync (Up to 10 Repos)",
-              "Download document",
+              "Download API docs",
               "Interactive Chat Assistance",
-              "Sync latest changes",
+              "Sync latest API changes",
               "All Free Plan features included",
             ],
           },
@@ -236,7 +236,7 @@ const Pricing = () => {
             period: "one-time payment",
             description: "Best for large teams and organizations.",
             features: [
-              "AI-Generated Docs (Unlimited)",
+              "AI-Generated API Docs (Unlimited)",
               "GitHub Sync (Unlimited Repos)",
               "Priority Support",
               "All Pro Plan features included",

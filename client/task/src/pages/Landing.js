@@ -11,10 +11,10 @@ const Landing = () => {
   return (
     <div className="ln dot-grid">
       <Helmet>
-        <title>DocufyAi - AI-Powered Code Documentation</title>
-        <meta name="description" content="DocufyAi is an AI-driven SaaS platform that automates technical documentation for developers. Connect your GitHub repositories and generate structured, real-time docs effortlessly." />
-        <meta property="og:title" content="DocufyAi - AI-Powered Code Documentation" />
-        <meta property="og:description" content="AI-powered documentation generator that integrates with GitHub, creating structured, always-updated docs for your codebase." />
+        <title>DocufyAi - AI-Powered API Documentation</title>
+        <meta name="description" content="DocufyAi is an AI-driven SaaS platform that automates API documentation for developers. Connect your GitHub repositories and generate structured, always-updated API docs effortlessly." />
+        <meta property="og:title" content="DocufyAi - AI-Powered API Documentation" />
+        <meta property="og:description" content="AI-powered API documentation generator that integrates with GitHub, creating structured, always-updated API docs for your codebase." />
         <meta property="og:url" content="https://docufyai.in" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="DocufyAi" />
@@ -155,13 +155,13 @@ const Landing = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <span></span>
-          AI-Powered Documentation
+          AI-Powered API Documentation
         </motion.div>
 
         <h1 className="ln-title">DocufyAi</h1>
 
         <p className="ln-subtitle">
-          Stop writing documentation manually. Connect your GitHub repos and let AI generate structured, always-updated technical docs in minutes.
+          Stop writing API documentation manually. Connect your GitHub repos and let AI generate structured, always-updated API docs in minutes.
         </p>
 
         <div className="ln-hero-actions">
@@ -207,40 +207,30 @@ const Landing = () => {
       {/* FEATURES */}
       <div className="ln-section-header" style={{ marginTop: "80px" }}>
         <div className="ln-section-label">Features</div>
-        <h2 className="ln-section-title">Everything you need to ship great docs</h2>
-        <p className="ln-section-desc">Powerful features built for modern development teams who move fast.</p>
+        <h2 className="ln-section-title">Everything you need to ship great API docs</h2>
+        <p className="ln-section-desc">Powerful features built for modern development teams who need accurate, always-current API documentation.</p>
       </div>
 
       <div className="ln-features">
         {[
           {
-            title: "Automated Documentation",
-            description: "AI scans your codebase, extracts functions, classes, and API endpoints, and generates structured, easy-to-read documentation — zero manual effort.",
+            title: "AI-Generated API Docs",
+            description: "Connect a repo and get structured API documentation in minutes — endpoints, HTTP methods, request/response schemas, and parameters, all extracted automatically.",
             icon: <FaCogs size={26} color="#6366f1" />,
           },
           {
             title: "GitHub Integration",
-            description: "Connect any GitHub repository in seconds. DocufyAi automatically syncs whenever your code changes, keeping everything fresh.",
+            description: "Connect any GitHub repository in seconds. DocufyAi automatically syncs whenever your code changes, keeping your API docs always up to date.",
             icon: <FaGithub size={26} color="#6366f1" />,
           },
           {
-            title: "API Reference Docs",
-            description: "Auto-generate detailed API documentation including endpoints, parameters, and responses — clear and well-structured for every developer.",
-            icon: <FaCode size={26} color="#6366f1" />,
-          },
-          {
-            title: "Versioned Documentation",
-            description: "Track changes effortlessly. Compare updates, revert to previous versions, and ensure consistency as your codebase evolves.",
+            title: "Versioned API Docs",
+            description: "Track API changes over time. Compare endpoint updates across versions and ensure consistency as your codebase evolves.",
             icon: <FaHistory size={26} color="#6366f1" />,
           },
           {
-            title: "Instant Generation",
-            description: "No waiting days for docs. Generate complete documentation for your entire repository in minutes using our optimized AI pipeline.",
-            icon: <FaBolt size={26} color="#6366f1" />,
-          },
-          {
-            title: "Interactive Chat",
-            description: "Ask questions about your codebase in natural language. Get contextual answers powered by your own repository's documentation.",
+            title: "Interactive API Chat",
+            description: "Ask questions about your API in natural language. Get instant answers about endpoints, parameters, and usage from your generated docs.",
             icon: <FaCode size={26} color="#6366f1" />,
           },
         ].map((feature, index) => (
@@ -262,13 +252,13 @@ const Landing = () => {
       <div className="ln-steps">
         <div className="ln-section-header" style={{ marginBottom: "48px" }}>
           <div className="ln-section-label">How It Works</div>
-          <h2 className="ln-section-title">From code to docs in 3 steps</h2>
+          <h2 className="ln-section-title">From code to API docs in 3 steps</h2>
         </div>
         <div className="ln-steps-grid">
           {[
-            { num: "01", title: "Connect GitHub", desc: "Link your GitHub account and select any repository." },
-            { num: "02", title: "AI Analysis", desc: "Our AI engine analyzes your entire codebase structure." },
-            { num: "03", title: "Get Docs", desc: "Receive beautiful, structured documentation instantly." },
+            { num: "01", title: "Connect GitHub", desc: "Link your GitHub account and select any repository exposing API routes." },
+            { num: "02", title: "AI Analysis", desc: "Our AI engine analyzes your endpoints, schemas, and request/response contracts." },
+            { num: "03", title: "Get API Docs", desc: "Receive beautiful, structured API documentation instantly." },
           ].map((step, i) => (
             <motion.div
               key={i}
@@ -292,8 +282,8 @@ const Landing = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
-        <h2>Ready to automate your docs?</h2>
-        <p>Join developers who've ditched manual documentation forever.</p>
+        <h2>Ready to automate your API docs?</h2>
+        <p>Join developers who've ditched manual API documentation forever.</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}

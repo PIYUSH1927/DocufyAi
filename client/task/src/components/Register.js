@@ -137,7 +137,7 @@ const Register = () => {
           <div className="form-logo-title">DocufyAi</div>
         </div>
         <h2>Create account</h2>
-        <p className="form-subtitle">Start automating your documentation today</p>
+        <p className="form-subtitle">Start automating your API documentation today</p>
         {successMessage && <p className="success">{successMessage}</p>}
         <form onSubmit={handleSubmit}>
           <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} />

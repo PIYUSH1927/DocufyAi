@@ -326,7 +326,7 @@ const ImportPage = () => {
       } else {
         const errorMessage = {
           type: "bot",
-          text: "⚠️ Failed to generate documentation. Please try again.",
+          text: "⚠️ Failed to generate API documentation. Please try again.",
           timestamp: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, errorMessage]);
@@ -658,7 +658,7 @@ const ImportPage = () => {
         <html>
         <head>
           <meta charset="utf-8">
-          <title>${repoName} Documentation</title>
+          <title>${repoName} API Documentation</title>
           <style>
              ${getAdjustedCssForHtml(cssRules)}
             body {
@@ -689,7 +689,7 @@ const ImportPage = () => {
           <meta name="ProgId" content="Word.Document">
           <meta name="Generator" content="Microsoft Word 15">
           <meta name="Originator" content="Microsoft Word 15">
-          <title>${repoName} Documentation</title>
+          <title>${repoName} API Documentation</title>
           <style>
             ${cssRules}
             @page WordSection1 {
@@ -739,10 +739,10 @@ const ImportPage = () => {
         blob = new Blob(["\ufeff", wordDoc], {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         });
-        filename = `${repoName}_documentation.doc`;
+        filename = `${repoName}_api_documentation.doc`;
       } else {
         blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-        filename = `${repoName}_documentation.htm`;
+        filename = `${repoName}_api_documentation.htm`;
       }
 
       const url = URL.createObjectURL(blob);
@@ -1026,7 +1026,7 @@ const ImportPage = () => {
           userId: user.id,
           repoName,
           type: "bot",
-          text: "⚠️ Failed to generate documentation. Please try again later.",
+          text: "⚠️ Failed to generate API documentation. Please try again later.",
           timestamp: new Date().toISOString(),
         };
 
@@ -1075,7 +1075,7 @@ const ImportPage = () => {
           onClick={() => navigate("/home")}
         />
         <span style={{ padding: "0px 35px" }} className="repo-name">
-          <b>{repoName}</b> - Documentation
+          <b>{repoName}</b> - API Docs
         </span>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a
@@ -1179,7 +1179,7 @@ const ImportPage = () => {
           className="import-text-input"
           placeholder={currentPlan === "Free Plan (₹0/month)" ?
             "Upgrade to Pro plan to use the chat feature" :
-            "Ask AI to refine documentation..."}
+            "Ask AI to refine API documentation..."}
           defaultValue=""
           onChange={(e) => { userInputRef.current = e.target.value; }}
           style={{

@@ -408,48 +408,114 @@ app.post("/api/generate-doc", async (req, res) => {
   try {
     const systemMessage = {
       role: "system",
-      content: `You are DocufyAi, a professional technical documentation generator. Follow these EXACT instructions:
-    
-    1. For initial repository analysis, generate PROFESSIONAL, ENTERPRISE-GRADE comprehensive documentation that would be acceptable at companies like Google or Microsoft.
+      content: `You are DocufyAi, an expert API documentation engineer. Your sole purpose is to produce industry-standard, professional API reference documentation — the kind shipped by Stripe, Twilio, and AWS.
 
-    2. NEVER respond with "No code found in repository" unless the repository is completely empty, if empty then respond.
-    
-    3. Documentation must include:
-       - Detailed function explanations with parameters for each file, return values, and examples
-       - Complete code flow analysis showing how data moves through the application
-       - Architecture diagrams described in text
-       - Proper technical specifications
-       - Tables for structured data where appropriate
-       - Dont include and introduction and conclusion and title heading of the documentation should only be Documentation in h1 .
-    
-    4. If both frontend and backend code exist:
-       - For frontend: document components,pages, state management, UI flow, and user interactions
-       - For backend: document services, controllers, models, and data flow
-    
-    5. Important: For API documentation dont give that in table and, include:
-       - Base URL/endpoint
-       - HTTP method
-       - Request headers
-       - Request body format with examples
-       - URL parameters
-       - Query parameters
-       - Response format with status codes and examples
-       - Error handling
-       - Authentication requirements
-       - Rate limiting information (if applicable)
-       - Use markdown tables for clarity
-    
-    6. CRITICAL: For ALL subsequent user messages after documentation has been generated, make MODIFICATIONS to the existing documentation based on the user's request.
-    
-    8. If asked to provide more details, expand only the specific section mentioned.
-    
-    9. IMPORTANT: Always keep the entire existing documentation structure and content intact, making only the specific changes requested by the user.
-    
-    10. If you cannot perform the specific modification, return the previous documentation completely unchanged.
-    
-    11. Do not create completely new documentation in response to a modification request - start with the existing documentation and make minimal targeted changes.
+## PRIMARY OBJECTIVE
+Analyze the supplied repository and produce a complete, production-grade API Reference document.
 
-    12. CRITICAL: Make sure to document ALL files, components, and directories in the repository. DO NOT SKIP ANY IMPORTANT FILES OR COMPONENTS. Follow the exact project structure in your documentation.`
+## DOCUMENT STRUCTURE (always follow this exact order)
+
+# API Documentation
+
+### Overview
+One concise paragraph: what this service does, its primary purpose, and target consumers.
+
+### Base URL
+\`\`\`
+https://api.example.com/v1
+\`\`\`
+If multiple environments exist (dev / staging / prod), list all.
+
+### Authentication
+Explain the auth mechanism (Bearer token / API key / OAuth2 / session cookie / etc.), where credentials go (header / query param), and show a concrete example request header.
+
+### Request & Response Format
+Default content types, date formats, pagination conventions, and any envelope wrapper pattern.
+
+### Error Codes
+A markdown table covering every HTTP status the API returns:
+| Status | Code | Meaning |
+|--------|---------|---------|
+| 400 | VALIDATION_ERROR | ... |
+
+### Rate Limiting
+Limits, window size, relevant headers (X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After). If not determinable, state "Not specified in source".
+
+### Endpoints
+For EVERY route/controller found, produce a subsection:
+
+#### [HTTP METHOD] /path/to/endpoint
+**Summary:** One-line description.
+**Auth required:** Yes / No
+
+**Path Parameters**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+
+**Query Parameters**
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+
+**Request Headers**
+| Header | Value |
+|--------|-------|
+| Authorization | Bearer <token> |
+
+**Request Body** (if applicable — show JSON schema + example)
+\`\`\`json
+{
+  "field": "value"
+}
+\`\`\`
+
+**Responses**
+| Status | Description |
+|--------|-------------|
+| 200 | Success |
+| 4xx | Error |
+
+**Success Response Example**
+\`\`\`json
+{ "id": "...", "status": "ok" }
+\`\`\`
+
+**Error Response Example**
+\`\`\`json
+{ "error": "VALIDATION_ERROR", "message": "..." }
+\`\`\`
+
+---
+
+## RULES — READ CAREFULLY
+
+1. **API-First**: The document is EXCLUSIVELY an API reference. Do NOT explain internal implementation details, classes, or utilities unless they directly affect the API contract.
+
+2. **No-API repositories**: If the codebase contains NO API routes (e.g., pure frontend, CLI tool, library), output:
+   > ⚠️ **No API endpoints detected.**
+   > This repository does not expose HTTP API endpoints. It appears to be a [frontend app / CLI tool / library / etc.].
+   > [2–3 sentences describing what it actually is and its main purpose.]
+   Do NOT fabricate endpoints.
+
+3. **Full-stack repositories**: Document the backend API completely. At the very end, add a single brief section:
+   ### Frontend
+   > [1–2 sentences only: framework used and what it consumes from this API. No component-level detail.]
+
+4. **Completeness**: Document EVERY route, controller, and middleware that affects request handling. Do not skip endpoints.
+
+5. **Accuracy over inference**: If a field, behaviour, or limit cannot be determined from the source, write "Not specified in source" — never invent values.
+
+6. **Formatting**: Use GitHub-flavored Markdown. Code blocks must have language tags. Tables must be properly aligned. No trailing whitespace.
+
+7. **Title rule**: The H1 heading must be exactly: # API Documentation — no project name prefix, no date.
+
+8. **No filler**: Do not include an introduction paragraph about yourself, disclaimers, or generic statements like "This document will help developers…".
+
+## FOR FOLLOW-UP USER MESSAGES (chat refinement)
+When the user asks to modify the existing documentation:
+- Apply only the minimal targeted change requested.
+- Keep the entire document structure intact.
+- Never regenerate the whole document unless explicitly asked.
+- If the requested change cannot be applied, return the document unchanged.`
     };
 
     const previousDoc = chatId ? documentationStore[chatId] : null;
@@ -507,7 +573,19 @@ app.post("/api/generate-doc", async (req, res) => {
       if (!isLargeRepo) {
         const userMessage = {
           role: "user",
-          content: `Analyze the following repository content and generate structured documentation, including explanations, APIs (if present), and usage details. MAKE SURE to document ALL components, pages, and important files in the repository structure:\n\n${repoContent}`
+          content: `Analyze the following repository and produce a complete, professional API Reference document.
+
+Follow the document structure and all rules defined in your system instructions exactly.
+
+Key priorities:
+1. Identify every HTTP route/endpoint in the codebase — Express routes, Django urls, Spring controllers, FastAPI decorators, etc.
+2. For each endpoint document: HTTP method, full path, auth requirement, all parameters (path/query/body), request/response schemas with JSON examples, and all possible status codes.
+3. Infer base URL from environment config, README, or deployment files if present.
+4. Identify the authentication strategy (JWT, session, API key, OAuth) and document it fully.
+5. If no API endpoints exist, follow the no-API rule from your instructions.
+6. If full-stack, add the brief Frontend section at the end only.
+
+Repository content:\n\n${repoContent}`
         };
 
         const completion = await openai.chat.completions.create({
@@ -559,43 +637,50 @@ app.post("/api/generate-doc", async (req, res) => {
 
           let chunkPrompt;
           if (isFirstChunk) {
-            chunkPrompt = `This is a large repository, so I'll analyze it in parts. 
-          
-          CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
-          If you find you're about to write something similar to previously generated content, 
-          REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
-          
-          Focus on creating an introduction, overview and architecture explanation based on the following repository content.
-          
-          IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
-          
-          Repository chunk to analyze:\n\n${trimmedChunk}`;
+            chunkPrompt = `This is a large repository being analyzed in sequential chunks to build a complete API Reference document.
+
+CHUNK 1 OF ${processingChunks.length} — FOUNDATION PASS
+From this chunk, extract and document:
+- Base URL (from .env, config files, README, or server bootstrap code)
+- Authentication mechanism (JWT, session, API key, OAuth — document headers/tokens required)
+- Global middleware that affects all requests (CORS, rate limiting, auth guards)
+- Any global error handling conventions
+- Any API versioning strategy
+- Begin documenting any endpoints found in this chunk using the full endpoint format from your system instructions
+
+DO NOT write a conclusion or summary — more chunks follow.
+DO NOT repeat section headers that will be continued in later chunks.
+
+Chunk content:\n\n${trimmedChunk}`;
           } else if (isLastChunk) {
-            chunkPrompt = `This is the final part of the repository. 
-          
-          CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
-          If you find you're about to write something similar to previously generated content, 
-          REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
-          
-          Based on this content and considering the previous parts (context: ${contextSummary}), 
-          complete the documentation with any remaining details.
-          
-          IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
-          
-          Repository chunk to analyze:\n\n${trimmedChunk}`;
+            chunkPrompt = `FINAL CHUNK (${i + 1} of ${processingChunks.length}) — COMPLETE THE API REFERENCE
+
+Context from previous chunks: ${contextSummary}
+
+From this final chunk:
+1. Document all remaining API endpoints found here (using full endpoint format)
+2. Document any remaining error codes, rate limit headers, or response schemas not yet covered
+3. If the codebase is full-stack, add the brief 1–2 line Frontend section at the very end
+4. DO NOT repeat any endpoint or section already documented in previous chunks
+5. DO NOT add a generic conclusion paragraph
+
+Chunk content:\n\n${trimmedChunk}`;
           } else {
-            chunkPrompt = `This is part ${i + 1} of the repository analysis. 
-          
-          CRITICAL INSTRUCTION: DO NOT REPEAT ANY INFORMATION FROM PREVIOUS DOCUMENTATION CHUNKS. 
-          If you find you're about to write something similar to previously generated content, 
-          REFER TO THE PREVIOUS CONTENT INSTEAD OF REWRITING IT.
-          
-          Using the previous context (${contextSummary}) as a foundation, 
-          continue the documentation by analyzing the following content.
-          
-          IMPORTANT: Document ALL files in this chunk and make sure to follow the exact repository structure. Include full file paths.
-          
-          Repository chunk to analyze:\n\n${trimmedChunk}`;
+            chunkPrompt = `CHUNK ${i + 1} of ${processingChunks.length} — CONTINUE API REFERENCE
+
+Context from previous chunks: ${contextSummary}
+
+From this chunk, extract and document:
+- All API endpoints (routes, controllers, handlers) found in these files
+- For each endpoint: HTTP method, full path, auth requirement, parameters, request/response schema with JSON examples, status codes
+- Any new middleware, guards, or decorators that affect specific routes
+- Any new error types or response patterns not yet documented
+
+DO NOT repeat anything already covered in previous chunks.
+DO NOT write section headers that duplicate prior output.
+DO NOT add filler text between endpoints.
+
+Chunk content:\n\n${trimmedChunk}`;
           }
 
           const chunkMessage = { role: "user", content: chunkPrompt };
@@ -626,37 +711,38 @@ app.post("/api/generate-doc", async (req, res) => {
         // Only do the refinement if we have a reasonable amount of documentation
         if (processingChunks.length > 1 && fullDocumentation.length < 50000) {
           try {
-            const refinementPrompt = `Carefully review this documentation and address the following critical requirements:
+            const refinementPrompt = `You have been given a draft API Reference document assembled from multiple analysis chunks. Refine it into a single, polished, production-grade API reference.
 
-            1. DOCUMENTATION ORGANIZATION INSTRUCTIONS:
-               - If both frontend and client-side code AND backend/server-side code exist in the repository:
-                 * Logically separate and organize code-related explanations by their domain
-                 * Ensure clear distinction between different code domains
-                 * Prevent mixing implementation details from different architectural layers
-               - Ensure there is a clear "Getting Started" section that includes environment setup, installation steps, and configuration
-            
-            2. Completely eliminate ALL repetitive sections and redundant content
-            3. Ensure each piece of information appears ONLY ONCE in the document
-            4. If similar content exists across different sections, consolidate them intelligently
-            5. Maintain a clear, logical flow of information
-            6. Preserve ALL unique details from the original documentation
-            7. Create a cohesive document that reads as a single, professional technical document
-            8. Ensure API documentation is comprehensive and uses consistent formatting
-            
-            Specific instructions for refinement:
-            - Remove duplicate explanations
-            - Combine similar sections without losing any unique information
-            - Restructure content to eliminate redundancy while maintaining comprehensive coverage
-            - Organize code-related information by its architectural domain
-            - Clearly differentiate between different code domains without using explicit "Frontend" or "Backend" headings
-            
-            IMPORTANT GUIDELINES:
-            - If repository contains multiple architectural domains, organize accordingly
-            - Maintain a clear, logical progression of information
-            - Ensure technical depth and comprehensiveness
-            - Prevent information overlap between different code domains
-            
-            Original documentation to refine:\n\n${fullDocumentation}`;
+REFINEMENT RULES — apply all of these:
+
+1. **Structure enforcement**: The final document must follow this exact order:
+   # API Documentation
+   - Overview
+   - Base URL
+   - Authentication
+   - Request & Response Format
+   - Error Codes (consolidated table)
+   - Rate Limiting
+   - Endpoints (one subsection per endpoint, grouped by resource/tag)
+   - Frontend (only if full-stack — 1–2 lines max)
+
+2. **Deduplication**: If the same endpoint appears more than once, merge into one canonical entry keeping all unique details.
+
+3. **Endpoint completeness**: Every endpoint entry must have: HTTP method, path, auth requirement, parameter tables, request body schema with JSON example, response table with status codes, success + error JSON examples.
+
+4. **Consistency**: Ensure all tables use the same column headers. All JSON examples use 2-space indentation. All code blocks have language tags.
+
+5. **Purge non-API content**: Remove any paragraphs explaining internal function logic, class hierarchies, or component trees — unless directly relevant to the API contract.
+
+6. **No filler**: Remove introductory sentences like "This document covers…", closing remarks, or any generic statements.
+
+7. **Frontend rule**: If full-stack, the Frontend section must be a single blockquote of 1–2 sentences only — no component docs.
+
+8. **No-API rule**: If no endpoints were found throughout all chunks, replace the entire document with the no-API notice format from the system instructions.
+
+9. **Accuracy**: Do not add, invent, or assume any endpoint, parameter, or behavior not evidenced in the draft.
+
+Draft API documentation to refine:\n\n${fullDocumentation}`;
 
             const refinementMessage = { role: "user", content: refinementPrompt };
 

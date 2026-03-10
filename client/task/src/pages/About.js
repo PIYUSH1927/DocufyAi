@@ -41,7 +41,7 @@ const About = () => {
         >
           <span className="ab-badge">Our Story</span>
           <h1>Built by developers,<br /><span>for developers</span></h1>
-          <p>We got tired of documentation being the last thing on every sprint. So we automated it.</p>
+          <p>We got tired of API documentation being the last thing on every sprint. So we automated it.</p>
         </motion.div>
 
         {/* SVG illustration */}
@@ -110,8 +110,8 @@ const About = () => {
                 <path d="m33 30 2 2 3-3" stroke="#6366f1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             ),
-            title: "Zero Manual Docs",
-            desc: "Connect a GitHub repo and our AI reads every function, class, and endpoint — generating clear, structured documentation in minutes."
+            title: "Zero Manual API Docs",
+            desc: "Connect a GitHub repo and our AI reads every endpoint, route handler, and schema — generating clear, structured API documentation in minutes."
           },
           {
             icon: (
@@ -122,7 +122,7 @@ const About = () => {
               </svg>
             ),
             title: "Always In Sync",
-            desc: "Push new code? DocufyAi detects the changes and updates your docs automatically, so they never fall behind your codebase."
+            desc: "Push new code? DocufyAi detects the changes and updates your API documentation automatically, so it never falls behind your codebase."
           },
           {
             icon: (
@@ -132,8 +132,8 @@ const About = () => {
                 <path d="M20 24h8M20 28h5" stroke="#6366f1" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
             ),
-            title: "Chat With Your Docs",
-            desc: "Ask questions about your codebase in plain English. Our AI assistant gives contextual answers powered by your own generated docs."
+            title: "Chat With Your API Docs",
+            desc: "Ask questions about your API in plain English. Our AI assistant gives contextual answers about endpoints, parameters, and usage powered by your generated API docs."
           }
         ].map((card, i) => (
           <motion.div
@@ -155,26 +155,26 @@ const About = () => {
       {/* ── HOW IT WORKS ── */}
       <section className="ab-timeline-section">
         <div className="ab-section-label">Workflow</div>
-        <h2 className="ab-section-title">How DocufyAi Works</h2>
+        <h2 className="ab-section-title">How DocufyAi Generates API Docs</h2>
 
         <div className="ab-timeline">
           {[
             {
               step: "01",
               title: "Connect Your Repository",
-              desc: "Securely link your GitHub account. Select the repositories you want documented. We establish a read-only connection to analyze your codebase instantly.",
+              desc: "Securely link your GitHub account. Select the repositories whose APIs you want documented. We establish a read-only connection to analyze your codebase instantly.",
               color: "#6366f1"
             },
             {
               step: "02",
               title: "AI Analysis & Processing",
-              desc: "Our advanced LLM engine scans your directory structure, parses complex logic, and understands the relationships between your components, APIs, and utilities.",
+              desc: "Our advanced LLM engine scans your directory structure, parses route handlers, and understands the request/response contracts, parameters, and authentication patterns of your APIs.",
               color: "#8b5cf6"
             },
             {
               step: "03",
               title: "Publish & Auto-Sync",
-              desc: "Get a beautifully formatted, comprehensive documentation site. Every time your team pushes new code to the main branch, your docs are automatically regenerated and kept in perfect sync.",
+              desc: "Get beautifully formatted, comprehensive API reference documentation. Every time your team pushes new code to the main branch, your API docs are automatically regenerated and kept in perfect sync.",
               color: "#22d3ee"
             }
           ].map((item, i) => (
@@ -213,8 +213,8 @@ const About = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2>Ready to automate your docs?</h2>
-          <p>Join developers who've shipped better documentation with zero manual effort.</p>
+          <h2>Ready to automate your API docs?</h2>
+          <p>Join developers who've shipped better API documentation with zero manual effort.</p>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}

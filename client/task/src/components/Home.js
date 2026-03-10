@@ -409,8 +409,8 @@ const Home = () => {
               animation: 'spin 0.8s linear infinite'
             }}></div>
             <div>
-              <h3 style={{ fontSize: '18px', marginBottom: '10px', color: '#818cf8', fontFamily: '"Space Grotesk", sans-serif', fontWeight: '700' }}>Generating Documentation</h3>
-              <p style={{ margin: '6px 0', fontSize: '14px', lineHeight: '1.7', color: '#4b5563', fontFamily: 'Inter, sans-serif' }}>Analyzing your repository and generating structured documentation...</p>
+              <h3 style={{ fontSize: '18px', marginBottom: '10px', color: '#818cf8', fontFamily: '"Space Grotesk", sans-serif', fontWeight: '700' }}>Generating API Documentation</h3>
+              <p style={{ margin: '6px 0', fontSize: '14px', lineHeight: '1.7', color: '#4b5563', fontFamily: 'Inter, sans-serif' }}>Analyzing your repository and generating structured API documentation...</p>
               <p style={{ margin: '6px 0', fontSize: '14px', lineHeight: '1.7', color: '#4b5563', fontFamily: 'Inter, sans-serif' }}>This may take 5–10 minutes for large repositories.</p>
               <p style={{ fontStyle: 'italic', fontSize: '12px', color: '#374151', marginTop: '12px', fontFamily: 'Inter, sans-serif' }}>Tip: Complex repos with many files may take longer.</p>
             </div>
@@ -442,7 +442,7 @@ const Home = () => {
               className="githubb-btn create-btn"
               onClick={handleCreateDocument}
             >
-              <FaPlus className="icon" /> Create New Project
+              <FaPlus className="icon" /> Create New Document
             </button>
           )}
         </div>
@@ -486,7 +486,7 @@ const Home = () => {
               >
                 <FaTrash className="delete-icon" />
               </div>
-              <div className="repo-title">{repoName} Documentation</div>
+              <div className="repo-title">{repoName} API Docs</div>
               <div className="github-info">
                 <img
                   src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
@@ -506,10 +506,10 @@ const Home = () => {
         {Object.keys(repoMessages).length === 0 && (
           <div className="unique-main-content">
             <FaCloudUploadAlt className="unique-upload-icon" />
-            <h3>Create your first project</h3>
+            <h3>Create your first API docs</h3>
             <p>
               Connect your GitHub repository and generate AI-powered
-              documentation effortlessly.
+              API documentation effortlessly.
             </p>
           </div>
         )}
